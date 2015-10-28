@@ -1,0 +1,9 @@
+<?php 
+$additionaldata = unserialize($this->getInfo()->getData('additional_data'));
+$additionaldata = $additionaldata['card'];
+?>
+<p><?php echo $this->__('Name on the Card: %s', $this->htmlEscape($this->getInfo()->getCcOwner())) ?></p>
+<p><?php echo $this->__('Credit Card Type: %s', $this->htmlEscape($this->getCcTypeName())) ?></p>
+<p><?php echo $this->__('Credit Card Number: xxxx-%s', $this->htmlEscape($this->getInfo()->getCcLast4())) ?></p>
+<p><?php echo $this->__('Expiration Date: %s/%s', $this->htmlEscape($this->getInfo()->getCcExpMonth()), $this->htmlEscape($this->getInfo()->getCcExpYear())) ?></p>
+<p><?php echo $this->__('Número de Parcelas: %s', $additionaldata["cc_installments"]) ?></p>

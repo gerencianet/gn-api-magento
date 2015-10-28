@@ -1,0 +1,212 @@
+<?php
+$_code=$this->getMethodCode();
+$cls  = new Mage_Core_Model_Design_Package();
+$path = $cls->getSkinBaseUrl();
+
+$modo_teste = Mage::getStoreConfig('payment/gerencianet_transparent/environment');
+$account_id = Mage::getStoreConfig('payment/gerencianet_transparent/account_id');
+?>
+<script type="text/javascript">
+//<![CDATA[
+	var brand = "";
+
+	function onlyNumbers(evt){
+		var e = event || evt; // for trans-browser compatibility
+		var charCode = e.which || e.keyCode;
+		if (charCode > 31 && (charCode < 48 || charCode > 57))
+			return false;
+		return true;
+	}
+
+	function checkToken() {
+		var cards = document.getElementsByName('payment[cc_type]');
+		for (i = 0; i < cards.length; i++) {
+			if (cards[i].checked) {
+				var type = cards[i].value;
+				if (cards[i].value === 'amex') {
+					document.getElementById('<?php echo $_code; ?>_cc_cid').setAttribute('maxlength', 4);
+				} else {
+					document.getElementById('<?php echo $_code; ?>_cc_cid').setAttribute('maxlength', 3);
+				}
+			}
+		}
+		var number		= document.getElementById('<?php echo $_code; ?>_cc_number').value;
+		var cvv			= document.getElementById('<?php echo $_code; ?>_cc_cid').value;
+		var exp_month	= document.getElementById('<?php echo $_code; ?>_cc_expiration').value;
+		var exp_year	= document.getElementById('<?php echo $_code; ?>_cc_expiration_yr').value;
+
+		if (!type) {
+			return false;
+		}
+		
+		if (!number) {
+			return false;
+		}
+		if (!cvv) {
+			return false;
+		}
+		if (!exp_month) {
+			return false;
+		}
+		if (!exp_year) {
+			return false;
+		}
+
+		var callback = function(error, response) {
+			if(error) {
+			  console.error(error);
+			} else {
+			  document.getElementById('<?php echo $_code; ?>_token').value = response.data.payment_token;
+			  console.log(response);
+			}
+		};
+
+		$gn.checkout.getPaymentToken({
+			brand: type,
+			number: number,
+			cvv: cvv,
+			expiration_month: exp_month,
+			expiration_year: exp_year
+		}, callback);
+	}
+
+	function calculateInstallments(newBrand) {
+        if(brand != newBrand) {
+                brand = newBrand;
+        var urlAjax = location.href;
+        var validarUrl = /^https:\/\//;
+
+        if ( urlAjax.match( validarUrl ) ) {
+                urlAjax = '<?php echo Mage::getBaseUrl("link", true)."gerencianet/payment/installments" ?>';
+        } else {
+                urlAjax = '<?php echo $this->getUrl("gerencianet/payment/installments") ?>';
+        }
+
+        new Ajax.Request( urlAjax, {
+                method: 'POST',
+                parameters: 'brand=' + brand,
+                evalScripts: true,
+                onLoading: function(transport) {
+                        $('installments').innerHTML = '<img src="<?php echo $this->getSkinUrl('images/opc-ajax-loader.gif');?>" /> <span style="color: #888;">Carregando Parcelas...</span>';
+                },
+                onSuccess: function(transport) {
+                        if (200 == transport.status) {
+                                        $('installments').innerHTML = transport.responseText;
+                        } else {
+                        }
+                        },
+                onFailure: function() {}
+        });
+        }
+	}
+		
+	window.onload = function(){
+		var s=document.createElement('script');
+		s.type='text/javascript';
+		var v=parseInt(Math.random()*1000000);
+		s.src='https://sandbox.gerencianet.com.br/v1/cdn/<?php echo $account_id; ?>/'+v;
+		s.async=false;
+		s.id='<?php echo $account_id; ?>';
+		if(!document.getElementById('<?php echo $account_id; ?>')){
+			document.getElementsByTagName('head')[0].appendChild(s);
+		};
+		$gn={validForm:true,processed:false,done:{},ready:function(fn){$gn.done=fn;}};
+		$gn.ready(function(checkout) {});
+	};
+//]]>
+</script>
+<ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none;">
+	<?php if ($modo_teste):	?>
+	<div style="padding: 5px; color: #820000; background: #FFE0E0; border:2px solid #920000;">
+		Forma de pagamento em teste, pedidos efetuados com esta forma de pagamento serão cancelados imediatamente.
+		<br />
+		Obrigado!
+	</div>
+	<br />
+	<?php endif; ?>
+	<li class="first">
+		<?php $_ccType = $this->getInfoData('cc_type') ?>
+		<ul class="card-logo">
+		<?php foreach ($this->getCcAvailableTypes() as $_typeCode => $_typeName): ?>
+			<li>
+				<label for="card-<?php echo $_typeCode ?>"><img src="<?php echo $this->getSkinUrl('images/gerencianet/'.$_typeCode.'.png') ?>" />
+				<input name="payment[cc_type]" type="radio" value="<?php echo $_typeCode ?>" id="card-<?php echo $_typeCode ?>" class="validate-one-required-by-name" onclick="javascript: calculateInstallments(this.value);" /></label>
+			</li>
+		<?php endforeach ?>
+		</ul>
+	</li>
+	<li>
+		<label for="<?php echo $_code ?>_cc_owner" class="required"><em>*</em><?php echo $this->__('Name on Card') ?></label>
+		<div class="input-box">
+			<input type="text" title="<?php echo $this->__('Name on Card') ?>" class="input-text required-entry" id="<?php echo $_code ?>_cc_owner" name="payment[cc_owner]" value="<?php echo $this->htmlEscape($this->getInfoData('cc_owner')) ?>" />
+		</div>
+	</li>
+	<li>
+		<label for="<?php echo $_code ?>_cc_number" class="required"><em>*</em><?php echo $this->__('Credit Card Number') ?></label>
+		<div class="input-box">
+			<input type="text" onkeypress="return onlyNumbers();" onblur="javascript: checkToken();" id="<?php echo $_code ?>_cc_number" name="payment[cc_number]" title="<?php echo $this->__('Credit Card Number') ?>" class="input-text validate-cc-number validate-digits required-entry" value="" maxlength="16" />
+		</div>
+	</li>
+	<li id="<?php echo $_code ?>_cc_type_exp_div">
+		<label for="<?php echo $_code ?>_expiration" class="required"><em>*</em><?php echo $this->__('Expiration Date') ?></label>
+		<div class="input-box">
+			<div class="v-fix">
+				<select id="<?php echo $_code ?>_cc_expiration" name="payment[cc_exp_month]" class="month validate-cc-exp required-entry" onchange="javascript: checkToken();" >
+				<?php $_ccExpMonth = $this->getInfoData('cc_exp_month') ?>
+				<?php foreach ($this->getCcMonths() as $k=>$v): ?>
+					<option value="<?php echo $k?$k:'' ?>"<?php if($k==$_ccExpMonth): ?> selected="selected"<?php endif ?>><?php echo $v ?></option>
+				<?php endforeach ?>
+				</select>
+			</div>
+			<div class="v-fix">
+				<select id="<?php echo $_code ?>_cc_expiration_yr" name="payment[cc_exp_year]" class="year required-entry" onchange="javascript: checkToken();" >
+				<?php $_ccExpYear = $this->getInfoData('cc_exp_year') ?>
+				<?php foreach ($this->getCcYears() as $k=>$v): ?>
+					<option value="<?php echo $k?$k:'' ?>"<?php if($k==$_ccExpYear): ?> selected="selected"<?php endif ?>><?php echo $v ?></option>
+				<?php endforeach ?>
+				</select>
+			</div>
+		</div>
+	</li>
+	<?php echo $this->getChildHtml() ?>
+	<?php if($this->hasVerification()): ?>
+	<li>
+		<label for="<?php echo $_code ?>_cc_cid" class="required"><em>*</em><?php echo $this->__('Card Verification Number') ?></label>
+		<div class="input-box">
+			<div class="v-fix">
+				<input type="text" onkeypress="return onlyNumbers();" onblur="javascript: checkToken();" title="<?php echo $this->__('Card Verification Number') ?>" class="input-text cvv validate-digits required-entry" size="5" id="<?php echo $_code ?>_cc_cid" name="payment[cc_cid]" value="" maxlength="4" />
+			</div>
+			<a href="#" class="cvv-what-is-this"><?php echo $this->__('What is this?') ?></a>
+		</div>
+	</li>
+	<?php endif; ?>
+	<li>
+		<label for="<?php echo $_code ?>_installments"><?php echo $this->__('Parcelas') ?> </label>
+		<div class="input-box" id="installments">
+			<select id="<?php echo $_code ?>_cc_installments" name="payment[cc_installments]">
+			</select>
+		</div>
+	</li>
+	<input type="hidden" id="<?php echo $_code; ?>_token" name="payment[cc_token]" value="" />
+</ul>
+
+<script type="text/javascript">
+//< ![CDATA[
+var customForm = new VarienForm('form-list');
+Validation.defaultOptions.immediate = true;
+//]]>
+</script>
+
+<style type="text/css">
+.card-logo { display: inline-block; }
+.card-logo li { float: left; text-align: center; margin-right: 15px !important;height:57px;vertical-align:bottom;display:block; position:relative; }
+.card-logo li .validation-advice {position:absolute;top:55px;width:150px; }
+.card-logo li label img { display: block; }
+
+.sp-methods .form-list li .input-box .input-text.cvv { width:50px; margin-right:5px; }
+.form-list li.first { text-align: center; }
+.sp-methods .form-list li label,
+.sp-methods .form-list li .input-box { width:300px; margin-right: 0px;}
+.form-list .card-logo li label,
+.sp-methods .form-list li .input-box select { width:auto !important;margin-right:5px; text-align: center;}
+</style>

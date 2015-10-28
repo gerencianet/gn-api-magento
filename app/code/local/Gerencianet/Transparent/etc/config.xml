@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Módulo de Pagamento Gerencianet para Magento
+ * Cobrança Online
+ * etc/config.xml
+ *
+ * NÃO MODIFIQUE OS ARQUIVOS DESTE MÓDULO PARA O BOM FUNCIONAMENTO DO MESMO
+ * Em caso de dúvidas entre em contato com a Gerencianet. Contatos através do site:
+ * http://www.gerencianet.com.br
+ */
+-->
+<config>
+    <modules>
+       <Gerencianet_Transparent>
+          <version>0.1.0</version>
+       </Gerencianet_Transparent>
+    </modules>
+ 
+    <global>
+        <models>
+          <gerencianet_transparent>
+            <class>Gerencianet_Transparent_Model</class>
+          </gerencianet_transparent>
+        </models>
+        <helpers>
+          <gerencianet_transparent>
+            <class>Gerencianet_Transparent_Helper</class>
+          </gerencianet_transparent>
+        </helpers>
+        <blocks>
+            <gerencianet_transparent>
+                <class>Gerencianet_Transparent_Block</class>
+            </gerencianet_transparent>
+        </blocks>
+    </global>
+ 
+    <default>
+        <payment>
+        	<gerencianet_transparent>
+                <active>1</active>
+                <model>gerencianet_transparent/standard</model>
+                <title>Gerencianet</title>
+                <allowspecific>0</allowspecific>
+            </gerencianet_transparent>
+            <gerencianet_card>
+                <active>1</active>
+                <model>gerencianet_transparent/card</model>
+                <title>Cartão de Crédito</title>
+                <allowspecific>0</allowspecific>
+                <cctypes>VI,MC,AE,DI</cctypes>
+                <payment_action>authorize</payment_action>
+            </gerencianet_card>
+            <gerencianet_billet>
+                <active>1</active>
+                <model>gerencianet_transparent/billet</model>
+                <allowspecific>0</allowspecific>
+                <title>Boleto Bancário</title>
+                <payment_action>authorize</payment_action>
+            </gerencianet_billet>
+         </payment>
+    </default>
+
+    <frontend>
+      <routers>
+        <gerencianet_transparent>
+          <use>standard</use>
+          <args>
+            <module>Gerencianet_Transparent</module>
+            <frontName>gerencianet</frontName>
+          </args>
+        </gerencianet_transparent>
+      </routers>
+    </frontend>
+</config>

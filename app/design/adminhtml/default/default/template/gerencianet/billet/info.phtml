@@ -1,0 +1,5 @@
+<?php $additionaldata = unserialize($this->getInfo()->getData('additional_data')); ?>
+<p>Data de Vencimento: <?php echo date('d/m/Y',strtotime($additionaldata['billet']['expires'])); ?></p>
+<?php if (isset($additionaldata['billet']['link'])): ?>
+<p><a href="<?php echo $additionaldata['billet']['link']; ?>">Imprimir Boleto</a></p>
+<?php endif; ?>
