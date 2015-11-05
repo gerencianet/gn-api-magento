@@ -1,4 +1,7 @@
 <?php
+
+require_once Mage::getBaseDir('lib'). DS . 'gerencianet' . DS . 'autoload.php';
+
 class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_Abstract {
 	
 	protected $_code = 'gerencianet_transparent';
@@ -36,14 +39,11 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	
 	public function getApi() {
 		if (!$this->_api) {
-			# Call loader
-			Mage::getModel('gerencianet_transparent/loader')->getLibs();
-			//Mage::log('CLASSES: ' . var_export(get_declared_classes(),true),0,'gerencianet.log');
 			
 			$options = array(
 				'client_id' => $this->_clientId,
 				'client_secret' => $this->_clientSecret,
-				'sandbox' => ($this->_environment == 1) ? true : false,
+				'sandbox' => ($this->_environment == 2) ? true : false,
 				'debug' => false
 			); 
 			
