@@ -1,4 +1,9 @@
 <?php
+// set_include_path(implode(PATH_SEPARATOR, array(Mage::getBaseDir('lib') . '/Gerencianet',Mage::getBaseDir('lib') . '/Guzzle',get_include_path(),)));
+// require_once(Mage::getBaseDir('lib') . '/Gerencianet/Gerencianet.php');
+
+use Gerencianet;
+
 class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_Abstract {
 	
 	protected $_code = 'gerencianet_transparent';
@@ -26,6 +31,8 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		$this->_clientId = Mage::getStoreConfig($this->_configPath . 'client_id');
 		$this->_clientSecret = Mage::getStoreConfig($this->_configPath . 'client_secret');
 		$this->_environment = Mage::getStoreConfig($this->_configPath . 'environment');
+		# Call loader
+		Mage::getModel('gerencianet_transparent/loader');
 	}
 	
 	public function isAvailable($quote = null)
@@ -36,18 +43,13 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	
 	public function getApi() {
 		if (!$this->_api) {
-			# Call loader
-			Mage::getModel('gerencianet_transparent/loader')->getLibs();
-			//Mage::log('CLASSES: ' . var_export(get_declared_classes(),true),0,'gerencianet.log');
+			$configFile = file_get_contents(Mage::getBaseDir('lib') . '/Gerencianet/config.json');
+			$options = json_decode($configFile, true);
 			
-			$options = array(
-				'client_id' => $this->_clientId,
-				'client_secret' => $this->_clientSecret,
-				'sandbox' => ($this->_environment == 1) ? true : false,
-				'debug' => false
-			); 
+			if ($this->_environment == self::ENV_TEST) 
+				$options['sandbox'] = $options['URL']['sandbox'];
 			
-			$this->_api = new Gerencianet\Gerencianet($options);
+			$this->_api = new Gerencianet($options);
 		}
 		
 		return $this->_api;
@@ -66,7 +68,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	public function createCharge() {
 		$charge = $this->getApi()->createCharge(array(), $this->getItems());
 		Mage::log('CHARGE: ' . var_export($charge,true),0,'gerencianet.log');
-		return $charge['data']['charge_id'];
+		return $charge->id;
 	}
 	
 	public function getBody() {
@@ -78,7 +80,6 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	
 	public function getCustomer() {
 		$order = $this->getOrder();
-		$address = $this->getOrder()->getBillingAddress();
 		$customer = array(
 			'name' => $order->getCustomerFirstname() . " " . $order->getCustomerLastname(),
 			'cpf' => $order->getCustomerTaxvat(),

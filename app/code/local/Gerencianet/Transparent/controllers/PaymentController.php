@@ -81,7 +81,7 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
     	$parcelas = $api->getInstallments($params, array());
     	
     	echo '<select id="gerencianet_card_cc_installments" name="payment[cc_installments]">';
-    	foreach($parcelas['data']['installments'] as $installment): 
+    	foreach($parcelas->data->installments as $installment): 
     		echo '<option value="' . $installment->installment . '">' . $installment->installment . 'x de R$ ' . $installment->currency . (($installment->has_interest) ? ' com juros' : ' sem juros') . '</option>';
     	endforeach;
 		echo '</select>';

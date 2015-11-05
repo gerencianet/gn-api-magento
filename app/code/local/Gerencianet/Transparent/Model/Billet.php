@@ -30,10 +30,10 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
 		$pay = $this->payCharge();
 		Mage::log('PAY CHARGE BILLET: ' . var_export($pay,true),0,'gerencianet.log');
 		
-		if ($pay['code'] == 200) {
+		if ($pay->code == 200) {
 			$add_data = unserialize($payment->getAdditonalData());
-			$add_data['billet']['barcode'] = $pay['data']['barcode'];
-			$add_data['billet']['link'] = $pay['data']['link'];
+			$add_data['billet']['barcode'] = $pay->data->barcode;
+			$add_data['billet']['link'] = $pay->data->link;
 			$payment->setAdditionalData(serialize($add_data));
 			$payment->save();
 		} else {
