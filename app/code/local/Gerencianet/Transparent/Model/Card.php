@@ -37,7 +37,11 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
 	public function authorize(Varien_Object $payment, $amount)
 	{
 		$pay = $this->payCharge();
-		Mage::log('PAY CHARGE BILLET: ' . var_export($pay,true),0,'gerencianet.log');
+		$payData = unserialize($payment->getAdditonalData());
+		$payData['charge_id'] = $pay['data']['charge_id'];
+		$payment->setAdditionalData(serialize($payData));
+		$payment->save();
+		Mage::log('PAY CHARGE CARD: ' . var_export($pay,true),0,'gerencianet.log');
 	}
 	
 	protected function getPaymentData() {

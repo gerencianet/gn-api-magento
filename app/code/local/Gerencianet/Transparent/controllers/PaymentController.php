@@ -58,20 +58,6 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 	
 	public function installmentsAction() {
 		$brand = $this->getRequest()->getParam('brand');
-		switch($brand) {
-			case 'VI':
-				$brand = 'visa';
-				break;
-			case 'MC':
-				$brand = 'mastercard';
-				break;
-			case 'AE':
-				$brand = 'amex';
-				break;
-			case 'DI':
-				$brand = 'diners';
-				break;
-		}
 		$api = Mage::getModel('gerencianet_transparent/standard')->getApi();
     	$quote = Mage::getModel('checkout/session')->getQuote();
     	$params = array(
@@ -79,10 +65,11 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
     			'brand' => $brand
     		);
     	$parcelas = $api->getInstallments($params, array());
+    	Mage::log('INSTALLMENTS: ' . var_export($parcelas,true),0,'gerencianet.log');
     	
     	echo '<select id="gerencianet_card_cc_installments" name="payment[cc_installments]">';
     	foreach($parcelas['data']['installments'] as $installment): 
-    		echo '<option value="' . $installment->installment . '">' . $installment->installment . 'x de R$ ' . $installment->currency . (($installment->has_interest) ? ' com juros' : ' sem juros') . '</option>';
+    		echo '<option value="' . $installment['installment'] . '">' . $installment['installment'] . 'x de R$ ' . $installment['currency'] . (($installment['has_interest']) ? ' com juros' : ' sem juros') . '</option>';
     	endforeach;
 		echo '</select>';
 		exit();

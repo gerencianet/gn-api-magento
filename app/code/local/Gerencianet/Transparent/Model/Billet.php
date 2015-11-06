@@ -34,6 +34,7 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
 			$add_data = unserialize($payment->getAdditonalData());
 			$add_data['billet']['barcode'] = $pay['data']['barcode'];
 			$add_data['billet']['link'] = $pay['data']['link'];
+			$add_data['charge_id'] = $pay['data']['charge_id'];
 			$payment->setAdditionalData(serialize($add_data));
 			$payment->save();
 		} else {

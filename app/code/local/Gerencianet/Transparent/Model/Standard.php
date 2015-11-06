@@ -69,6 +69,21 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		return $charge['data']['charge_id'];
 	}
 	
+	public function updateCharge() {
+		$metadata = array(
+			'custom_id' => $this->getOrder()->getIncrementalId(),
+			'notification_url' => Mage::getUrl('gerencianet/payment/notification')
+			);
+		$charge = $this->getApi()->updateChargeMetadata(array('id' => $this->getChargeId()), $metadata);
+		Mage::log('UPDATE CHARGE METADATA: ' . var_export($charge,true),0,'gerencianet.log');
+	}
+	
+	public function getChargeId() {
+		$payData = $this->getOrder()->getPayment()->getAdditonalData();
+		$payData = unserialize($payData);
+		return $payData['charge_id'];
+	}
+	
 	public function getBody() {
 		$body = array(
 			'payment' => $this->getPaymentData()
@@ -81,11 +96,13 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		$address = $this->getOrder()->getBillingAddress();
 		$customer = array(
 			'name' => $order->getCustomerFirstname() . " " . $order->getCustomerLastname(),
-			'cpf' => $order->getCustomerTaxvat(),
+			'cpf' => preg_replace( '/[^0-9]/', '', $order->getCustomerTaxvat()),
 			'email' => $order->getCustomerEmail(),
 			'birth' => date('Y-m-d',strtotime($order->getCustomerDob())),
 			'phone_number' => preg_replace( '/[^0-9]/', '', $address->getTelephone())
 		);
+		
+		Mage::getModel('gerencianet_transparent/validator')->validate($customer);
 		
 		return $customer;
 	}
@@ -104,10 +121,12 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		if($address->getStreet3())
 			$return['complement'] = $address->getStreet3();
 		
+		Mage::getModel('gerencianet_transparent/validator')->validate($return);
+		
 		return $return;
 	}
 	
-	public function getItems() {
+	public function getChargeBody() {
 		$order = $this->getOrder();
 		$items = $order->getItemsCollection();
 		$return = array();
@@ -120,7 +139,17 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				);
 		}
 		
-		return array('items' => $return);
+		$retShipping = array();
+		if ($order->getShippingAddress()->getShippingAmount() > 0) {
+			$title = $order->getShippingAddress()->getShippingDescription();
+			$price = $order->getShippingAddress()->getShippingAmount();
+			$retShipping[] = array(
+						'name' => $title,
+						'value'=> (int)number_format($price,2,'','')
+					);
+		}
+		
+		return array('items' => $return, 'shippings' => $retShipping);
 	}
 	
 	public function getOrder() {
