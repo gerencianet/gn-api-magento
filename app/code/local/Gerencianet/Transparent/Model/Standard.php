@@ -64,17 +64,17 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	}
 	
 	public function createCharge() {
-		$charge = $this->getApi()->createCharge(array(), $this->getItems());
+		$charge = $this->getApi()->createCharge(array(), $this->getChargeBody());
 		Mage::log('CHARGE: ' . var_export($charge,true),0,'gerencianet.log');
 		return $charge['data']['charge_id'];
 	}
 	
-	public function updateCharge() {
+	public function updateCharge($orderID, $chargeID) {
 		$metadata = array(
-			'custom_id' => $this->getOrder()->getIncrementalId(),
+			'custom_id' => $orderID,
 			'notification_url' => Mage::getUrl('gerencianet/payment/notification')
 			);
-		$charge = $this->getApi()->updateChargeMetadata(array('id' => $this->getChargeId()), $metadata);
+		$charge = $this->getApi()->updateChargeMetadata(array('id' => $chargeID), $metadata);
 		Mage::log('UPDATE CHARGE METADATA: ' . var_export($charge,true),0,'gerencianet.log');
 	}
 	
@@ -130,8 +130,10 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		$order = $this->getOrder();
 		$items = $order->getItemsCollection();
 		$return = array();
+		$orderTotal = 0;
 		foreach ($items as $it) {
 			$item = $order->getItemById($it->getItemId());
+			$orderTotal += $item->getBasePrice();
 			$return[] = array(
 					'name' => $item->getName(),
 					'value' => (int)number_format($item->getBasePrice(),2,'',''),
@@ -143,10 +145,21 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		if ($order->getShippingAddress()->getShippingAmount() > 0) {
 			$title = $order->getShippingAddress()->getShippingDescription();
 			$price = $order->getShippingAddress()->getShippingAmount();
+			$orderTotal += $price;
 			$retShipping[] = array(
 						'name' => $title,
 						'value'=> (int)number_format($price,2,'','')
 					);
+		}
+		
+		# Tratamento para inclusão de taxa/imposto como um item do pedido
+		if ($orderTotal < $order->getBaseTotal()) {
+			$taxValue = $order->getBaseTotal() - $orderTotal;
+			$return[] = array(
+					'name' => 'Taxa/Imposto',
+					'value' => (int)number_format($taxValue,2,'',''),
+					'amount' => 1
+				);
 		}
 		
 		return array('items' => $return, 'shippings' => $retShipping);

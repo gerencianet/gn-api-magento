@@ -62,6 +62,17 @@
     </default>
 
     <frontend>
+      <events>
+        <checkout_onepage_controller_success_action>
+            <observers>
+                <gerencianet_transparent>
+                    <type>model</type>
+                    <class>gerencianet_transparent/observer</class>
+                    <method>updatecharge</method>
+                </gerencianet_transparent>
+            </observers>
+        </checkout_onepage_controller_success_action>
+      </events>
       <routers>
         <gerencianet_transparent>
           <use>standard</use>
