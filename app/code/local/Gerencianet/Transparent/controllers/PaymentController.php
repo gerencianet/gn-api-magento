@@ -53,7 +53,7 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 		if ($token) {
 			$notifications = Mage::getModel('gerencianet_transparent/standard')->getNotification($token);
 			$current = $notifications[count($notifications)-1];
-			Mage::helper('gerencianet_transparent')->updateOrderStatus($current['custom_id'],$current['status']['current']);
+			Mage::helper('gerencianet_transparent')->updateOrderStatus($current);
 		}
 	}
 	

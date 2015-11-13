@@ -11,13 +11,27 @@
 
 class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 {
-	public function updateOrderStatus($orderID,$status){
-		$order = Mage::getModel('sales/order')->loadByIncrementId($orderID);
+	public function updateOrderStatus($notification){
+		$order = Mage::getModel('sales/order')->loadByIncrementId($notification['custom_id']);
 		if ($order) {
-			switch($current['status']['current']) {
+			switch($notification['status']['current']) {
 				case 'waiting':
+					if($order->canHold()) {
+						$changeTo = Mage_Sales_Model_Order::STATE_HOLDED;
+						$comment = utf8_encode('Aguardando Pagamento');
+						$order->setHoldBeforeState($order->getState());
+						$order->setHoldBeforeStatus($order->getStatus());
+						$order->setState($changeTo, true, $comment, $notified = false);
+						$order->hold();
+					}
+					break;
 				case 'contested':
 					if($order->canHold()) {
+						$changeTo = Mage_Sales_Model_Order::STATE_HOLDED;
+						$comment = utf8_encode('Pagamento Contestado - Aguardando Posicionamento');
+						$order->setHoldBeforeState($order->getState());
+						$order->setHoldBeforeStatus($order->getStatus());
+						$order->setState($changeTo, true, $comment, $notified = false);
 						$order->hold();
 					}
 					break;
@@ -25,7 +39,23 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 					if($order->canUnhold()) {
 						$order->unhold();
 					}
-					$order->setState('processing', true);
+					if ($order->canInvoice()) {
+						$changeTo = Mage_Sales_Model_Order::STATE_PROCESSING;
+					
+						$invoice = $order->prepareInvoice();
+						$invoice->register()->pay();
+						$invoice_msg = utf8_encode(sprintf('Pagamento confirmado. Transa&ccedil;&atilde;o Gerencianet: %s', $notification['identifiers']['charge_id']));
+						$invoice->addComment($invoice_msg, true);
+						$invoice->sendEmail(true, $invoice_msg);
+						$invoice->setEmailSent(true);
+					
+						Mage::getModel('core/resource_transaction')
+							->addObject($invoice)
+							->addObject($invoice->getOrder())
+							->save();
+						$comment = utf8_encode(sprintf('Fatura #%s criada.', $invoice->getIncrementId()));
+						$order->setState($changeTo, true, $comment, $notified = true);
+					}
 					break;
 				case 'unpaid':
 				case 'refunded':
@@ -34,6 +64,7 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 						$order->unhold();
 					}
 					if($order->canCancel()) {
+						$order->getPayment()->setMessage("Pagamento cancelado.");
 						$order->cancel();
 					}
 					break;
