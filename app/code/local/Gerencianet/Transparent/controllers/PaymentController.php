@@ -48,12 +48,13 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 		return Mage::getSingleton('gerencianet_transparent/standard');
 	}
 	
-	public function processAction(){
-		
-	}
-
 	public function notificationAction(){
-		
+		$token = $this->getRequest()->getParam('notification');
+		if ($token) {
+			$notifications = Mage::getModel('gerencianet_transparent/standard')->getNotification($token);
+			$current = $notifications[count($notifications)-1];
+			Mage::helper('gerencianet_transparent')->updateOrderStatus($current['custom_id'],$current['status']['current']);
+		}
 	}
 	
 	public function installmentsAction() {
@@ -65,7 +66,6 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
     			'brand' => $brand
     		);
     	$parcelas = $api->getInstallments($params, array());
-    	Mage::log('INSTALLMENTS: ' . var_export($parcelas,true),0,'gerencianet.log');
     	
     	echo '<select id="gerencianet_card_cc_installments" name="payment[cc_installments]">';
     	foreach($parcelas['data']['installments'] as $installment): 

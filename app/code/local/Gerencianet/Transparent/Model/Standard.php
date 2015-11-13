@@ -78,6 +78,12 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		Mage::log('UPDATE CHARGE METADATA: ' . var_export($charge,true),0,'gerencianet.log');
 	}
 	
+	public function getNotification($token) {
+		$notification = $this->getApi()->getNotification(array('token' => $token), array());
+		Mage::log('NOTIFICATION: ' . var_export($notification,true),0,'gerencianet.log');
+		return $notification['data'];
+	}
+	
 	public function getChargeId() {
 		$payData = $this->getOrder()->getPayment()->getAdditonalData();
 		$payData = unserialize($payData);
