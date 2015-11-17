@@ -134,7 +134,7 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
 				var s=document.createElement('script');
 				s.type='text/javascript';
 				var v=parseInt(Math.random()*1000000);
-				s.src='https://".( ($modo_teste) ? 'sandbox' : 'go' ) . ".gerencianet.com.br/v1/cdn/" . $account_id . "/'+v;
+				s.src='https://".( ($modo_teste) ? 'sandbox' : 'api' ) . ".gerencianet.com.br/v1/cdn/" . $account_id . "/'+v;
 				s.async=false;
 				s.id='". $account_id . "';
 				if(!document.getElementById('" . $account_id . "')){

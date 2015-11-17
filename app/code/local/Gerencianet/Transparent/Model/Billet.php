@@ -17,9 +17,7 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
 		$info = $this->getInfoInstance();
 		$quote = Mage::getModel('checkout/session')->getQuote();
 		$expires = Mage::getStoreConfig('payment/gerencianet_billet/duedate');
-		$additionaldata['billet'] = array(
-			'expires' => date('Y-m-d',strtotime('+'.$expires.' days'))
-		);
+		$additionaldata['billet']['expires'] = date('Y-m-d',strtotime('+'.$expires.' days'));
 		$info->setAdditionalData(serialize($additionaldata));
 		
 		return $this;
@@ -31,7 +29,8 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
 		Mage::log('PAY CHARGE BILLET: ' . var_export($pay,true),0,'gerencianet.log');
 		
 		if ($pay['code'] == 200) {
-			$add_data = unserialize($payment->getAdditonalData());
+			$add_data = unserialize($this->getOrder()->getPayment()->getAdditionalData());
+// 			$add_data['billet']['expires'] = $pay['data']['expire_at'];
 			$add_data['billet']['barcode'] = $pay['data']['barcode'];
 			$add_data['billet']['link'] = $pay['data']['link'];
 			$add_data['charge_id'] = $pay['data']['charge_id'];
@@ -45,10 +44,16 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
 	
 	protected function getPaymentData() {
 		$expires = Mage::getStoreConfig('payment/gerencianet_billet/duedate');
+		$instructions = array();
+		$instructions[] = Mage::getStoreConfig('payment/gerencianet_billet/instruction1');
+		$instructions[] = Mage::getStoreConfig('payment/gerencianet_billet/instruction2');
+		$instructions[] = Mage::getStoreConfig('payment/gerencianet_billet/instruction3');
+		$instructions[] = Mage::getStoreConfig('payment/gerencianet_billet/instruction4');
 		$return = array(
 			'banking_billet' => array(
 					'expire_at' => date('Y-m-d',strtotime($this->getOrder()->getCreatedAt().' +' . $expires . 'days')),
-					'customer' => $this->getCustomer()
+					'customer' => $this->getCustomer(),
+					'instructions' => $instructions
 				)		
 		);
 		return $return;

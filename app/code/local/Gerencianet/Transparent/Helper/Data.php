@@ -17,10 +17,8 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 			switch($notification['status']['current']) {
 				case 'waiting':
 					if($order->canHold()) {
-						$changeTo = Mage_Sales_Model_Order::STATE_HOLDED;
+						$changeTo = Mage_Sales_Model_Order::STATE_PENDING_PAYMENT;
 						$comment = utf8_encode('Aguardando Pagamento');
-						$order->setHoldBeforeState($order->getState());
-						$order->setHoldBeforeStatus($order->getStatus());
 						$order->setState($changeTo, true, $comment, $notified = false);
 						$order->hold();
 					}
@@ -58,7 +56,25 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 					}
 					break;
 				case 'unpaid':
+					if($order->canUnhold()) {
+						$order->unhold();
+					}
+					if($order->canCancel()) {
+						$order->cancel();
+						$comment = utf8_encode('Pagamento Inadimplente');
+						$order->addStatusHistoryComment($comment, 'gerencianet_unpaid');
+					}
+					break;
 				case 'refunded':
+					if($order->canUnhold()) {
+						$order->unhold();
+					}
+					if($order->canCancel()) {
+						$order->cancel();
+						$comment = utf8_encode('Pagamento Devolvido');
+						$order->addStatusHistoryComment($comment, 'gerencianet_refunded');
+					}
+					break;
 				case 'canceled':
 					if($order->canUnhold()) {
 						$order->unhold();

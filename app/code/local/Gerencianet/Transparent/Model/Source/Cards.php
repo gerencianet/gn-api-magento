@@ -8,7 +8,8 @@ class Gerencianet_Transparent_Model_Source_Cards extends Mage_Payment_Model_Sour
 			'jcb'			=> 'JCB',
 			'elo'			=> 'Elo',
 			'diners'		=> 'Diners',
-			'discover'		=> 'Discover'
+			'discover'		=> 'Discover',
+			'aura'			=> 'Aura'
 		);
 
     public function toOptionArray()

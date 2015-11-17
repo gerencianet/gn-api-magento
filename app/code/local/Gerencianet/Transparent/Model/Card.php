@@ -17,10 +17,9 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
 	public function assignData($data) {
 		$info = $this->getInfoInstance();
 		$quote = Mage::getModel('checkout/session')->getQuote();
-		$additionaldata['card'] = array(
-			'cc_token' => $data->getCcToken(),
-			'cc_installments' => $data->getCcInstallments() ,
-		);
+		$additionaldata['card']['cc_token'] = $data->getCcToken();
+		$additionaldata['card']['cc_installments'] = $data->getCcInstallments();
+		
 		$info->setAdditionalData(serialize($additionaldata));
 		
 		$info->setCcType($data->getCcType());
@@ -37,7 +36,7 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
 	public function authorize(Varien_Object $payment, $amount)
 	{
 		$pay = $this->payCharge();
-		$payData = unserialize($payment->getAdditonalData());
+		$payData = unserialize($this->getOrder()->getPayment()->getAdditionalData());
 		$payData['charge_id'] = $pay['data']['charge_id'];
 		$payment->setAdditionalData(serialize($payData));
 		$payment->save();

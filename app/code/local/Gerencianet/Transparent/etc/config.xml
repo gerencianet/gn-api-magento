@@ -33,6 +33,26 @@
                 <class>Gerencianet_Transparent_Block</class>
             </gerencianet_transparent>
         </blocks>
+        <resources>
+            <gerencianet_transparent_setup>
+                <setup>
+                    <module>Gerencianet_Transparent</module>
+                </setup>
+                <connection>
+		        	<use>core_setup</use>
+		        </connection>
+	            <gerencianet_transparent_write>
+	                <connection>
+	                    <use>core_write</use>
+	                </connection>
+	            </gerencianet_transparent_write>
+	            <gerencianet_transparent_read>
+	                <connection>
+	                    <use>core_read</use>
+	                </connection>
+	            </gerencianet_transparent_read>
+            </gerencianet_transparent_setup>
+        </resources>
     </global>
  
     <default>

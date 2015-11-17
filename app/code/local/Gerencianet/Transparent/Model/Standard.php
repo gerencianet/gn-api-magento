@@ -94,6 +94,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		$body = array(
 			'payment' => $this->getPaymentData()
 		);
+		Mage::log('BODY PAYMENT: ' . var_export($body,true),0,'gerencianet.log');
 		return $body;
 	}
 	

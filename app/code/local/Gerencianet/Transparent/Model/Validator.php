@@ -40,7 +40,7 @@ class Gerencianet_Transparent_Model_Validator {
 	protected function isValid($field,$data) {
 		if (isset($this->_validators[$field])) {
 			if (!$this->{$this->_validators[$field]}($data)) {
-				$this->sendError($field);
+				$this->_sendError($field);
 			}
 		}
 		return true;
