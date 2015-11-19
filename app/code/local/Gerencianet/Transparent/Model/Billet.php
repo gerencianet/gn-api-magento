@@ -44,6 +44,7 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
 	
 	protected function getPaymentData() {
 		$expires = Mage::getStoreConfig('payment/gerencianet_billet/duedate');
+		$add_data = unserialize($this->getOrder()->getPayment()->getAdditionalData());
 		$instructions = array();
 		$instructions[] = Mage::getStoreConfig('payment/gerencianet_billet/instruction1');
 		$instructions[] = Mage::getStoreConfig('payment/gerencianet_billet/instruction2');
@@ -51,11 +52,12 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
 		$instructions[] = Mage::getStoreConfig('payment/gerencianet_billet/instruction4');
 		$return = array(
 			'banking_billet' => array(
-					'expire_at' => date('Y-m-d',strtotime($this->getOrder()->getCreatedAt().' +' . $expires . 'days')),
+					'expire_at' => $add_data['billet']['expires'],
 					'customer' => $this->getCustomer(),
 					'instructions' => $instructions
 				)		
 		);
+		Mage::log("BANKING BILLET BODY: " . var_export($return,true),0,'gerencianet.log');
 		return $return;
 	}
 }

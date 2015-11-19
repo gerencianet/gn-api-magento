@@ -16,12 +16,12 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 		if ($order) {
 			switch($notification['status']['current']) {
 				case 'waiting':
-					if($order->canHold()) {
-						$changeTo = Mage_Sales_Model_Order::STATE_PENDING_PAYMENT;
-						$comment = utf8_encode('Aguardando Pagamento');
-						$order->setState($changeTo, true, $comment, $notified = false);
-						$order->hold();
+					if($order->canUnhold()) {
+						$order->unhold();
 					}
+					$changeTo = Mage_Sales_Model_Order::STATE_PROCESSING;
+					$comment = utf8_encode('Aguardando Pagamento');
+					$order->setState($changeTo, 'gerencianet_waiting', $comment, $notified = false);
 					break;
 				case 'contested':
 					if($order->canHold()) {
@@ -52,7 +52,7 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 							->addObject($invoice->getOrder())
 							->save();
 						$comment = utf8_encode(sprintf('Fatura #%s criada.', $invoice->getIncrementId()));
-						$order->setState($changeTo, true, $comment, $notified = true);
+						$order->setState($changeTo, 'gerencianet_paid', $comment, $notified = true);
 					}
 					break;
 				case 'unpaid':

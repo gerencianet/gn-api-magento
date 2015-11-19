@@ -64,7 +64,8 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	}
 	
 	public function createCharge() {
-		$charge = $this->getApi()->createCharge(array(), $this->getChargeBody());
+		$body = $this->getChargeBody();
+		$charge = $this->getApi()->createCharge(array(), $body);
 		Mage::log('CHARGE: ' . var_export($charge,true),0,'gerencianet.log');
 		return $charge['data']['charge_id'];
 	}
@@ -72,7 +73,6 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	public function updateCharge($orderID, $chargeID) {
 		$metadata = array(
 			'custom_id' => $orderID,
-			'notification_url' => Mage::getUrl('gerencianet/payment/notification')
 			);
 		$charge = $this->getApi()->updateChargeMetadata(array('id' => $chargeID), $metadata);
 		Mage::log('UPDATE CHARGE METADATA: ' . var_export($charge,true),0,'gerencianet.log');
@@ -133,6 +133,25 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		return $return;
 	}
 	
+	public function getShippingAddress() {
+		$address = $this->getOrder()->getShippingAddress();
+		$return = array(
+				'street' => $address->getStreet1(),
+				'number' => $address->getStreet2(),
+				'zipcode' => $address->getPostcode(),
+				'neighborhood' => $address->getStreet4(),
+				'state' => $address->getRegionCode(),
+				'city' => $address->getCity()
+		);
+			
+		if($address->getStreet3())
+			$return['complement'] = $address->getStreet3();
+	
+		Mage::getModel('gerencianet_transparent/validator')->validate($return);
+	
+		return $return;
+	}
+	
 	public function getChargeBody() {
 		$order = $this->getOrder();
 		$items = $order->getItemsCollection();
@@ -169,7 +188,14 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				);
 		}
 		
-		return array('items' => $return, 'shippings' => $retShipping);
+		return array(
+				'items' => $return, 
+				'shippings' => $retShipping, 
+				'metadata' => array(
+						'notification_url' => Mage::getUrl('gerencianet/payment/notification'
+							)
+				)
+		);
 	}
 	
 	public function getOrder() {
