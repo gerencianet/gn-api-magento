@@ -106,7 +106,8 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			'cpf' => preg_replace( '/[^0-9]/', '', $order->getCustomerTaxvat()),
 			'email' => $order->getCustomerEmail(),
 			'birth' => date('Y-m-d',strtotime($order->getCustomerDob())),
-			'phone_number' => preg_replace( '/[^0-9]/', '', $address->getTelephone())
+			'phone_number' => preg_replace( '/[^0-9]/', '', $address->getTelephone()),
+			'address' => $this->getShippingAddress()
 		);
 		
 		Mage::getModel('gerencianet_transparent/validator')->validate($customer);

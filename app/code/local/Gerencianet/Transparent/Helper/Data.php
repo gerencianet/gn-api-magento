@@ -15,6 +15,14 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 		$order = Mage::getModel('sales/order')->loadByIncrementId($notification['custom_id']);
 		if ($order) {
 			switch($notification['status']['current']) {
+				case 'new':
+					if($order->canUnhold()) {
+						$order->unhold();
+					}
+					$changeTo = Mage_Sales_Model_Order::STATE_NEW;
+					$comment = utf8_encode('Pedido Recebido');
+					$order->setState($changeTo, true, $comment, $notified = false);
+					break;
 				case 'waiting':
 					if($order->canUnhold()) {
 						$order->unhold();
