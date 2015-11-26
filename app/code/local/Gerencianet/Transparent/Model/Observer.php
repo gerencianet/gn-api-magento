@@ -9,6 +9,17 @@ class Gerencianet_Transparent_Model_Observer
     	if (in_array($payment->getMethod(),array('gerencianet_billet','gerencianet_card'))) {
     		$data = unserialize($payment->getAdditionalData());
     		Mage::getModel('gerencianet_transparent/standard')->updateCharge($order->getIncrementID(),$data['charge_id']);
+    		
+    		# changes order state to PENDING
+    		$state = $order->getState();
+    		$status = $order->getStatus();
+    		$defaultStatus = Mage::getSingleton('sales/order_config')->getStateDefaultStatus(Mage_Sales_Model_Order::STATE_PROCESSING);
+    		if ($state == Mage_Sales_Model_Order::STATE_PROCESSING && $status == $defaultStatus) {
+	    		$changeTo = Mage_Sales_Model_Order::STATE_NEW;
+	    		$comment = utf8_encode('Pedido Recebido');
+	    		$order->setState($changeTo, true, $comment, $notified = false);
+	    		$order->save();
+    		}
     	}
     }
 }
