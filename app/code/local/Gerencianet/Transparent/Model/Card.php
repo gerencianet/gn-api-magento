@@ -58,6 +58,8 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
 		$return['credit_card']['billing_address'] = $this->getBillingAddress();
 		$return['credit_card']['customer'] = $this->getCustomer();
 		
+		$return['credit_card'] = $this->checkDiscount($return['credit_card']);
+		
 		return $return;
 	}
 }

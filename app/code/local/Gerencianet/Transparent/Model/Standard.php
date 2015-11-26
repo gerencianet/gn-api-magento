@@ -179,7 +179,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 					);
 		}
 		
-		# Tratamento para inclusão de taxa/imposto como um item do pedido
+		# Add taxes as a charge's item
 		if ($orderTotal < $order->getBaseTotal()) {
 			$taxValue = $order->getBaseTotal() - $orderTotal;
 			$return[] = array(
@@ -210,6 +210,26 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			}
 		}
 		return $this->_order;
+	}
+	
+	public function checkDiscount($paymentData) {
+		$order = $this->getOrder();
+		$discount = false;
+		if ($order->getDiscountAmount()) {
+			$discount = (int)number_format($order->getDiscountAmount(),2,'','');
+		} else {
+			$totals = $order->getTotals();
+			if(isset($totals['discount'])) {
+				$discount = (int)number_format($totals['discount']->getValue(),2,'',''); 
+			}
+		}
+		
+		if ($discount) {
+			$paymentData['discount'] = array(
+					'type' 		=> 'currency',
+					'value'		=> $discount
+			);
+		}
 	}
 	
 }

@@ -59,6 +59,9 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
 					'instructions' => $instructions
 				)		
 		);
+		
+		$return['banking_billet'] = $this->checkDiscount($return['banking_billet']);
+		
 		Mage::log("BANKING BILLET BODY: " . var_export($return,true),0,'gerencianet.log');
 		return $return;
 	}
