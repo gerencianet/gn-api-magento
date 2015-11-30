@@ -220,7 +220,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		} else {
 			$totals = $order->getTotals();
 			if(isset($totals['discount'])) {
-				$discount = (int)number_format($totals['discount']->getValue(),2,'',''); 
+				$discount = (int)abs(number_format($totals['discount']->getValue(),2,'','')); 
 			}
 		}
 		
@@ -230,6 +230,8 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 					'value'		=> $discount
 			);
 		}
+		
+		return $paymentData;
 	}
 	
 }
