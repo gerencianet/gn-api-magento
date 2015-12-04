@@ -1,14 +1,32 @@
 <?php
+/**
+ * Gerencianet
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL).
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Payment
+ * @package    Gerencianet_Transparent
+ * @copyright  Copyright (c) 2015 Gerencianet (http://www.gerencianet.com.br)
+ * @author     AV5 Tecnologia <anderson@av5.com.br>
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
 class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc {
 
     /**
-     * Set block template
+     * Block constructor
      */
     protected function _construct() {
     	parent::_construct();
         $this->setTemplate('gerencianet/card/form.phtml');
     }
 
+    /**
+     * Returns card types from source model
+     */
 	public function getSourceModel()
     {
 		return Mage::getSingleton('gerencianet_transparent/source_cards');
@@ -21,19 +39,21 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
      */
     public function getCcAvailableTypes()
     {
-        //recupera os tipos disponiveis e preenche o vetor types
-        $arrayCartoes = $this->getSourceModel()->toOptionArray();
+        $ccTypes = $this->getSourceModel()->toOptionArray();
 
-        $types = array();
-        foreach($arrayCartoes as $cartao) {
-            $types[$cartao['value']] = $cartao['label'];
+        $return = array();
+        foreach($ccTypes as $type) {
+            $return[$type['value']] = $type['label'];
         }
 
-        return $types;
+        return $return;
     }
     
+    /**
+     * Prepares layout for show on screen
+     */
     protected function _prepareLayout(){
-    	$modo_teste = Mage::getStoreConfig('payment/gerencianet_transparent/environment');
+    	$testmode = Mage::helper('gerencianet_transparent')->isSandbox();
     	$account_id = Mage::getStoreConfig('payment/gerencianet_transparent/account_id');
     	// add Gerencianet JS after <body>
     	$jsBlock = Mage::app()->getLayout()->createBlock('core/text', 'js_gerencianet');
@@ -134,7 +154,7 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
 				var s=document.createElement('script');
 				s.type='text/javascript';
 				var v=parseInt(Math.random()*1000000);
-				s.src='https://".( ($modo_teste) ? 'sandbox' : 'api' ) . ".gerencianet.com.br/v1/cdn/" . $account_id . "/'+v;
+				s.src='https://".( ($testmode) ? 'sandbox' : 'api' ) . ".gerencianet.com.br/v1/cdn/" . $account_id . "/'+v;
 				s.async=false;
 				s.id='". $account_id . "';
 				if(!document.getElementById('" . $account_id . "')){
@@ -165,16 +185,6 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
         return $this->getLayout()->createBlock('payment/form_cc')
                         ->setMethod($this->getMethod());
     }
-
-    public function getInstallments() {
-    	$api = Mage::getModel('gerencianet_transparent/api_paymentData');
-    	$quote = Mage::getModel('checkout/session')->getQuote();
-    	$totals = $quote->getTotals();
-    	$parcelas = $api->value($totals['grand_total']->_data['value'])
-    		->type('visa')
-    		->run()
-			->response();
-        return $parcelas;
-    }
+    
 
 }

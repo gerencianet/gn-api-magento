@@ -1,6 +1,23 @@
 <?php
+/**
+ * Gerencianet
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL).
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Payment
+ * @package    Gerencianet_Transparent
+ * @copyright  Copyright (c) 2015 Gerencianet (http://www.gerencianet.com.br)
+ * @author     AV5 Tecnologia <anderson@av5.com.br>
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
 class Gerencianet_Transparent_Model_Validator {
-	
+	/*
+	 * Model properties
+	 */
 	protected $_messages = array(
 			'name'			=> "Motivo: O nome informado não é válido.\nPor favor, informe nome e sobrenome válidos!",
 			'cpf'			=> "Motivo: O CPF informado não é válido.\nPor favor, informe um número de CPF válido!",
@@ -25,6 +42,11 @@ class Gerencianet_Transparent_Model_Validator {
 			'state'			=> '_empty',
 		);
 	
+	/**
+	 * Validates given data array
+	 * @param array $data
+	 * @return boolean
+	 */
 	public function validate($data) {
 		if (!is_array($data))
 			return false;
@@ -37,6 +59,12 @@ class Gerencianet_Transparent_Model_Validator {
 		return true;
 	}
 	
+	/**
+	 * Check a field has valid data
+	 * @param string $field
+	 * @param string|int $data
+	 * @return boolean
+	 */
 	protected function isValid($field,$data) {
 		if (isset($this->_validators[$field])) {
 			if (!$this->{$this->_validators[$field]}($data)) {
@@ -46,6 +74,11 @@ class Gerencianet_Transparent_Model_Validator {
 		return true;
 	}
 	
+	/**
+	 * Validates name field
+	 * @param string $data
+	 * @return boolean
+	 */
 	protected function _name($data) {
 		$validation = new Zend_Validate_Regex('/^[A-zÀ-ú.\-\s]*$/');
 		if (!$validation->isValid($data) || str_word_count($data) < 2) {
@@ -55,6 +88,11 @@ class Gerencianet_Transparent_Model_Validator {
 		return true;
 	}
 	
+	/**
+	 * Validates email field
+	 * @param string $data
+	 * @return boolean
+	 */
 	protected function _email($data) {
 		$validation = new Zend_Validate_EmailAddress();
 		if (!$validation->isValid($data)) {
@@ -63,6 +101,11 @@ class Gerencianet_Transparent_Model_Validator {
 		return true;
 	}
 	
+	/**
+	 * Validates birthdate fields
+	 * @param string $data
+	 * @return boolean
+	 */
 	protected function _birth($data) {
 		$validation = new Zend_Validate_Date('YYYY-MM-DD');
 		if (!$validation->isValid($data)) {
@@ -71,6 +114,11 @@ class Gerencianet_Transparent_Model_Validator {
 		return true;
 	}
 	
+	/**
+	 * Validates CPF data
+	 * @param string $data
+	 * @return boolean
+	 */
 	protected function _cpf($data) {
 		if(empty($data)) {
 			return false;
@@ -107,6 +155,11 @@ class Gerencianet_Transparent_Model_Validator {
 		return true;
 	}
 	
+	/**
+	 * Validate field is empty
+	 * @param string $data
+	 * @return boolean
+	 */
 	protected function _empty($data) {
 		$validation = new Zend_Validate_NotEmpty();
 		if (!$validation->isValid($data)) {
@@ -115,6 +168,10 @@ class Gerencianet_Transparent_Model_Validator {
 		return true;
 	} 
 	
+	/**
+	 * Send error message
+	 * @param Exception $msg
+	 */
 	protected function _sendError($msg) {
 		Mage::throwException(Mage::helper('gerencianet_transparent')->__("Erro ao efetuar o pagamento!\n" . $this->_messages[$msg]));
 	}

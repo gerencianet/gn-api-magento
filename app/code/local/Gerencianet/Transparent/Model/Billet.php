@@ -1,6 +1,24 @@
 <?php
+/**
+* Gerencianet
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Open Software License (OSL).
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/osl-3.0.php
+*
+* @category   Payment
+* @package    Gerencianet_Transparent
+* @copyright  Copyright (c) 2015 Gerencianet (http://www.gerencianet.com.br)
+* @author     AV5 Tecnologia <anderson@av5.com.br>
+* @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+*/
 class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model_Standard {
 	
+	/**
+	 * Model Properties
+	 */
 	protected $_code 					= 'gerencianet_billet';
 	protected $_infoBlockType 			= 'gerencianet_transparent/billet_info';
 	protected $_isGateway               = true;
@@ -13,6 +31,13 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
 	protected $_canUseCheckout          = true;
 	protected $_canUseForMultishipping  = true;
 	
+	/**
+	 * Assign data to current payment info instance
+	 * 
+	 * @param $data - paymentData
+	 * 
+	 * @return Gerencianet_Transparent_Model_Standard
+	 */
 	public function assignData($data) {
 		$info = $this->getInfoInstance();
 		$quote = Mage::getModel('checkout/session')->getQuote();
@@ -23,30 +48,42 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
 		return $this;
 	}
 	
+	/**
+	 * Authorizes payment request
+	 * 
+	 * @param Varien_Object $payment
+	 * @param double $amount
+	 */
 	public function authorize(Varien_Object $payment, $amount)
 	{
-		$pay = $this->payCharge();
-		Mage::log('PAY CHARGE BILLET: ' . var_export($pay,true),0,'gerencianet.log');
-		
-		if ($pay['code'] == 200) {
-			$add_data = unserialize($this->getOrder()->getPayment()->getAdditionalData());
-// 			$add_data['billet']['expires'] = $pay['data']['expire_at'];
-			$add_data['billet']['barcode'] = $pay['data']['barcode'];
-			$add_data['billet']['link'] = $pay['data']['link'];
-			$add_data['charge_id'] = $pay['data']['charge_id'];
-			$payment->setAdditionalData(serialize($add_data));
-			$payment->save();
-		} else {
-			Mage::throwException($this->_getHelper()->__("Erro na emissão do boleto!\nMotivo: " . $pay->error_description . ".\nPor favor tente novamente mais tarde!"));
+		if ($this->validateData()) {
+			$pay = $this->payCharge();
+			Mage::log('PAY CHARGE BILLET: ' . var_export($pay,true),0,'gerencianet.log');
+			
+			if ($pay['code'] == 200) {
+				$add_data = unserialize($this->getOrder()->getPayment()->getAdditionalData());
+				$add_data['billet']['barcode'] = $pay['data']['barcode'];
+				$add_data['billet']['link'] = $pay['data']['link'];
+				$add_data['charge_id'] = $pay['data']['charge_id'];
+				$payment->setAdditionalData(serialize($add_data));
+				$payment->save();
+			} else {
+				Mage::throwException($this->_getHelper()->__("Erro na emissão do boleto!\nMotivo: " . $pay->error_description . ".\nPor favor tente novamente mais tarde!"));
+			}
 		}
 		
 	}
 	
+	/**
+	 * Returns payment data formatted to API
+	 * 
+	 * @return array
+	 */
 	protected function getPaymentData() {
 		$expires = Mage::getStoreConfig('payment/gerencianet_billet/duedate');
 		$add_data = unserialize($this->getOrder()->getPayment()->getAdditionalData());
 		$instructions = array();
-		for ($i=1;$i < 4;$i++) {
+		for ($i=1;$i<=4;$i++) {
 			$inst = Mage::getStoreConfig('payment/gerencianet_billet/instruction'.$i);
 			if ($inst)
 				$instructions[] = Mage::getStoreConfig('payment/gerencianet_billet/instruction'.$i);

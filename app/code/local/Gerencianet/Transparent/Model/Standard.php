@@ -1,9 +1,27 @@
 <?php
+/**
+ * Gerencianet
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL).
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Payment
+ * @package    Gerencianet_Transparent
+ * @copyright  Copyright (c) 2015 Gerencianet (http://www.gerencianet.com.br)
+ * @author     AV5 Tecnologia <anderson@av5.com.br>
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
 
 require_once Mage::getBaseDir('lib'). DS . 'gerencianet' . DS . 'autoload.php';
 
 class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_Abstract {
 	
+	/**
+	 * Model properties
+	 */
 	protected $_code = 'gerencianet_transparent';
 	protected $_isGateway = true;
 	protected $_isInitializeNeeded = false;
@@ -24,6 +42,9 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	const ENV_PRODUCTION = 1;
 	const ENV_TEST = 2;
 	
+	/**
+	 * Model constructor
+	 */
 	public function __construct() {
 		parent::__construct();
 		$this->_clientId = Mage::getStoreConfig($this->_configPath . 'client_id');
@@ -31,12 +52,37 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		$this->_environment = Mage::getStoreConfig($this->_configPath . 'environment');
 	}
 	
+	/**
+	 * Check if module is available for use
+	 * @param Mage_Sales_Model_Quote $quote
+	 * @return boolean
+	 */
 	public function isAvailable($quote = null)
 	{
 		$available = parent::isAvailable($quote);
 		return $available;
 	}
 	
+	/**
+	 * Validates all data before charge creation
+	 * @param Varien_Object $payment
+	 * @param double $amount
+	 */
+	public function validateData() {
+		try {
+			$this->getBillingAddress();
+			$this->getCustomer();
+		} catch (Exception $e) {
+			Mage::throwException($e->getMessage());
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Returns API object
+	 * @return Gerencianet\Gerencianet
+	 */
 	public function getApi() {
 		if (!$this->_api) {
 			
@@ -63,6 +109,11 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		return $this->getApi()->payCharge($params,$this->getBody());
 	}
 	
+	/**
+	 * Create a charge for current quote
+	 * 
+	 * @return int
+	 */
 	public function createCharge() {
 		$body = $this->getChargeBody();
 		$charge = $this->getApi()->createCharge(array(), $body);
@@ -70,6 +121,11 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		return $charge['data']['charge_id'];
 	}
 	
+	/**
+	 * Update charge meta data
+	 * @param int $orderID
+	 * @param int $chargeID
+	 */
 	public function updateCharge($orderID, $chargeID) {
 		$metadata = array(
 			'custom_id' => $orderID,
@@ -78,18 +134,31 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		Mage::log('UPDATE CHARGE METADATA: ' . var_export($charge,true),0,'gerencianet.log');
 	}
 	
+	/**
+	 * Retrieve notification's data
+	 * @param string $token
+	 * @return array
+	 */
 	public function getNotification($token) {
 		$notification = $this->getApi()->getNotification(array('token' => $token), array());
 		Mage::log('NOTIFICATION: ' . var_export($notification,true),0,'gerencianet.log');
 		return $notification['data'];
 	}
 	
+	/**
+	 * Retrieve order's charge ID
+	 * @return int
+	 */
 	public function getChargeId() {
 		$payData = $this->getOrder()->getPayment()->getAdditonalData();
 		$payData = unserialize($payData);
 		return $payData['charge_id'];
 	}
 	
+	/**
+	 * Get payment data for pay charge
+	 * @return array
+	 */
 	public function getBody() {
 		$body = array(
 			'payment' => $this->getPaymentData()
@@ -98,6 +167,10 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		return $body;
 	}
 	
+	/**
+	 * Retrieves customer's data for pay charge
+	 * @return array
+	 */
 	public function getCustomer() {
 		$order = $this->getOrder();
 		$address = $this->getOrder()->getBillingAddress();
@@ -115,6 +188,10 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		return $customer;
 	}
 	
+	/**
+	 * Retrieves billing address data for pay charge
+	 * @return array
+	 */
 	public function getBillingAddress() {
 		$address = $this->getOrder()->getBillingAddress();
 		$return = array(
@@ -134,6 +211,10 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		return $return;
 	}
 	
+	/**
+	 * Retrieves shipping address data for pay charge
+	 * @return array
+	 */
 	public function getShippingAddress() {
 		$address = $this->getOrder()->getShippingAddress();
 		$return = array(
@@ -153,6 +234,10 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		return $return;
 	}
 	
+	/**
+	 * Generates charge body
+	 * @return array
+	 */
 	public function getChargeBody() {
 		$order = $this->getOrder();
 		$items = $order->getItemsCollection();
@@ -199,6 +284,10 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		);
 	}
 	
+	/**
+	 * Get current order object
+	 * @return Mage_Sales_Model_Order
+	 */
 	public function getOrder() {
 		if (!$this->_order) {
 			$this->_order = Mage::registry('current_order');
@@ -212,6 +301,11 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		return $this->_order;
 	}
 	
+	/**
+	 * Check discount data for pay charge
+	 * @param array $paymentData
+	 * @return array
+	 */
 	public function checkDiscount($paymentData) {
 		$order = $this->getOrder();
 		$discount = false;

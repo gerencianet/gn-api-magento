@@ -1,13 +1,19 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Módulo de Pagamento Gerencianet para Magento
- * Cobrança Online
- * etc/system.xml
+ * Gerencianet
  *
- * NÃO MODIFIQUE OS ARQUIVOS DESTE MÓDULO PARA O BOM FUNCIONAMENTO DO MESMO
- * Em caso de dúvidas entre em contato com a Gerencianet. Contatos através do site:
- * http://www.gerencianet.com.br
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL).
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Payment
+ * @package    Gerencianet_Transparent
+ * @copyright  Copyright (c) 2015 Gerencianet (http://www.gerencianet.com.br)
+ * @author     AV5 Tecnologia <anderson@av5.com.br>
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 -->
 <config>
@@ -38,6 +44,10 @@
                           <show_in_default>1</show_in_default>
                           <show_in_website>1</show_in_website>
                           <show_in_store>0</show_in_store>
+                          <validate>required-entry</validate>
+                          <depends>
+                          	<active>1</active>
+                          </depends>
                         </client_id>
                         <client_secret translate="label">
                           <label>Client Secret</label>
@@ -46,6 +56,10 @@
                           <show_in_default>1</show_in_default>
                           <show_in_website>1</show_in_website>
                           <show_in_store>0</show_in_store>
+                          <validate>required-entry</validate>
+                          <depends>
+                          	<active>1</active>
+                          </depends>
                         </client_secret>
                         <account_id translate="label">
                           <label>Identificador da Conta</label>
@@ -54,6 +68,10 @@
                           <show_in_default>1</show_in_default>
                           <show_in_website>1</show_in_website>
                           <show_in_store>0</show_in_store>
+                          <validate>required-entry</validate>
+                          <depends>
+                          	<active>1</active>
+                          </depends>
                         </account_id>
                         <environment translate="label">
                           <label>Ambiente</label>

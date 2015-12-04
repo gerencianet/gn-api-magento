@@ -1,6 +1,24 @@
 <?php
+/**
+ * Gerencianet
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL).
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Payment
+ * @package    Gerencianet_Transparent
+ * @copyright  Copyright (c) 2015 Gerencianet (http://www.gerencianet.com.br)
+ * @author     AV5 Tecnologia <anderson@av5.com.br>
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
 class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_Standard {
 	
+	/**
+	 * Model properties
+	 */
 	protected $_code 					= 'gerencianet_card';
 	protected $_formBlockType 			= 'gerencianet_transparent/card_form';
 	protected $_infoBlockType 			= 'gerencianet_transparent/card_info';
@@ -14,6 +32,13 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
     protected $_canUseCheckout          = true;
     protected $_canUseForMultishipping  = true;
 	
+    /**
+     * Assign data to current payment info instance
+     *
+     * @param $data - paymentData
+     *
+     * @return Gerencianet_Transparent_Model_Standard
+     */
 	public function assignData($data) {
 		$info = $this->getInfoInstance();
 		$quote = Mage::getModel('checkout/session')->getQuote();
@@ -33,16 +58,29 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
 		return $this;
 	}
 	
+	/**
+	 * Authorizes payment request
+	 * 
+	 * @param Varien_Object $payment
+	 * @param double $amount
+	 */
 	public function authorize(Varien_Object $payment, $amount)
 	{
-		$pay = $this->payCharge();
-		$payData = unserialize($this->getOrder()->getPayment()->getAdditionalData());
-		$payData['charge_id'] = $pay['data']['charge_id'];
-		$payment->setAdditionalData(serialize($payData));
-		$payment->save();
-		Mage::log('PAY CHARGE CARD: ' . var_export($pay,true),0,'gerencianet.log');
+		if ($this->validateData()) {		
+			$pay = $this->payCharge();
+			$payData = unserialize($this->getOrder()->getPayment()->getAdditionalData());
+			$payData['charge_id'] = $pay['data']['charge_id'];
+			$payment->setAdditionalData(serialize($payData));
+			$payment->save();
+			Mage::log('PAY CHARGE CARD: ' . var_export($pay,true),0,'gerencianet.log');
+		}
 	}
 	
+	/**
+	 * Returns payment data formatted to API
+	 * 
+	 * @return array
+	 */
 	protected function getPaymentData() {
 		$payment = unserialize($this->getOrder()->getPayment()->getAdditionalData());
 		$return = array( 'credit_card' => array() );

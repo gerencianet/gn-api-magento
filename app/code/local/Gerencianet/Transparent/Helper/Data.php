@@ -1,16 +1,25 @@
 <?php
 /**
- * Módulo de Pagamento Gerencianet para Magento
- * Cobrança Online
- * Helper/Data.php
- *
- * NÃO MODIFIQUE OS ARQUIVOS DESTE MÓDULO PARA O BOM FUNCIONAMENTO DO MESMO
- * Em caso de dúvidas entre em contato com a Gerencianet. Contatos através do site:
- * http://www.gerencianet.com.br
- */
-
+* Gerencianet
+*
+* NOTICE OF LICENSE
+*
+* This source file is subject to the Open Software License (OSL).
+* It is also available through the world-wide-web at this URL:
+* http://opensource.org/licenses/osl-3.0.php
+*
+* @category   Payment
+* @package    Gerencianet_Transparent
+* @copyright  Copyright (c) 2015 Gerencianet (http://www.gerencianet.com.br)
+* @author     AV5 Tecnologia <anderson@av5.com.br>
+* @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+*/
 class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 {
+	/**
+	 * Update order status accordingly parameter notification
+	 * @param string $notification
+	 */
 	public function updateOrderStatus($notification){
 		$order = Mage::getModel('sales/order')->loadByIncrementId($notification['custom_id']);
 		if ($order) {
@@ -96,5 +105,18 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 			}
 			$order->save();
 		}
-	}    
+	}
+
+	/**
+	 * Checks if is sandbox mode
+	 * @return boolean
+	 */
+	public function isSandbox() {
+		$environment = Mage::getStoreConfig('payment/gerencianet_transparent/environment');
+		if ($environment == Gerencianet_Transparent_Model_Standard::ENV_TEST) {
+			return true;
+		}
+		
+		return false;
+	}
 }
