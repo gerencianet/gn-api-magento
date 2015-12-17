@@ -47,7 +47,6 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 						$order->setHoldBeforeState($order->getState());
 						$order->setHoldBeforeStatus($order->getStatus());
 						$order->setState($changeTo, true, $comment, $notified = false);
-						$order->hold();
 					}
 					break;
 				case 'paid':
@@ -90,6 +89,19 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 						$order->cancel();
 						$comment = utf8_encode('Pagamento Devolvido');
 						$order->addStatusHistoryComment($comment, 'gerencianet_refunded');
+					} else { // ORDER ALREADY PAID, MUST CREATE CREDIT MEMO
+					    $orderItem = $order->getItemsCollection();
+					    $service = Mage::getModel('sales/service_order', $order);
+					    $qtys = array();
+					    foreach ($orderItem as $item) {
+					        $qtys[$item->getId()] = $item->getQtyOrdered();
+					    }
+					    $data = array(
+					        'qtys' => $qtys
+					    );
+					    $creditMemo = $service->prepareCreditmemo($data)->register()->save();
+					    $comment = utf8_encode('Pagamento Devolvido');
+					    $order->addStatusHistoryComment($comment, 'gerencianet_refunded');
 					}
 					break;
 				case 'canceled':
@@ -99,6 +111,19 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 					if($order->canCancel()) {
 						$order->getPayment()->setMessage("Pagamento cancelado.");
 						$order->cancel();
+					} else { // ORDER ALREADY PAID, MUST CREATE CREDIT MEMO
+					    $orderItem = $order->getItemsCollection();
+					    $service = Mage::getModel('sales/service_order', $order);
+					    $qtys = array();
+					    foreach ($orderItem as $item) {
+					        $qtys[$item->getId()] = $item->getQtyOrdered();
+					    }
+					    $data = array(
+					        'qtys' => $qtys
+					    );
+					    $creditMemo = $service->prepareCreditmemo($data)->register()->save();
+					    $comment = utf8_encode('Pagamento cancelado');
+					    $order->addStatusHistoryComment($comment, 'canceled');
 					}
 					break;
 		

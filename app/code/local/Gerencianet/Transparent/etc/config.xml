@@ -88,25 +88,32 @@
     </default>
 
     <frontend>
-      <events>
-        <checkout_onepage_controller_success_action>
-            <observers>
-                <gerencianet_transparent>
-                    <type>model</type>
-                    <class>gerencianet_transparent/observer</class>
-                    <method>updatecharge</method>
-                </gerencianet_transparent>
-            </observers>
-        </checkout_onepage_controller_success_action>
-      </events>
-      <routers>
-        <gerencianet_transparent>
-          <use>standard</use>
-          <args>
-            <module>Gerencianet_Transparent</module>
-            <frontName>gerencianet</frontName>
-          </args>
-        </gerencianet_transparent>
-      </routers>
+		<events>
+		  <checkout_onepage_controller_success_action>
+		      <observers>
+		          <gerencianet_transparent>
+		              <type>model</type>
+		              <class>gerencianet_transparent/observer</class>
+		              <method>updatecharge</method>
+		          </gerencianet_transparent>
+		      </observers>
+		  </checkout_onepage_controller_success_action>
+		</events>
+		<routers>
+		  <gerencianet_transparent>
+		    <use>standard</use>
+		    <args>
+		      <module>Gerencianet_Transparent</module>
+		      <frontName>gerencianet</frontName>
+		    </args>
+		  </gerencianet_transparent>
+		</routers>
+		<layout>
+			<updates>
+				<gerencianet_transparent>
+		        	<file>gerencianet_transparent.xml</file>
+		    	</gerencianet_transparent>
+			</updates>
+		</layout>
     </frontend>
 </config>

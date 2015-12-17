@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout version="0.1.0">
+    <checkout_onepage_success translate="label">
+        <label>Gerencianet Checkout Success</label>
+        <reference name="content">
+            <reference name="checkout.success">
+                <action method="setTemplate"><template>gerencianet/success.phtml</template></action>
+            </reference>
+        </reference>
+    </checkout_onepage_success>
+</layout>
