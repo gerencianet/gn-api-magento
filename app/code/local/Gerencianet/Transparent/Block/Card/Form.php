@@ -79,7 +79,7 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
 						} else {
 							document.getElementById('gerencianet_card_cc_cid').setAttribute('maxlength', 3);
 						}
-					}
+    	    		}
 				}
 				var number		= document.getElementById('gerencianet_card_cc_number').value;
 				var cvv			= document.getElementById('gerencianet_card_cc_cid').value;
@@ -105,10 +105,10 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
 		
 				var callback = function(error, response) {
 					if(error) {
-					  console.error(error);
+					  //console.error(error);
 					} else {
 					  document.getElementById('gerencianet_card_token').value = response.data.payment_token;
-					  console.log(response);
+					  //console.log(response);
 					}
 				};
 		
@@ -124,14 +124,14 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
 			function calculateInstallments(newBrand) {
 		        if(brand != newBrand) {
 		                brand = newBrand;
-		        var urlAjax = location.href;
+		        var urlAjax = '" . Mage::getUrl("gerencianet/payment/installments") . "';
 		        var validarUrl = /^https:\/\//;
-		
-		        if ( urlAjax.match( validarUrl ) ) {
-		                urlAjax = '" . Mage::getBaseUrl("link", true) . "gerencianet/payment/installments';
-		        } else {
-		                urlAjax = '" . Mage::getUrl("gerencianet/payment/installments") . "';
-		        }
+    	    
+    	        if (newBrand === 'aura') {
+				    document.getElementById('gerencianet_card_cc_number').setAttribute('maxlength', 19);
+				} else {
+				    document.getElementById('gerencianet_card_cc_number').setAttribute('maxlength', 16);
+				}
 		
 		        new Ajax.Request( urlAjax, {
 		                method: 'POST',

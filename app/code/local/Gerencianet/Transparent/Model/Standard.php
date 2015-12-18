@@ -89,7 +89,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			$options = array(
 				'client_id' => $this->_clientId,
 				'client_secret' => $this->_clientSecret,
-				'sandbox' => ($this->_environment == 2) ? true : false,
+				'sandbox' => Mage::helper('gerencianet_transparent')->isSandbox(),
 				'debug' => false
 			); 
 			
@@ -253,15 +253,15 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				);
 		}
 		
-		$retShipping = array();
-		if ($order->getShippingAddress()->getShippingAmount() > 0) {
+		$returnData = array();
+		if (!$order->isVirtual()) { // CHECK ORDER IS NOT VIRTUAL
 			$title = $order->getShippingAddress()->getShippingDescription();
 			$price = $order->getShippingAddress()->getShippingAmount();
 			$orderTotal += $price;
-			$retShipping[] = array(
+			$returnData['shippings'] = array(array(
 						'name' => $title,
 						'value'=> (int)number_format($price,2,'','')
-					);
+					));
 		}
 		
 		# Add taxes as a charge's item
@@ -274,14 +274,10 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				);
 		}
 		
-		return array(
-				'items' => $return, 
-				'shippings' => $retShipping, 
-				'metadata' => array(
-						'notification_url' => Mage::getUrl('gerencianet/payment/notification'
-							)
-				)
-		);
+		$returnData['items'] = $return;
+		$returnData['metadata'] = array('notification_url' => Mage::getUrl('gerencianet/payment/notification'));
+				
+		return $returnData;
 	}
 	
 	/**
