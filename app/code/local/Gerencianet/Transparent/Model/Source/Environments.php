@@ -25,7 +25,7 @@ class Gerencianet_Transparent_Model_Source_Environments
     {
         return array(
             array('value'=>'1', 'label'=>Mage::helper('adminhtml')->__('Produção')),
-            array('value'=>'2', 'label'=>Mage::helper('adminhtml')->__('Homologação')),
+            array('value'=>'2', 'label'=>Mage::helper('adminhtml')->__('Desenvolvimento')),
         );
     }
 
