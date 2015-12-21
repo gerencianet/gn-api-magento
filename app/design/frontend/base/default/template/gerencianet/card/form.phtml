@@ -20,20 +20,20 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 ?>
 <ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none;">
 	<?php if ($isSandbox):	?>
-	<div style="padding: 5px; color: #820000; background: #FFE0E0; border:2px solid #920000;">
-		Forma de pagamento em teste, pedidos efetuados com esta forma de pagamento serão cancelados imediatamente.
-		<br />
-		Obrigado!
+	<div class="alert-development">
+		<strong>ATENÇÃO!</strong>
+		<p>Essa loja está em Modo Desenvolvimento. O pagamento de cartão de crédito será confirmado automaticamente no ambiente de Sandbox da Gerencianet.</p>
 	</div>
-	<br />
 	<?php endif; ?>
 	<li class="first">
 		<?php $_ccType = $this->getInfoData('cc_type') ?>
 		<ul class="card-logo">
 		<?php foreach ($this->getCcAvailableTypes() as $_typeCode => $_typeName): ?>
 			<li>
-				<label for="card-<?php echo $_typeCode ?>"><img src="<?php echo $this->getSkinUrl('images/gerencianet/'.$_typeCode.'.png') ?>" />
-				<input name="payment[cc_type]" type="radio" value="<?php echo $_typeCode ?>" id="card-<?php echo $_typeCode ?>" class="validate-one-required-by-name" onclick="javascript: calculateInstallments(this.value);" /></label>
+				<label for="card-<?php echo $_typeCode ?>" class="brand-label">
+					<input name="payment[cc_type]" type="radio" value="<?php echo $_typeCode ?>" id="card-<?php echo $_typeCode ?>" class="validate-one-required-by-name" onclick="javascript: calculateInstallments(this.value);" />
+					<img src="<?php echo $this->getSkinUrl('images/gerencianet/'.$_typeCode.'.png') ?>" />
+				</label>
 			</li>
 		<?php endforeach ?>
 		</ul>
@@ -101,8 +101,13 @@ Validation.defaultOptions.immediate = true;
 </script>
 
 <style type="text/css">
+.alert-development { color: #c90000; border: 1px solid #c90000; margin-top: 20px; margin-bottom: 20px; padding: 10px; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; }
+.alert-development p { color: #707070; margin: 0; padding: 0; font-size: 13px; }
+.card-logo input { position: absolute; top: 15px; left: 4px; }
+.brand-label { border: 1px solid #ddd; padding: 5px 5px 5px 20px; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; cursor: pointer; position: relative; }
+
 .card-logo { display: inline-block; }
-.card-logo li { float: left; text-align: center; margin-right: 15px !important;height:57px;vertical-align:bottom;display:block; position:relative; }
+.card-logo li { float: left; text-align: center; margin-right: 10px !important;height:57px;vertical-align:bottom;display:block; position:relative; }
 .card-logo li .validation-advice {position:absolute;top:55px;width:150px; }
 .card-logo li label img { display: block; }
 
