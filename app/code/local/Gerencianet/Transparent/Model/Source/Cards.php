@@ -20,9 +20,9 @@ class Gerencianet_Transparent_Model_Source_Cards extends Mage_Payment_Model_Sour
 	 * Array of allowed card types
 	 */
 	protected $allowedTypes = array(
-			'amex' 			=> 'American Express',
 			'visa' 			=> 'Visa',
 			'mastercard' 	=> 'Mastercard',
+			'amex' 			=> 'American Express',
 			'jcb'			=> 'JCB',
 			'elo'			=> 'Elo',
 			'diners'		=> 'Diners',
