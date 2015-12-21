@@ -18,19 +18,19 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 {
 	/**
 	 * Update order status accordingly parameter notification
-	 * @param string $notification
+	 * @param array $notification
 	 */
 	public function updateOrderStatus($notification){
-		$order = Mage::getModel('sales/order')->loadByIncrementId($notification['custom_id']);
+		$order = Mage::getModel('sales/order')->loadByIncrementId($notification['order']);
 		if ($order) {
-			switch($notification['status']['current']) {
+			switch($notification['status']) {
 				case 'new':
 					if($order->canUnhold()) {
-						$order->unhold();
+					    $order->unhold();
 					}
-					$changeTo = Mage_Sales_Model_Order::STATE_NEW;
+					$changeTo = Mage_Sales_Model_Order::STATE_PROCESSING;
 					$comment = utf8_encode('Pedido Recebido');
-					$order->setState($changeTo, true, $comment, $notified = false);
+					$order->setState($changeTo, 'gerencianet_new', $comment, $notified = false);
 					break;
 				case 'waiting':
 					if($order->canUnhold()) {

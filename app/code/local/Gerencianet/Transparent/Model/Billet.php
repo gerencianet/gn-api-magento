@@ -20,6 +20,7 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
 	 * Model Properties
 	 */
 	protected $_code 					= 'gerencianet_billet';
+	protected $_formBlockType 			= 'gerencianet_transparent/billet_form';
 	protected $_infoBlockType 			= 'gerencianet_transparent/billet_info';
 	protected $_isGateway               = true;
 	protected $_canAuthorize            = true;

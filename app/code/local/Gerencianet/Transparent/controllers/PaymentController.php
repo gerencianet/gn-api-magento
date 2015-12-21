@@ -44,7 +44,12 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 		if ($token) {
 			$notifications = $this->getStandard()->getNotification($token);
 			$current = $notifications[count($notifications)-1];
-			Mage::helper('gerencianet_transparent')->updateOrderStatus($current);
+			$notificationData = array(
+                'order'          => $current['custom_id'],
+			    'status'         => $current['status']['current'],
+			    'charge_id'      => $current['identifiers']['charge_id']			    
+			);
+			Mage::getResourceModel('gerencianet_transparent/notifications')->insert($notificationData);
 		}
 	}
 	
@@ -67,6 +72,14 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
     	endforeach;
 		echo '</select>';
 		exit();
+	}
+	
+	/**
+	 * Receives and process charge notifications
+	 */
+	public function updateAction(){
+	    Mage::getModel('gerencianet_transparent/updater')->updatecharge();
+	    echo 'PEDIDOS ATUALIZADOS';
 	}
 
 }

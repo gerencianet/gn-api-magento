@@ -1,0 +1,32 @@
+<?php
+/**
+ * Gerencianet
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL).
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Payment
+ * @package    Gerencianet_Transparent
+ * @copyright  Copyright (c) 2015 Gerencianet (http://www.gerencianet.com.br)
+ * @author     AV5 Tecnologia <anderson@av5.com.br>
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+$_code = $this->getMethodCode();
+$isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
+?>
+<ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none;">
+	<?php if ($isSandbox):	?>
+	<div style="padding: 5px; color: #820000; background: #FFE0E0; border:2px solid #920000;">
+		Forma de pagamento em teste, pedidos efetuados com esta forma de pagamento ser&atilde;o cancelados imediatamente.
+		<br />
+		Obrigado!
+	</div>
+	<?php endif; ?>
+	<li class="first">
+        O boleto estar&aacute; dispon&iacute;vel para impress&atilde;o ap&oacute;s a finaliza&ccedil;&atilde;o do pedido.
+    </li>
+</ul>

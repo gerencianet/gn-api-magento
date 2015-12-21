@@ -19,7 +19,7 @@
 <config>
     <modules>
        <Gerencianet_Transparent>
-          <version>0.1.1</version>
+          <version>0.1.3</version>
        </Gerencianet_Transparent>
     </modules>
  
@@ -27,7 +27,16 @@
         <models>
           <gerencianet_transparent>
             <class>Gerencianet_Transparent_Model</class>
+       		<resourceModel>gerencianet_transparent_mysql4</resourceModel>
           </gerencianet_transparent>
+          <gerencianet_transparent_mysql4>
+			<class>Gerencianet_Transparent_Model_Mysql4</class>
+			<entities>
+	  			<notifications>
+					<table>gerencianet_notifications</table>
+				</notifications>
+			</entities>
+      	  </gerencianet_transparent_mysql4>
         </models>
         <helpers>
           <gerencianet_transparent>
@@ -43,6 +52,7 @@
             <gerencianet_transparent_setup>
                 <setup>
                     <module>Gerencianet_Transparent</module>
+                    <class>Mage_Sales_Model_Mysql4_Setup</class>
                 </setup>
                 <connection>
 		        	<use>core_setup</use>
@@ -89,7 +99,7 @@
 
     <frontend>
 		<events>
-		  <checkout_onepage_controller_success_action>
+		  <sales_order_place_after>
 		      <observers>
 		          <gerencianet_transparent>
 		              <type>model</type>
@@ -97,7 +107,7 @@
 		              <method>updatecharge</method>
 		          </gerencianet_transparent>
 		      </observers>
-		  </checkout_onepage_controller_success_action>
+		  </sales_order_place_after>
 		</events>
 		<routers>
 		  <gerencianet_transparent>
@@ -116,4 +126,17 @@
 			</updates>
 		</layout>
     </frontend>
+    
+    <crontab>
+    	<jobs>
+    		<gerencianet_transparent_updater>
+    			<schedule>
+    				<cron_expr>*/5 * * * *</cron_expr>
+    			</schedule>
+    			<run>
+    				<model>gerencianet_transparent/updater::updatecharge</model>
+    			</run>
+    		</gerencianet_transparent_updater>
+    	</jobs>
+    </crontab>
 </config>
