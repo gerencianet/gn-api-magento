@@ -20,13 +20,16 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 ?>
 <ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none;">
 	<?php if ($isSandbox):	?>
-	<div style="padding: 5px; color: #820000; background: #FFE0E0; border:2px solid #920000;">
-		Forma de pagamento em teste, pedidos efetuados com esta forma de pagamento ser&atilde;o cancelados imediatamente.
-		<br />
-		Obrigado!
+	<div class="alert-development">
+		<strong>ATEN&Ccedil;&Atilde;O!</strong>
+		<p>Essa loja est&aacute; em Modo Desenvolvimento. O pagamento de boleto ser&aacute; confirmado automaticamente no ambiente de Sandbox da Gerencianet.</p>
 	</div>
 	<?php endif; ?>
 	<li class="first">
         O boleto estar&aacute; dispon&iacute;vel para impress&atilde;o ap&oacute;s a finaliza&ccedil;&atilde;o do pedido.
     </li>
 </ul>
+<style type="text/css">
+.alert-development { color: #c90000; border: 1px solid #c90000; margin-top: 20px; margin-bottom: 20px; padding: 10px; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; }
+.alert-development p { color: #707070; margin: 0; padding: 0; font-size: 13px; }
+</style>
