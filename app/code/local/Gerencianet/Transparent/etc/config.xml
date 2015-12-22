@@ -101,13 +101,22 @@
 		<events>
 		  <sales_order_place_after>
 		      <observers>
-		          <gerencianet_transparent>
+		          <gerencianet_transparent_updatecharge>
 		              <type>model</type>
 		              <class>gerencianet_transparent/observer</class>
 		              <method>updatecharge</method>
-		          </gerencianet_transparent>
+		          </gerencianet_transparent_updatecharge>
 		      </observers>
 		  </sales_order_place_after>
+		  <checkout_onepage_controller_success_action>
+		      <observers>
+		          <gerencianet_transparent_notifications>
+		              <type>model</type>
+		              <class>gerencianet_transparent/observer</class>
+		              <method>processnotifications</method>
+		          </gerencianet_transparent_notifications>
+		      </observers>
+		  </checkout_onepage_controller_success_action>
 		</events>
 		<routers>
 		  <gerencianet_transparent>

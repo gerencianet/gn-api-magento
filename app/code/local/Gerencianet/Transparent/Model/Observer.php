@@ -27,8 +27,6 @@ class Gerencianet_Transparent_Model_Observer
         $payment = $order->getPayment();
     	if (in_array($payment->getMethod(),array('gerencianet_billet','gerencianet_card'))) {
     		$data = unserialize($payment->getAdditionalData());
-    		Mage::getModel('gerencianet_transparent/standard')->updateCharge($order->getIncrementID(),$data['charge_id']);
-    		
     		$payment->setGerencianetChargeId($data['charge_id']);
     		
     		# changes order state to PENDING
@@ -37,7 +35,12 @@ class Gerencianet_Transparent_Model_Observer
 		    $order->setState($changeTo, 'gerencianet_new', $comment, $notified = false);
 		    $order->save();
 		    
+    		Mage::getModel('gerencianet_transparent/standard')->updateCharge($order->getIncrementID(),$data['charge_id']);
 		    Mage::getModel('gerencianet_transparent/updater')->updatecharge();
     	}
+    }
+    
+    public function processnotifications($observer) {
+        Mage::getModel('gerencianet_transparent/updater')->updatecharge();
     }
 }

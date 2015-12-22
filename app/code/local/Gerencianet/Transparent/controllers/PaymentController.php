@@ -50,10 +50,7 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 			    'charge_id'      => $current['identifiers']['charge_id']			    
 			);
 			Mage::getResourceModel('gerencianet_transparent/notifications')->insert($notificationData);
-			
-			if($notificationData['order']) {
-			    Mage::getModel('gerencianet_transparent/updater')->updatecharge();
-			}
+		    Mage::getModel('gerencianet_transparent/updater')->updatecharge();
 		}
 	}
 	
