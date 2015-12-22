@@ -36,6 +36,8 @@ class Gerencianet_Transparent_Model_Observer
 		    $comment = utf8_encode('Pedido Recebido');
 		    $order->setState($changeTo, 'gerencianet_new', $comment, $notified = false);
 		    $order->save();
+		    
+		    Mage::getModel('gerencianet_transparent/updater')->updatecharge();
     	}
     }
 }
