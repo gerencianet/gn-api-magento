@@ -7,7 +7,7 @@
 - Defina as permissões 755 e 644 para as pastas code e etc, respectivamente.
 - Atualize o cache da sua loja acessando Sistema > Gerenciador de Cache > Atualizar Cache.
 
-* * Ao substituir as pastas no seu projeto, o sistema pode informar que alguns arquivos serão sobrescritos. Não se preocupe, pode confirmar o procedimento pois a instalação não afeterá nenhum arquivo já existente em seu projeto.*
+*Ao substituir as pastas no seu projeto, o sistema pode informar que alguns arquivos serão sobrescritos. Não se preocupe, pode confirmar o procedimento pois a instalação não afeterá nenhum arquivo já existente em seu projeto.
 
 ## Configuração
 
