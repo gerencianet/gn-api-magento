@@ -1,4 +1,4 @@
-# Magento Module Gerencianet #
+# Módulo em desenvolvimento #
 
 ## Instalação
 
