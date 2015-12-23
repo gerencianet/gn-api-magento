@@ -20,11 +20,15 @@ class Gerencianet_Transparent_Model_Mysql4_Notifications extends Mage_Core_Model
         $this->_init('gerencianet_transparent/notifications', 'id');
     }
 	
-    public function getAll() {
+    public function getAll($ID=NULL) {
         $read = $this->_getReadAdapter();
         $table = Mage::getSingleton('core/resource')->getTableName('gerencianet_transparent/notifications');
 
 		$select = $read->select()->from($table);
+		
+		if ($ID) {
+		    $select->where('charge_id = ' . $ID);
+		}
 		
 		$rows = $read->fetchAll($select);
 		
