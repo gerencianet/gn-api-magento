@@ -64,7 +64,7 @@
       if (strpos($method, 'gerencianet_billet') !== false):
       	$addData = unserialize($order->getPayment()->getAdditionalData()); 
     ?>
-      	<a title="Imprimir Boleto" href="<?php echo $addData['billet']['link']; ?>" target='_blank'><img src="<?php echo $this->getSkinUrl('images/gerencianet/botao-imprimir.png'); ?>" /></a>
+      	<a title="Imprimir Boleto" href="<?php echo $addData['billet']['link']; ?>" target='_blank'><img class="btn-imprimir" src="<?php echo $this->getSkinUrl('images/gerencianet/botao-imprimir.png'); ?>" /></a>
     <?php endif; ?>
     <br /><br />
 </center>
@@ -73,3 +73,9 @@
 <div class="buttons-set">
     <button type="button" class="button" title="<?php echo $this->__('Continue Shopping') ?>" onclick="window.location='<?php echo $this->getUrl() ?>'"><span><span><?php echo $this->__('Continue Shopping') ?></span></span></button>
 </div>
+<style>
+.btn-imprimir{
+  display: inline-block;
+  margin-top: 20px;
+}
+</style>
