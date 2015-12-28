@@ -59,7 +59,7 @@
                           </depends>
                         </account_id>
                         <production_page translate="label">
-                            <label>Dados Produção</label>
+                            <label>Credenciais de Produção</label>
                             <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
                             <sort_order>4</sort_order>
                             <show_in_default>1</show_in_default>
@@ -97,7 +97,7 @@
                             </depends>
                         </client_secret>
                         <sandbox_page translate="label">
-                            <label>Dados Desenvolvimento</label>
+                            <label>Credenciais de Desenvolvimento</label>
                             <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
                             <sort_order>7</sort_order>
                             <show_in_default>1</show_in_default>
