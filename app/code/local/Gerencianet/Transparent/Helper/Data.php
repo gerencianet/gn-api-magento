@@ -137,11 +137,15 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 	 * @return boolean
 	 */
 	public function isSandbox() {
-		$environment = Mage::getStoreConfig('payment/gerencianet_transparent/environment');
+		$environment = $this->getEnvironment();
 		if ($environment == Gerencianet_Transparent_Model_Standard::ENV_TEST) {
 			return true;
 		}
 		
 		return false;
+	}
+	
+	public function getEnvironment() {
+	    return Mage::getStoreConfig('payment/gerencianet_transparent/environment');
 	}
 }

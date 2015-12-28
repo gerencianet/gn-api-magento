@@ -28,6 +28,8 @@ class Gerencianet_Transparent_Model_Observer
     	if (in_array($payment->getMethod(),array('gerencianet_billet','gerencianet_card'))) {
     		$data = unserialize($payment->getAdditionalData());
     		$payment->setGerencianetChargeId($data['charge_id']);
+    		$payment->setGerencianetEnvironment((string)Mage::helper('gerencianet_transparent')->getEnvironment());
+    		$payment->save();
     		
     		# changes order state to PENDING
 		    $changeTo = Mage_Sales_Model_Order::STATE_PROCESSING;

@@ -35,7 +35,7 @@ class Gerencianet_Transparent_Model_Mysql4_Notifications extends Mage_Core_Model
 		return $rows;
     }
     
-    public function delete($id) {
+    public function deleteById($id) {
     	$write = $this->_getWriteAdapter();
     	$table = Mage::getSingleton('core/resource')->getTableName('gerencianet_transparent/notifications');
     	$write->delete($table, "id = " . $id);
@@ -52,7 +52,7 @@ class Gerencianet_Transparent_Model_Mysql4_Notifications extends Mage_Core_Model
 		));
     }
     
-    public function findOrderByCharge($charge_id) {
+    public function findOrderByCharge($charge_id, $environment) {
         $read = $this->_getReadAdapter();
         
         $table = Mage::getSingleton('core/resource')->getTableName('sales/order_payment');

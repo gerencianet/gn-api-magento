@@ -34,6 +34,8 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	protected $_configPath = 'payment/gerencianet_transparent/';
 	protected $_clientId;
 	protected $_clientSecret;
+	protected $_sandboxClientId;
+	protected $_sandboxClientSecret;
 	protected $_environment;
 	
 	/**
@@ -47,9 +49,11 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 */
 	public function __construct() {
 		parent::__construct();
-		$this->_clientId = Mage::getStoreConfig($this->_configPath . 'client_id');
-		$this->_clientSecret = Mage::getStoreConfig($this->_configPath . 'client_secret');
 		$this->_environment = Mage::getStoreConfig($this->_configPath . 'environment');
+		$this->_clientId = Mage::getStoreConfig($this->_configPath . 'client_id');
+    	$this->_clientSecret = Mage::getStoreConfig($this->_configPath . 'client_secret');
+    	$this->_sandboxClientId = Mage::getStoreConfig($this->_configPath . 'sandbox_client_id');
+    	$this->_sandboxClientSecret = Mage::getStoreConfig($this->_configPath . 'sandbox_client_secret');
 	}
 	
 	/**
@@ -83,13 +87,31 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * Returns API object
 	 * @return Gerencianet\Gerencianet
 	 */
-	public function getApi() {
+	public function getApi($env=NULL) {
+	    if ($env) {
+	        if ($env !== $this->_environment) {
+	            $this->_api = NULL;
+	        }
+	    } else {
+	        $env = $this->_environment;
+	    }
+	        
 		if (!$this->_api) {
+		    
+    	    if ($env == self::ENV_TEST) {
+    	        $clientID = $this->_sandboxClientId;
+    	        $clientSecret = $this->_sandboxClientSecret;
+    	        $mode = true;
+    	    } else {
+    	        $clientID = $this->_clientId;
+    	        $clientSecret = $this->_clientSecret;
+    	        $mode = false;
+    	    }
 			
 			$options = array(
-				'client_id' => $this->_clientId,
-				'client_secret' => $this->_clientSecret,
-				'sandbox' => Mage::helper('gerencianet_transparent')->isSandbox(),
+				'client_id' => $clientID,
+				'client_secret' => $clientSecret,
+				'sandbox' => $mode,
 				'debug' => false
 			); 
 			
@@ -140,9 +162,20 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * @return array
 	 */
 	public function getNotification($token) {
-		$notification = $this->getApi()->getNotification(array('token' => $token), array());
+		$notification = $this->getApi(self::ENV_PRODUCTION)->getNotification(array('token' => $token), array());
 		Mage::log('NOTIFICATION: ' . var_export($notification,true),0,'gerencianet.log');
 		return $notification['data'];
+	}
+	
+	/**
+	 * Retrieve sandbox notification's data
+	 * @param string $token
+	 * @return array
+	 */
+	public function getNotificationSB($token) {
+	    $notification = $this->getSandbox(self::ENV_TEST)->getNotification(array('token' => $token), array());
+	    Mage::log('NOTIFICATION SANDBOX: ' . var_export($notification,true),0,'gerencianet.log');
+	    return $notification['data'];
 	}
 	
 	/**
@@ -275,7 +308,12 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		}
 		
 		$returnData['items'] = $return;
-		$returnData['metadata'] = array('notification_url' => Mage::getUrl('gerencianet/payment/notification'));
+		
+		$notification_url = 'gerencianet/payment/notification';
+		if (Mage::helper('gerencianet_transparent')->isSandbox()) {
+		    $notification_url .= 'sb';
+		}
+		$returnData['metadata'] = array('notification_url' => Mage::getUrl($notification_url));
 				
 		return $returnData;
 	}

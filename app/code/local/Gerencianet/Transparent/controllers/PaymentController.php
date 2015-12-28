@@ -47,11 +47,31 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 			$notificationData = array(
                 'order'          => $current['custom_id'],
 			    'status'         => $current['status']['current'],
-			    'charge_id'      => $current['identifiers']['charge_id']			    
+			    'charge_id'      => $current['identifiers']['charge_id'],
+			    'environment'    => Gerencianet_Transparent_Model_Standard::ENV_PRODUCTION
 			);
 			Mage::getResourceModel('gerencianet_transparent/notifications')->insert($notificationData);
 		    Mage::getModel('gerencianet_transparent/updater')->updatecharge();
 		}
+	}
+	
+	/**
+	 * Receives and process charge notifications
+	 */
+	public function notificationsbAction(){
+	    $token = $this->getRequest()->getParam('notification');
+	    if ($token) {
+	        $notifications = $this->getStandard()->getNotificationSB($token);
+	        $current = $notifications[count($notifications)-1];
+	        $notificationData = array(
+	            'order'          => $current['custom_id'],
+	            'status'         => $current['status']['current'],
+	            'charge_id'      => $current['identifiers']['charge_id'],
+			    'environment'    => Gerencianet_Transparent_Model_Standard::ENV_TEST
+	        );
+	        Mage::getResourceModel('gerencianet_transparent/notifications')->insert($notificationData);
+	        Mage::getModel('gerencianet_transparent/updater')->updatecharge();
+	    }
 	}
 	
 	/**
