@@ -173,7 +173,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * @return array
 	 */
 	public function getNotificationSB($token) {
-	    $notification = $this->getSandbox(self::ENV_TEST)->getNotification(array('token' => $token), array());
+	    $notification = $this->getApi(self::ENV_TEST)->getNotification(array('token' => $token), array());
 	    Mage::log('NOTIFICATION SANDBOX: ' . var_export($notification,true),0,'gerencianet.log');
 	    return $notification['data'];
 	}
