@@ -230,7 +230,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		$return = array(
 			'street' => $address->getStreet1(),
 			'number' => $address->getStreet2(),
-			'zipcode' => $address->getPostcode(),
+			'zipcode' => preg_replace('/[^0-9\s]/', '',$address->getPostcode()),
 			'neighborhood' => $address->getStreet4(),
 			'state' => $address->getRegionCode(),
 			'city' => $address->getCity()
@@ -253,7 +253,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		$return = array(
 				'street' => $address->getStreet1(),
 				'number' => $address->getStreet2(),
-				'zipcode' => $address->getPostcode(),
+				'zipcode' => preg_replace('/[^0-9\s]/', '',$address->getPostcode()),
 				'neighborhood' => $address->getStreet4(),
 				'state' => $address->getRegionCode(),
 				'city' => $address->getCity()
