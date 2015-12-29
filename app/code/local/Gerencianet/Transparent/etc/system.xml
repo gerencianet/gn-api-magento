@@ -164,12 +164,12 @@
                         <duedate translate="label">
                           <label>Dias para vencimento</label>
                           <frontend_type>text</frontend_type>
-                          <validate>validate-number validate-number-range number-range-1-365</validate>
+                          <validate>validate-number validate-number-range number-range-0-365</validate>
                           <sort_order>3</sort_order>
                           <show_in_default>1</show_in_default>
                           <show_in_website>1</show_in_website>
                           <show_in_store>0</show_in_store>
-                          <comment>Informe um valor numérico entre 1 e 365</comment>
+                          <comment>Informe um valor numérico entre 0 e 365</comment>
                         </duedate>
                         <instruction1 translate="label">
                           <label>Instruções (linha1)</label>
