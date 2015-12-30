@@ -54,7 +54,7 @@ Array
     [code] => 200
     [data] => Array
         (
-            [charge_id] => 1024
+            [charge_id] => 1000
             [total] => 5000
             [status] => canceled
             [custom_id] =>
@@ -82,13 +82,13 @@ Array
                 (
                     [0] => Array
                         (
-                            [status] => new
+                            [message] => Cobrança criada
                             [created_at] => 2015-07-27 09:43:05
                         )
 
                     [1] => Array
                         (
-                            [status] => canceled
+                            [message] => Cobrança cancelada
                             [created_at] => 2015-07-27 10:22:43
                         )
 

@@ -94,12 +94,16 @@ Then open any example in your browser.
 - [Detailing charges](/docs/CHARGE_DETAIL.md)
 - [Updating informations](/docs/CHARGE_UPDATE.md)
 - [Resending billet](/docs/RESEND_BILLET.md)
+- [Adding information to charge's history](/docs/CHARGE_CREATE_HISTORY.md)
 
 #### Carnets
 
 - [Creating carnets](/docs/CARNET.md)
 - [Detailing carnets](/docs/CARNET_DETAIL.md)
 - [Updating informations](/docs/CARNET_UPDATE.md)
+- [Resending the carnet](/docs/CARNET_RESEND.md)
+- [Resending carnet parcel](/docs/CARNET_RESEND_PARCEL.md)
+- [Adding information to carnet's history](/docs/CARNET_CREATE_HISTORY.md)
 
 #### Subscriptions
 
