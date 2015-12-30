@@ -70,68 +70,68 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
 			}
 
 			function checkToken() {
-				var cards = document.getElementsByName('payment[cc_type]');
-				for (i = 0; i < cards.length; i++) {
-					if (cards[i].checked) {
-						var type = cards[i].value;
-						if (cards[i].value === 'amex') {
-							document.getElementById('gerencianet_card_cc_cid').setAttribute('maxlength', 4);
-						} else {
-							document.getElementById('gerencianet_card_cc_cid').setAttribute('maxlength', 3);
-						}
-    	    		}
-				}
-				var number		= document.getElementById('gerencianet_card_cc_number').value;
-				var cvv			= document.getElementById('gerencianet_card_cc_cid').value;
-				var exp_month	= document.getElementById('gerencianet_card_cc_expiration').value;
-				var exp_year	= document.getElementById('gerencianet_card_cc_expiration_yr').value;
-		
-				if (!type) {
-					return false;
-				}
-				
-				if (!number) {
-					return false;
-				}
-				if (!cvv) {
-					return false;
-				}
-				if (!exp_month) {
-					return false;
-				}
-				if (!exp_year) {
-					return false;
-				}
-		
-				var callback = function(error, response) {
-					if(error) {
-					  //console.error(error);
-					} else {
-					  document.getElementById('gerencianet_card_token').value = response.data.payment_token;
-    	              setTimeout(checkToken, 3000);
-					  //console.log(response);
-					}
-				};
-		
-				$"."gn.checkout.getPaymentToken({
-					brand: type,
-					number: number,
-					cvv: cvv,
-					expiration_month: exp_month,
-					expiration_year: exp_year
-				}, callback);
-    	    
-                
+    	        token = document.getElementById('gerencianet_card_token').value;
+    	        if(!token) {
+					var cards = document.getElementsByName('payment[cc_type]');
+    				for (i = 0; i < cards.length; i++) {
+    					if (cards[i].checked) {
+    						var type = cards[i].value;
+    						if (cards[i].value === 'amex') {
+    							document.getElementById('gerencianet_card_cc_cid').setAttribute('maxlength', 4);
+    						} else {
+    							document.getElementById('gerencianet_card_cc_cid').setAttribute('maxlength', 3);
+    						}
+        	    		}
+    				}
+    				var number		= document.getElementById('gerencianet_card_cc_number').value;
+    				var cvv			= document.getElementById('gerencianet_card_cc_cid').value;
+    				var exp_month	= document.getElementById('gerencianet_card_cc_expiration').value;
+    				var exp_year	= document.getElementById('gerencianet_card_cc_expiration_yr').value;
+    		
+    				if (!type) {
+    					return false;
+    				}
+    				
+    				if (!number) {
+    					return false;
+    				}
+    				if (!cvv) {
+    					return false;
+    				}
+    				if (!exp_month) {
+    					return false;
+    				}
+    				if (!exp_year) {
+    					return false;
+    				}
+        	        
+        	        var callback = function(error, response) {
+    					if(error) {
+    					  //console.error(error);
+    					} else {
+    					  document.getElementById('gerencianet_card_token').value = response.data.payment_token;
+    					  //console.log(response);
+    					}
+    				};
+    		
+    				$"."gn.checkout.getPaymentToken({
+    					brand: type,
+    					number: number,
+    					cvv: cvv,
+    					expiration_month: exp_month,
+    					expiration_year: exp_year
+    				}, callback);
+    	       }
 			}
 
 			function calculateInstallments(newBrand) {
 		        if(brand != newBrand || document.getElementById('gerencianet_card_cc_installments').length == 0) {
 		            brand = newBrand;
+    	            document.getElementById('gerencianet_card_token').value = '';
 		            var urlAjax = '" . Mage::getUrl("gerencianet/payment/installments") . "';
-		            var validarUrl = /^https:\/\//;
-    	    
-        	        if (newBrand === 'aura') {
-    				    document.getElementById('gerencianet_card_cc_number').setAttribute('maxlength', 19);
+        	        
+    	            if (newBrand === 'aura') {
+    		  		    document.getElementById('gerencianet_card_cc_number').setAttribute('maxlength', 19);
     				} else {
     				    document.getElementById('gerencianet_card_cc_number').setAttribute('maxlength', 16);
     				}
@@ -152,6 +152,29 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
     		        });
 		        }
 			}
+    	    
+    	    function checkNewToken() {
+    	        token = document.getElementById('gerencianet_card_token');
+    	        if (token) {
+        	        if(token.value) {
+            	        var urlAjax = '" . Mage::getUrl("gerencianet/payment/checktoken") . "';
+            	        new Ajax.Request( urlAjax, {
+        		                method: 'POST',
+        		                parameters: 'token=' + token.value,
+        		                evalScripts: true,
+        		                onSuccess: function(transport) {
+        	                        if (200 == transport.status) {
+            	                       if (transport.responseText == 'FALSE') {
+        	                        	  document.getElementById('gerencianet_card_token').value = '';
+        	                              checkToken();
+        	                           }
+        	                        }
+        						},
+        		                onFailure: function() {}
+        		        });
+        	        }
+    	       }
+    	    }
 		
 			window.onload = function(){
 				var s=document.createElement('script');
@@ -165,6 +188,7 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
 				};
     			$"."gn={validForm:true,processed:false,done:{},ready:function(fn){ $"."gn.done=fn; }};
 				$"."gn.ready(function(checkout) {});
+    	        setInterval(checkNewToken, 4000);
 			};
 		//]]>
 		</script>");

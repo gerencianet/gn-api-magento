@@ -46,5 +46,8 @@ class Gerencianet_Transparent_Model_Observer
         $order = Mage::getModel('sales/order')->load($order_id[0]);
         $payment = $order->getPayment();
         Mage::getModel('gerencianet_transparent/updater')->updatecharge($payment->getGerencianetChargeId());
+        
+        $model = Mage::getResourceModel('gerencianet_transparent/tokens');
+        $model->deleteById($order->getQuoteId());
     }
 }
