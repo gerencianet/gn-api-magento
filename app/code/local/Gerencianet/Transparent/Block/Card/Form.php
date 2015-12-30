@@ -108,6 +108,7 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
 					  //console.error(error);
 					} else {
 					  document.getElementById('gerencianet_card_token').value = response.data.payment_token;
+    	              setTimeout(checkToken, 3000);
 					  //console.log(response);
 					}
 				};
@@ -119,34 +120,36 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
 					expiration_month: exp_month,
 					expiration_year: exp_year
 				}, callback);
+    	    
+                
 			}
 
 			function calculateInstallments(newBrand) {
-		        if(brand != newBrand) {
-		                brand = newBrand;
-		        var urlAjax = '" . Mage::getUrl("gerencianet/payment/installments") . "';
-		        var validarUrl = /^https:\/\//;
+		        if(brand != newBrand || document.getElementById('gerencianet_card_cc_installments').length == 0) {
+		            brand = newBrand;
+		            var urlAjax = '" . Mage::getUrl("gerencianet/payment/installments") . "';
+		            var validarUrl = /^https:\/\//;
     	    
-    	        if (newBrand === 'aura') {
-				    document.getElementById('gerencianet_card_cc_number').setAttribute('maxlength', 19);
-				} else {
-				    document.getElementById('gerencianet_card_cc_number').setAttribute('maxlength', 16);
-				}
-		
-		        new Ajax.Request( urlAjax, {
-		                method: 'POST',
-		                parameters: 'brand=' + brand,
-		                evalScripts: true,
-		                onLoading: function(transport) {
-		                        $('installments').innerHTML = '<img src=\"".$this->getSkinUrl('images/opc-ajax-loader.gif')."\" /> <span style=\"color: #888;\">Carregando Parcelas...</span>';
-		                },
-		                onSuccess: function(transport) {
-	                        if (200 == transport.status) {
-	                        	$('installments').innerHTML = transport.responseText;
-	                        }
-						},
-		                onFailure: function() {}
-		        });
+        	        if (newBrand === 'aura') {
+    				    document.getElementById('gerencianet_card_cc_number').setAttribute('maxlength', 19);
+    				} else {
+    				    document.getElementById('gerencianet_card_cc_number').setAttribute('maxlength', 16);
+    				}
+    		
+    		        new Ajax.Request( urlAjax, {
+    		                method: 'POST',
+    		                parameters: 'brand=' + brand,
+    		                evalScripts: true,
+    		                onLoading: function(transport) {
+    		                        $('installments').innerHTML = '<img src=\"".$this->getSkinUrl('images/opc-ajax-loader.gif')."\" /> <span style=\"color: #888;\">Carregando Parcelas...</span>';
+    		                },
+    		                onSuccess: function(transport) {
+    	                        if (200 == transport.status) {
+    	                        	$('installments').innerHTML = transport.responseText;
+    	                        }
+    						},
+    		                onFailure: function() {}
+    		        });
 		        }
 			}
 		

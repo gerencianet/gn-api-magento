@@ -66,13 +66,18 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
 	 */
 	public function authorize(Varien_Object $payment, $amount)
 	{
-		if ($this->validateData()) {		
+		if ($this->validateData()) {	
 			$pay = $this->payCharge();
-			$payData = unserialize($this->getOrder()->getPayment()->getAdditionalData());
-			$payData['charge_id'] = $pay['data']['charge_id'];
-			$payment->setAdditionalData(serialize($payData));
-			$payment->save();
 			Mage::log('PAY CHARGE CARD: ' . var_export($pay,true),0,'gerencianet.log');
+			
+		    if ($pay['code'] == 200) {	
+    			$payData = unserialize($this->getOrder()->getPayment()->getAdditionalData());
+    			$payData['charge_id'] = $pay['data']['charge_id'];
+    			$payment->setAdditionalData(serialize($payData));
+    			$payment->save();
+			} else {
+			    Mage::throwException($this->_getHelper()->__("Erro no pagamento por cartão!\nMotivo: " . $pay->error_description . ".\nPor favor tente novamente!"));
+			}
 		}
 	}
 	
