@@ -1,3 +1,22 @@
+# 1.0.5
+
+- Updated: ApiRequest
+
+# 1.0.4
+
+- Added: new endpoints (carnet history, resend parcel and resend carnet)
+- Updated: docs
+
+# 1.0.3
+
+- Fix: endpoint charge history
+
+# 1.0.2
+
+- Added: new endpoint (charge history)
+- Added: custom header
+- Updated: docs
+
 # 1.0.1
 
 - Added: new endpoint (resend billet)

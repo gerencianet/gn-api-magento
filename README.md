@@ -1,4 +1,4 @@
-# Módulo em desenvolvimento #
+# Módulo Oficial da Gerencianet para o Magento #
 
 ## Instalação
 
