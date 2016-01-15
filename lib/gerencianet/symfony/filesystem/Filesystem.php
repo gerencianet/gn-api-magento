@@ -446,7 +446,7 @@ class Filesystem
         return strspn($file, '/\\', 0, 1)
             || (strlen($file) > 3 && ctype_alpha($file[0])
                 && substr($file, 1, 1) === ':'
-                && (strspn($file, '/\\', 2, 1))
+                && strspn($file, '/\\', 2, 1)
             )
             || null !== parse_url($file, PHP_URL_SCHEME)
         ;
@@ -507,12 +507,14 @@ class Filesystem
     /**
      * Atomically dumps content into a file.
      *
-     * @param string $filename The file to be written to.
-     * @param string $content  The data to write into the file.
+     * @param string   $filename The file to be written to.
+     * @param string   $content  The data to write into the file.
+     * @param null|int $mode     The file mode (octal). If null, file permissions are not modified
+     *                           Deprecated since version 2.3.12, to be removed in 3.0.
      *
      * @throws IOException If the file cannot be written to.
      */
-    public function dumpFile($filename, $content)
+    public function dumpFile($filename, $content, $mode = 0666)
     {
         $dir = dirname($filename);
 
@@ -528,6 +530,13 @@ class Filesystem
             throw new IOException(sprintf('Failed to write file "%s".', $filename), 0, null, $filename);
         }
 
+        if (null !== $mode) {
+            if (func_num_args() > 2) {
+                @trigger_error('Support for modifying file permissions is deprecated since version 2.3.12 and will be removed in 3.0.', E_USER_DEPRECATED);
+            }
+
+            $this->chmod($tmpFile, $mode);
+        }
         $this->rename($tmpFile, $filename, true);
     }
 

@@ -164,7 +164,7 @@ class Question
      *
      * @return Question The current instance
      */
-    public function setValidator(callable $validator = null)
+    public function setValidator($validator)
     {
         $this->validator = $validator;
 
@@ -224,7 +224,7 @@ class Question
      *
      * @return Question The current instance
      */
-    public function setNormalizer(callable $normalizer)
+    public function setNormalizer($normalizer)
     {
         $this->normalizer = $normalizer;
 

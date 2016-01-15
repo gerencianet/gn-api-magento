@@ -274,19 +274,15 @@ class ArgvInput extends Input
      * This method is to be used to introspect the input parameters
      * before they have been validated. It must be used carefully.
      *
-     * @param string|array $values     The value(s) to look for in the raw parameters (can be an array)
-     * @param bool         $onlyParams Only check real parameters, skip those following an end of options (--) signal
+     * @param string|array $values The value(s) to look for in the raw parameters (can be an array)
      *
      * @return bool true if the value is contained in the raw parameters
      */
-    public function hasParameterOption($values, $onlyParams = false)
+    public function hasParameterOption($values)
     {
         $values = (array) $values;
 
         foreach ($this->tokens as $token) {
-            if ($onlyParams && $token === '--') {
-                return false;
-            }
             foreach ($values as $value) {
                 if ($token === $value || 0 === strpos($token, $value.'=')) {
                     return true;
@@ -303,22 +299,18 @@ class ArgvInput extends Input
      * This method is to be used to introspect the input parameters
      * before they have been validated. It must be used carefully.
      *
-     * @param string|array $values     The value(s) to look for in the raw parameters (can be an array)
-     * @param mixed        $default    The default value to return if no result is found
-     * @param bool         $onlyParams Only check real parameters, skip those following an end of options (--) signal
+     * @param string|array $values  The value(s) to look for in the raw parameters (can be an array)
+     * @param mixed        $default The default value to return if no result is found
      *
      * @return mixed The option value
      */
-    public function getParameterOption($values, $default = false, $onlyParams = false)
+    public function getParameterOption($values, $default = false)
     {
         $values = (array) $values;
         $tokens = $this->tokens;
 
         while (0 < count($tokens)) {
             $token = array_shift($tokens);
-            if ($onlyParams && $token === '--') {
-                return false;
-            }
 
             foreach ($values as $value) {
                 if ($token === $value || 0 === strpos($token, $value.'=')) {
@@ -341,13 +333,14 @@ class ArgvInput extends Input
      */
     public function __toString()
     {
-        $tokens = array_map(function ($token) {
+        $self = $this;
+        $tokens = array_map(function ($token) use ($self) {
             if (preg_match('{^(-[^=]+=)(.+)}', $token, $match)) {
-                return $match[1].$this->escapeToken($match[2]);
+                return $match[1].$self->escapeToken($match[2]);
             }
 
             if ($token && $token[0] !== '-') {
-                return $this->escapeToken($token);
+                return $self->escapeToken($token);
             }
 
             return $token;

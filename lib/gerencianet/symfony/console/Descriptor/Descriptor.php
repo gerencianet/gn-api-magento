@@ -29,7 +29,7 @@ abstract class Descriptor implements DescriptorInterface
     /**
      * @var OutputInterface
      */
-    protected $output;
+    private $output;
 
     /**
      * {@inheritdoc}

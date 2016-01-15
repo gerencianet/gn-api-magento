@@ -62,22 +62,17 @@ class ArrayInput extends Input
      * This method is to be used to introspect the input parameters
      * before they have been validated. It must be used carefully.
      *
-     * @param string|array $values     The values to look for in the raw parameters (can be an array)
-     * @param bool         $onlyParams Only check real parameters, skip those following an end of options (--) signal
+     * @param string|array $values The values to look for in the raw parameters (can be an array)
      *
      * @return bool true if the value is contained in the raw parameters
      */
-    public function hasParameterOption($values, $onlyParams = false)
+    public function hasParameterOption($values)
     {
         $values = (array) $values;
 
         foreach ($this->parameters as $k => $v) {
             if (!is_int($k)) {
                 $v = $k;
-            }
-
-            if ($onlyParams && $v === '--') {
-                return false;
             }
 
             if (in_array($v, $values)) {
@@ -94,21 +89,16 @@ class ArrayInput extends Input
      * This method is to be used to introspect the input parameters
      * before they have been validated. It must be used carefully.
      *
-     * @param string|array $values     The value(s) to look for in the raw parameters (can be an array)
-     * @param mixed        $default    The default value to return if no result is found
-     * @param bool         $onlyParams Only check real parameters, skip those following an end of options (--) signal
+     * @param string|array $values  The value(s) to look for in the raw parameters (can be an array)
+     * @param mixed        $default The default value to return if no result is found
      *
      * @return mixed The option value
      */
-    public function getParameterOption($values, $default = false, $onlyParams = false)
+    public function getParameterOption($values, $default = false)
     {
         $values = (array) $values;
 
         foreach ($this->parameters as $k => $v) {
-            if ($onlyParams && ($k === '--' || (is_int($k) && $v === '--'))) {
-                return false;
-            }
-
             if (is_int($k)) {
                 if (in_array($v, $values)) {
                     return true;
@@ -146,9 +136,6 @@ class ArrayInput extends Input
     protected function parse()
     {
         foreach ($this->parameters as $key => $value) {
-            if ($key === '--') {
-                return;
-            }
             if (0 === strpos($key, '--')) {
                 $this->addLongOption(substr($key, 2), $value);
             } elseif ('-' === $key[0]) {

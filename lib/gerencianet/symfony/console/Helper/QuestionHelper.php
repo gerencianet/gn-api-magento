@@ -56,8 +56,10 @@ class QuestionHelper extends Helper
             return $this->doAsk($output, $question);
         }
 
-        $interviewer = function () use ($output, $question) {
-            return $this->doAsk($output, $question);
+        $that = $this;
+
+        $interviewer = function () use ($output, $question, $that) {
+            return $that->doAsk($output, $question);
         };
 
         return $this->validateAttempts($interviewer, $output, $question);
@@ -102,6 +104,8 @@ class QuestionHelper extends Helper
     /**
      * Asks the question to the user.
      *
+     * This method is public for PHP 5.3 compatibility, it should be private.
+     *
      * @param OutputInterface $output
      * @param Question        $question
      *
@@ -110,7 +114,7 @@ class QuestionHelper extends Helper
      * @throws \Exception
      * @throws \RuntimeException
      */
-    private function doAsk(OutputInterface $output, Question $question)
+    public function doAsk(OutputInterface $output, Question $question)
     {
         $this->writePrompt($output, $question);
 
@@ -156,11 +160,12 @@ class QuestionHelper extends Helper
         $message = $question->getQuestion();
 
         if ($question instanceof ChoiceQuestion) {
-            $width = max(array_map('strlen', array_keys($question->getChoices())));
+            $maxWidth = max(array_map(array($this, 'strlen'), array_keys($question->getChoices())));
 
             $messages = (array) $question->getQuestion();
             foreach ($question->getChoices() as $key => $value) {
-                $messages[] = sprintf("  [<info>%-${width}s</info>] %s", $key, $value);
+                $width = $maxWidth - $this->strlen($key);
+                $messages[] = '  [<info>'.$key.str_repeat(' ', $width).'</info>] '.$value;
             }
 
             $output->writeln($messages);
@@ -377,7 +382,7 @@ class QuestionHelper extends Helper
      *
      * @throws \Exception In case the max number of attempts has been reached and no valid response has been given
      */
-    private function validateAttempts(callable $interviewer, OutputInterface $output, Question $question)
+    private function validateAttempts($interviewer, OutputInterface $output, Question $question)
     {
         $error = null;
         $attempts = $question->getMaxAttempts();
@@ -434,7 +439,7 @@ class QuestionHelper extends Helper
     private function readFromInput($stream)
     {
         if (STDIN === $stream && function_exists('readline')) {
-            $ret = readline();
+            $ret = readline('');
         } else {
             $ret = fgets($stream, 4096);
         }

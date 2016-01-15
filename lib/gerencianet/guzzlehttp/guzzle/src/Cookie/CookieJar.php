@@ -1,13 +1,14 @@
 <?php
 namespace GuzzleHttp\Cookie;
 
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\ToArrayInterface;
 
 /**
  * Cookie jar that stores cookies an an array
  */
-class CookieJar implements CookieJarInterface
+class CookieJar implements CookieJarInterface, ToArrayInterface
 {
     /** @var SetCookie[] Loaded cookie data */
     private $cookies = [];
@@ -193,24 +194,23 @@ class CookieJar implements CookieJarInterface
         RequestInterface $request,
         ResponseInterface $response
     ) {
-        if ($cookieHeader = $response->getHeader('Set-Cookie')) {
+        if ($cookieHeader = $response->getHeaderAsArray('Set-Cookie')) {
             foreach ($cookieHeader as $cookie) {
                 $sc = SetCookie::fromString($cookie);
                 if (!$sc->getDomain()) {
-                    $sc->setDomain($request->getUri()->getHost());
+                    $sc->setDomain($request->getHost());
                 }
                 $this->setCookie($sc);
             }
         }
     }
 
-    public function withCookieHeader(RequestInterface $request)
+    public function addCookieHeader(RequestInterface $request)
     {
         $values = [];
-        $uri = $request->getUri();
-        $scheme = $uri->getScheme();
-        $host = $uri->getHost();
-        $path = $uri->getPath() ?: '/';
+        $scheme = $request->getScheme();
+        $host = $request->getHost();
+        $path = $request->getPath();
 
         foreach ($this->cookies as $cookie) {
             if ($cookie->matchesPath($path) &&
@@ -223,9 +223,9 @@ class CookieJar implements CookieJarInterface
             }
         }
 
-        return $values
-            ? $request->withHeader('Cookie', implode('; ', $values))
-            : $request;
+        if ($values) {
+            $request->setHeader('Cookie', implode('; ', $values));
+        }
     }
 
     /**
