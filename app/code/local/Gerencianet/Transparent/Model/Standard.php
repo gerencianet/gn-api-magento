@@ -132,7 +132,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			return $this->getApi()->payCharge($params,$this->getBody());
 		} catch(Exception $e) {
 			Mage::log('PAY CHARGE ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
-			throw $e;
+			Mage::throwException($e->getMessage());
 		}
 	}
 
@@ -149,7 +149,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			return $charge['data']['charge_id'];
 		} catch(Exception $e) {
 			Mage::log('CREATE CHARGE ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
-			throw $e;
+			Mage::throwException($e->getMessage());
 		}
 	}
 
@@ -167,7 +167,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			Mage::log('UPDATE CHARGE METADATA: ' . var_export($charge,true),0,'gerencianet.log');
 		} catch(Exception $e) {
 			Mage::log('UPDATE CHARGE ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
-			throw $e;
+			Mage::throwException($e->getMessage());
 		}
 	}
 
@@ -183,7 +183,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			return $notification['data'];
 		} catch(Exception $e) {
 			Mage::log('GET NOTIFICATION ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
-			throw $e;
+			Mage::throwException($e->getMessage());
 		}
 	}
 
@@ -199,7 +199,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	    	return $notification['data'];
 	    } catch(Exception $e) {
 				Mage::log('GET NOTIFICATION SANDBOX ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
-				throw $e;
+				Mage::throwException($e->getMessage());
 			}
 	}
 
@@ -233,7 +233,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		$order = $this->getOrder();
 		$address = $this->getOrder()->getBillingAddress();
 		$customer = array(
-			'name' => $order->getCustomerFirstname() . " " . $order->getCustomerLastname(),
+			'name' => $address->getFirstname() . " " . $address->getLastname(),
 			'cpf' => preg_replace( '/[^0-9]/', '', $order->getCustomerTaxvat()),
 			'email' => $order->getCustomerEmail(),
 			'birth' => date('Y-m-d',strtotime($order->getCustomerDob())),
