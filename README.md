@@ -2,6 +2,14 @@
 
 ## Instalação
 
+### Instalar usando o [modgit](https://github.com/jreinke/modgit):
+
+    $ cd /path/to/magento
+    $ modgit init
+    $ modgit add gerencianet git@github.com:gerencianet/gn-api-magento.git
+
+### Instalar manualmente:
+
 - Baixe a [última versão]() do módulo.
 - Descompacte o arquivo baixado e copie as pastas app, lib e skin para dentro do diretório principal do Magento*.
 - Defina as permissões 755 e 644 para as pastas code e etc, respectivamente.
