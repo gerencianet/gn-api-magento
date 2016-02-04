@@ -17,6 +17,10 @@
 
 *Ao substituir as pastas no seu projeto, o sistema pode informar que alguns arquivos serão sobrescritos. Não se preocupe, pode confirmar o procedimento pois a instalação não afeterá nenhum arquivo já existente em seu projeto.
 
+## Requisitos
+
+ - PHP >= 5.4.0
+
 ## Configuração
 
 Acessando `Sistema > Configuração > Formas de Pagamento`, 3 novos menus serão mostrados:
