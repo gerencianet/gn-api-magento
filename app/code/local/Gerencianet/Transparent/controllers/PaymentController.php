@@ -96,29 +96,6 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 	}
 	
 	/**
-	 * Include new payment_token on database
-	 */
-	public function checktokenAction() {
-	    $model = Mage::getResourceModel('gerencianet_transparent/tokens');
-	    $token = $model->exists($this->getRequest()->getParam('token'));
-	    
-	    if (!$token) {
-    	    $quote_id = Mage::getSingleton('checkout/session')->getQuoteId();
-    	    echo $quote_id;
-    	    $tokenData = array(
-                'token'     => $this->getRequest()->getParam('token'),
-    	        'quote_id'  => $quote_id 	        
-    	    );
-    	    $model->insert($tokenData);
-    	    echo "TRUE";
-	    } elseif ($model->active($token)) {
-	        echo "TRUE";
-	    } else {
-	        echo "FALSE";
-	    }
-	}
-	
-	/**
 	 * Receives and process charge notifications
 	 */
 	public function updateAction(){

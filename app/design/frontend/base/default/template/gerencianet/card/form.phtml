@@ -31,7 +31,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 		<?php foreach ($this->getCcAvailableTypes() as $_typeCode => $_typeName): ?>
 			<li>
 				<label for="card-<?php echo $_typeCode ?>" class="brand-label" title="<?php echo $_typeName ?>">
-					<input name="payment[cc_type]" type="radio" value="<?php echo $_typeCode ?>" id="<?php echo $_code ?>_cc_type" class="validate-one-required-by-name" onclick="javascript: calculateInstallments(this.value);" />
+					<input name="payment[cc_type]" type="radio" value="<?php echo $_typeCode ?>" id="<?php echo $_code ?>_cc_type" class="validate-one-required-by-name" />
 					<img src="<?php echo $this->getSkinUrl('images/gerencianet/'.$_typeCode.'.png') ?>" />
 				</label>
 			</li>
@@ -47,14 +47,14 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 	<li>
 		<label for="<?php echo $_code ?>_cc_number" class="required"><em>*</em><?php echo $this->__('Credit Card Number') ?></label>
 		<div class="input-box">
-			<input type="text" onkeypress="return onlyNumbers();" onblur="javascript: checkToken();" id="<?php echo $_code ?>_cc_number" name="payment[cc_number]" title="<?php echo $this->__('Credit Card Number') ?>" class="input-text validate-cc-number validate-digits required-entry" value="" maxlength="16" />
+			<input type="text" id="<?php echo $_code ?>_cc_number" name="payment[cc_number]" title="<?php echo $this->__('Credit Card Number') ?>" class="input-text validate-cc-number validate-digits required-entry" value="" maxlength="16" />
 		</div>
 	</li>
 	<li id="<?php echo $_code ?>_cc_type_exp_div">
 		<label for="<?php echo $_code ?>_expiration" class="required"><em>*</em><?php echo $this->__('Expiration Date') ?></label>
 		<div class="input-box">
 			<div class="v-fix">
-				<select id="<?php echo $_code ?>_cc_expiration" name="payment[cc_exp_month]" class="month validate-cc-exp required-entry" onchange="javascript: checkToken();" >
+				<select id="<?php echo $_code ?>_cc_expiration" name="payment[cc_exp_month]" class="month validate-cc-exp required-entry">
 				<?php $_ccExpMonth = $this->getInfoData('cc_exp_month') ?>
 				<?php foreach ($this->getCcMonths() as $k=>$v): ?>
 					<option value="<?php echo $k?$k:'' ?>"<?php if($k==$_ccExpMonth): ?> selected="selected"<?php endif ?>><?php echo $v ?></option>
@@ -62,7 +62,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 				</select>
 			</div>
 			<div class="v-fix">
-				<select id="<?php echo $_code ?>_cc_expiration_yr" name="payment[cc_exp_year]" class="year required-entry" onchange="javascript: checkToken();" >
+				<select id="<?php echo $_code ?>_cc_expiration_yr" name="payment[cc_exp_year]" class="year required-entry">
 				<?php $_ccExpYear = $this->getInfoData('cc_exp_year') ?>
 				<?php foreach ($this->getCcYears() as $k=>$v): ?>
 					<option value="<?php echo $k?$k:'' ?>"<?php if($k==$_ccExpYear): ?> selected="selected"<?php endif ?>><?php echo $v ?></option>
@@ -77,7 +77,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 		<label for="<?php echo $_code ?>_cc_cid" class="required"><em>*</em><?php echo $this->__('Card Verification Number') ?></label>
 		<div class="input-box">
 			<div class="v-fix">
-				<input type="text" onkeypress="return onlyNumbers();" onblur="javascript: checkToken();" title="<?php echo $this->__('Card Verification Number') ?>" class="input-text cvv validate-digits required-entry" size="5" id="<?php echo $_code ?>_cc_cid" name="payment[cc_cid]" value="" maxlength="4" />
+				<input type="text" title="<?php echo $this->__('Card Verification Number') ?>" class="input-text cvv validate-digits required-entry" size="5" id="<?php echo $_code ?>_cc_cid" name="payment[cc_cid]" value="" maxlength="4" />
 			</div>
 			<a href="#" class="cvv-what-is-this"><?php echo $this->__('What is this?') ?></a>
 		</div>

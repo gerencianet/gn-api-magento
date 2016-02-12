@@ -28,6 +28,7 @@ class Gerencianet_Transparent_Model_Validator {
 			'neighborhood'	=> "Motivo: Bairro não informado.\nPor favor, informe um bairro válido!",
 			'city'			=> "Motivo: Cidade não informada.\nPor favor, informe uma cidade válida!",
 			'state'			=> "Motivo: Estado não informado.\nPor favor, informe um estado válido!",
+	        'zipcode'		=> "Motivo: O CEP informado não é válido.\nPor favor, informe um CEP válido com 8 dígitos!",
 			);
 	
 	protected $_validators = array(
@@ -40,6 +41,7 @@ class Gerencianet_Transparent_Model_Validator {
 			'neighborhood'	=> '_empty',
 			'city'			=> '_empty',
 			'state'			=> '_empty',
+	        'zipcode'		=> '_zipcode',
 		);
 	
 	/**
@@ -153,6 +155,19 @@ class Gerencianet_Transparent_Model_Validator {
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * Validates zipcode fields
+	 * @param string $data
+	 * @return boolean
+	 */
+	protected function _zipcode($data) {
+	    $zipcode = preg_replace('/[^0-9\s]/', '',$data);
+		if (strlen($zipcode) < 8) {
+	        return false;
+	    }
+	    return true;
 	}
 	
 	/**

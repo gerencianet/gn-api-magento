@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * Gerencianet
  *
@@ -14,11 +14,11 @@
  * @author     AV5 Tecnologia <anderson@av5.com.br>
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-class Gerencianet_Transparent_Model_Mysql4_Tokens_Collection extends Mage_Core_Model_Mysql4_Collection_Abstract
-{
-	public function _construct()
-	{
-		parent::_construct();
-		$this->_init('gerencianet_transparent/tokens');
-	}
-}
+
+$installer = $this;
+
+$installer->startSetup();
+
+$installer->run("DROP TABLE IF EXISTS {$this->getTable('gerencianet_tokens')};");
+
+$installer->endSetup();

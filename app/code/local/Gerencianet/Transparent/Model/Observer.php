@@ -38,16 +38,8 @@ class Gerencianet_Transparent_Model_Observer
 		    $order->save();
 		    
     		Mage::getModel('gerencianet_transparent/standard')->updateCharge($order->getIncrementID(),$data['charge_id']);
+            Mage::getModel('gerencianet_transparent/updater')->updatecharge($data['charge_id']);
     	}
     }
     
-    public function processnotifications($observer) {
-        $order_id = $observer->getData('order_ids');
-        $order = Mage::getModel('sales/order')->load($order_id[0]);
-        $payment = $order->getPayment();
-        Mage::getModel('gerencianet_transparent/updater')->updatecharge($payment->getGerencianetChargeId());
-        
-        $model = Mage::getResourceModel('gerencianet_transparent/tokens');
-        $model->deleteById($order->getQuoteId());
-    }
 }

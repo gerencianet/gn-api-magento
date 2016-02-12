@@ -19,7 +19,7 @@
 <config>
     <modules>
        <Gerencianet_Transparent>
-          <version>0.1.6</version>
+          <version>0.1.7</version>
        </Gerencianet_Transparent>
     </modules>
  
@@ -35,9 +35,6 @@
 	  			<notifications>
 					<table>gerencianet_notifications</table>
 				</notifications>
-				<tokens>
-					<table>gerencianet_tokens</table>
-				</tokens>
 			</entities>
       	  </gerencianet_transparent_mysql4>
         </models>
@@ -111,15 +108,6 @@
 		          </gerencianet_transparent_updatecharge>
 		      </observers>
 		  </sales_order_place_after>
-		  <checkout_onepage_controller_success_action>
-		      <observers>
-		          <gerencianet_transparent_notifications>
-		              <type>model</type>
-		              <class>gerencianet_transparent/observer</class>
-		              <method>processnotifications</method>
-		          </gerencianet_transparent_notifications>
-		      </observers>
-		  </checkout_onepage_controller_success_action>
 		</events>
 		<routers>
 		  <gerencianet_transparent>

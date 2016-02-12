@@ -69,8 +69,6 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
 		if ($this->validateData()) {	
 			$pay = $this->payCharge();
 			$payData = unserialize($this->getOrder()->getPayment()->getAdditionalData());
-			$model = Mage::getResourceModel('gerencianet_transparent/tokens');
-			$model->setUsed($payData['card']['cc_token']);
 			Mage::log('PAY CHARGE CARD: ' . var_export($pay,true),0,'gerencianet.log');
 			
 		    if ($pay['code'] == 200) {	
