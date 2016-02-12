@@ -14,12 +14,10 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 var GerencianetTransparent = function GerencianetTransparent(){};
-GerencianetTransparent.onlyNumbers = function(evt){
-	var e = event || evt; // for trans-browser compatibility
-	var charCode = e.which || e.keyCode;
-	if (charCode > 31 && (charCode < 48 || charCode > 57))
-		return false;
-	return true;
+GerencianetTransparent.onlyNumbers = function(elm){
+	value = elm.value;
+	value = value.replace(/\D/g,"");
+	elm.value = value;
 };
 	
 GerencianetTransparent.sendError = function(msg) {
@@ -113,8 +111,8 @@ GerencianetTransparent.addFieldsObservers = function() {
            Element.observe(elm,'click',function(e){ GerencianetTransparent.calculateInstallments(); });
         });
        
-        Element.observe(ccNumElm,'keypress',function(e){GerencianetTransparent.onlyNumbers();});
-        Element.observe(ccCvvElm,'keypress',function(e){GerencianetTransparent.onlyNumbers();});
+        Element.observe(ccNumElm,'keyup',function(e){GerencianetTransparent.onlyNumbers(this);});
+        Element.observe(ccCvvElm,'keyup',function(e){GerencianetTransparent.onlyNumbers(this);});
     }
 };
 	
@@ -123,22 +121,26 @@ GerencianetTransparent.rebuildSave = function() {
 	if (typeof OSCPayment !== "undefined") { // One Step Checkout Brasil 6 Pro
 	    OSCPayment._savePayment = OSCPayment.savePayment;
 	    OSCPayment.savePayment = function() {
-	    	if (OSCPayment.currentMethod == 'gerencianet_card') {
-	    		checkToken = GerencianetTransparent.getPaymentToken();
-            	if(!checkToken)
-            		return false;
-            } 
-	    	OSCPayment._savePayment(); 
+	    	if (OSCForm.validate()) {
+		    	if (OSCPayment.currentMethod == 'gerencianet_card') {
+		    		checkToken = GerencianetTransparent.getPaymentToken();
+	            	if(!checkToken)
+	            		return false;
+	            } 
+		    	OSCPayment._savePayment();
+	    	}
 	    }
 	} else if (typeof OPC !== "undefined") { // One Step Checkout Brasil 4
 	    OPC.prototype._save = OPC.prototype.save;
 	    OPC.prototype.save = function() {
-            if (payment.currentMethod == 'gerencianet_card') {
-            	checkToken = GerencianetTransparent.getPaymentToken();
-            	if(!checkToken)
-            		return false;
-            }
-            this._save();
+	    	if (this.validator.validate()) {
+	            if (payment.currentMethod == 'gerencianet_card') {
+	            	checkToken = GerencianetTransparent.getPaymentToken();
+	            	if(!checkToken)
+	            		return false;
+	            }
+	            this._save();
+	    	}
 	    }
 	} else if(typeof IWD !== "undefined" && typeof IWD.OPC !== "undefined") { // One Page Checkout IWD
 	    IWD.OPC._saveOrder = IWD.OPC.saveOrder;
@@ -153,12 +155,14 @@ GerencianetTransparent.rebuildSave = function() {
 	} else if (typeof AWOnestepcheckoutForm !== "undefined") { //One Step Checkout by aheadWorks
 	    AWOnestepcheckoutForm.prototype._placeOrder = AWOnestepcheckoutForm.prototype.placeOrder;
 	    AWOnestepcheckoutForm.prototype.placeOrder = function() {
-	        if (awOSCPayment.currentMethod == 'gerencianet_card') {
-	        	checkToken = GerencianetTransparent.getPaymentToken();
-            	if(!checkToken)
-            		return false;
-	        }
-            this._placeOrder();
+	    	if (this.validate()) {
+		        if (awOSCPayment.currentMethod == 'gerencianet_card') {
+		        	checkToken = GerencianetTransparent.getPaymentToken();
+	            	if(!checkToken)
+	            		return false;
+		        }
+		        this._placeOrder();
+	    	}
 	    }
 	} else if (typeof FireCheckout !== "undefined") { // FireCheckout
 	    FireCheckout.prototype._save = FireCheckout.prototype.save;
@@ -173,12 +177,15 @@ GerencianetTransparent.rebuildSave = function() {
 	} else { // Default Magento Checkout
 	    Payment.prototype._save = Payment.prototype.save;
 	    Payment.prototype.save = function() {
-	    	if (this.currentMethod == 'gerencianet_card') {
-	        	checkToken = GerencianetTransparent.getPaymentToken();
-            	if(!checkToken)
-            		return false;
+	    	var validator = new Validation(this.form);
+	        if (this.validate() && validator.validate()) {
+		    	if (this.currentMethod == 'gerencianet_card') {
+		        	checkToken = GerencianetTransparent.getPaymentToken();
+	            	if(!checkToken)
+	            		return false;
+		        }
+	            this._save();
 	        }
-            this._save();
 	    };
 
 	    Review.prototype._save = Review.prototype.save;
