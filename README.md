@@ -6,7 +6,7 @@
 
     $ cd /path/to/magento
     $ modgit init
-    $ modgit add gerencianet git@github.com:gerencianet/gn-api-magento.git
+    $ modgit add gerencianet https://github.com/gerencianet/gn-api-magento.git
 
 ### Instalar manualmente:
 
