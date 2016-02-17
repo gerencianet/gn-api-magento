@@ -30,8 +30,8 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 		<ul class="card-logo">
 		<?php foreach ($this->getCcAvailableTypes() as $_typeCode => $_typeName): ?>
 			<li>
-				<label for="card-<?php echo $_typeCode ?>" class="brand-label" title="<?php echo $_typeName ?>">
-					<input name="payment[cc_type]" type="radio" value="<?php echo $_typeCode ?>" id="<?php echo $_code ?>_cc_type" class="validate-one-required-by-name" />
+				<label for="<?php echo $_typeCode ?>_cc_type" class="brand-label" title="<?php echo $_typeName ?>">
+					<input name="payment[cc_type]" type="radio" value="<?php echo $_typeCode ?>" id="<?php echo $_typeCode ?>_cc_type" class="validate-one-required-by-name" />
 					<img src="<?php echo $this->getSkinUrl('images/gerencianet/'.$_typeCode.'.png') ?>" />
 				</label>
 			</li>
