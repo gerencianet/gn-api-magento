@@ -91,6 +91,7 @@
                 <active>1</active>
                 <model>gerencianet_transparent/billet</model>
                 <allowspecific>0</allowspecific>
+                <duedate>0</duedate>
                 <title>Boleto Bancário</title>
                 <payment_action>authorize</payment_action>
             </gerencianet_billet>
