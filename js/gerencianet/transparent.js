@@ -19,17 +19,17 @@ GerencianetTransparent.onlyNumbers = function(elm){
 	value = value.replace(/\D/g,"");
 	elm.value = value;
 };
-	
+
 GerencianetTransparent.sendError = function(msg) {
 	if(isDebug)
 		console.error(msg);
 };
-	
+
 GerencianetTransparent.sendLog = function(msg) {
 	if(isDebug)
 		console.log(msg);
 };
-	
+
 GerencianetTransparent.getPaymentToken = function() {
 	var type 		= $$('input:checked[name="payment[cc_type]"]').first().value;
 	var number		= document.getElementById('gerencianet_card_cc_number').value;
@@ -40,7 +40,7 @@ GerencianetTransparent.getPaymentToken = function() {
 	if (!type || !number || !cvv || !exp_month || !exp_year) {
 		return false;
 	}
-    
+
     var callback = function(error, response) {
 		if(error) {
 		  GerencianetTransparent.sendError(error);
@@ -57,22 +57,22 @@ GerencianetTransparent.getPaymentToken = function() {
 		expiration_month: exp_month,
 		expiration_year: exp_year
 	}, callback);
-	
+
 	return true;
 };
-	
+
 GerencianetTransparent.calculateInstallments = function() {
     newBrand = $$('input:checked[name=\"payment[cc_type]\"]').first().value;
     if(brand != newBrand || document.getElementById('gerencianet_card_cc_installments').length == 0) {
         brand = newBrand;
         document.getElementById('gerencianet_card_token').value = '';
-        
+
         if (newBrand === 'amex') {
 			document.getElementById('gerencianet_card_cc_cid').setAttribute('maxlength', 4);
 		} else {
 			document.getElementById('gerencianet_card_cc_cid').setAttribute('maxlength', 3);
 		}
-        
+
         if (newBrand === 'aura') {
   		    document.getElementById('gerencianet_card_cc_number').setAttribute('maxlength', 19);
 		} else {
@@ -95,7 +95,7 @@ GerencianetTransparent.calculateInstallments = function() {
         });
     }
 };
-	
+
 GerencianetTransparent.addFieldsObservers = function() {
     var ccNumElm = $('gerencianet_card_cc_number');
     if (ccNumElm != undefined) {
@@ -105,17 +105,12 @@ GerencianetTransparent.addFieldsObservers = function() {
         var ccCvvElm = $('gerencianet_card_cc_cid');
 
         clearInterval(declareObservers);
-        
-        var brands = $$('input[name="payment[cc_type]"]');
-        brands.each(function(elm){
-           Element.observe(elm,'click',function(e){ GerencianetTransparent.calculateInstallments(); });
-        });
-       
+
         Element.observe(ccNumElm,'keyup',function(e){GerencianetTransparent.onlyNumbers(this);});
         Element.observe(ccCvvElm,'keyup',function(e){GerencianetTransparent.onlyNumbers(this);});
     }
 };
-	
+
 GerencianetTransparent.rebuildSave = function() {
 	/* MAGENTO CHECKOUT METHODS SAVING */
 	if (typeof OSCPayment !== "undefined") { // One Step Checkout Brasil 6 Pro
@@ -126,7 +121,7 @@ GerencianetTransparent.rebuildSave = function() {
 		    		checkToken = GerencianetTransparent.getPaymentToken();
 	            	if(!checkToken)
 	            		return false;
-	            } 
+	            }
 		    	OSCPayment._savePayment();
 	    	}
 	    }
