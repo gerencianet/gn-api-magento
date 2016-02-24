@@ -10,7 +10,7 @@
 
 ### Instalar manualmente:
 
-- Baixe a [última versão](/gerencianet/gn-api-magento/archive/master.zip) do módulo.
+- Baixe a [última versão](https://github.com/gerencianet/gn-api-magento/archive/master.zip) do módulo.
 - Descompacte o arquivo baixado e copie as pastas app, lib e skin para dentro do diretório principal do Magento*.
 - Defina as permissões 755 e 644 para as pastas code e etc, respectivamente.
 - Atualize o cache da sua loja acessando `Sistema > Gerenciador de Cache > Atualizar Cache`.
