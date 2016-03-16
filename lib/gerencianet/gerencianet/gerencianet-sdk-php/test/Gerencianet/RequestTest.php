@@ -8,10 +8,11 @@ use GuzzleHttp\Message\Response;
 
 class RequestTest extends \PHPUnit_Framework_TestCase
 {
+
     private $options = [
       'client_id' => 'client_id',
       'client_secret' => 'client_secret',
-      'url' => 'http://localhost:8082',
+      'url' => 'http://localhost:8082'
     ];
 
     private $success;
@@ -26,10 +27,12 @@ class RequestTest extends \PHPUnit_Framework_TestCase
      */
     public function shouldAuthorizeSuccessfully()
     {
+
+        $this->options['certified_path'] = __DIR__.'/ca.crt';
         $request = new Request($this->options);
 
         $client = $this->getMockBuilder('Client')
-                              ->setMethods(array('send', 'createRequest'))
+                              ->setMethods(array('send', 'createRequest', 'setDefaultOption'))
                               ->getMock();
 
         $response = $this->getMockBuilder('Response')
