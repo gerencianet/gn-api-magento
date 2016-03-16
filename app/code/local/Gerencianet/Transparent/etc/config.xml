@@ -109,6 +109,15 @@
 		          </gerencianet_transparent_updatecharge>
 		      </observers>
 		  </sales_order_place_after>
+		  <sales_order_payment_place_end>
+		      <observers>
+		          <gerencianet_transparent_updatecharge>
+		              <type>model</type>
+		              <class>gerencianet_transparent/observer</class>
+		              <method>setNew</method>
+		          </gerencianet_transparent_updatecharge>
+		      </observers>
+		  </sales_order_payment_place_end>
 		</events>
 		<routers>
 		  <gerencianet_transparent>

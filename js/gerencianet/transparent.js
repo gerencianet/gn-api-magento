@@ -138,14 +138,15 @@ GerencianetTransparent.rebuildSave = function() {
 	    	}
 	    }
 	} else if(typeof IWD !== "undefined" && typeof IWD.OPC !== "undefined") { // One Page Checkout IWD
-	    IWD.OPC._saveOrder = IWD.OPC.saveOrder;
-	    IWD.OPC.saveOrder = function() {
+	    IWD.OPC._savePayment = IWD.OPC.savePayment;
+	    IWD.OPC.savePayment = function() {
+	    	IWD.OPC.Checkout.lockPlaceOrder();
 	        if (payment.currentMethod == 'gerencianet_card') {
 	        	checkToken = GerencianetTransparent.getPaymentToken();
             	if(!checkToken)
             		return false;
 	        }
-	        this._saveOrder();
+	        this._savePayment();
 	    }
 	} else if (typeof AWOnestepcheckoutForm !== "undefined") { //One Step Checkout by aheadWorks
 	    AWOnestepcheckoutForm.prototype._placeOrder = AWOnestepcheckoutForm.prototype.placeOrder;

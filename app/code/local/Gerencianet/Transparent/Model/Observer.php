@@ -31,15 +31,27 @@ class Gerencianet_Transparent_Model_Observer
     		$payment->setGerencianetEnvironment((string)Mage::helper('gerencianet_transparent')->getEnvironment());
     		$payment->save();
     		
-    		# changes order state to PENDING
+    		/*# changes order state to PENDING
 		    $changeTo = Mage_Sales_Model_Order::STATE_PROCESSING;
 		    $comment = utf8_encode('Pedido Recebido');
 		    $order->setState($changeTo, 'gerencianet_new', $comment, $notified = false);
-		    $order->save();
+		    $order->save();*/
 		    
     		Mage::getModel('gerencianet_transparent/standard')->updateCharge($order->getIncrementID(),$data['charge_id']);
             Mage::getModel('gerencianet_transparent/updater')->updatecharge($data['charge_id']);
     	}
+    }
+    
+    public function setNew($event) {
+        $payment = $event->getEvent()->getPayment();
+        if (in_array($payment->getMethodInstance()->getCode(),array('gerencianet_billet','gerencianet_card'))) {
+            # changes order state to PENDING
+            $order = $payment->getOrder();
+            $changeTo = Mage_Sales_Model_Order::STATE_PROCESSING;
+            $comment = utf8_encode('Pedido Recebido');
+            $order->setState($changeTo, 'gerencianet_new', $comment, $notified = false);
+            $order->save();
+        }
     }
     
 }
