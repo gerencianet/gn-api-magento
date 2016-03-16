@@ -12,7 +12,20 @@
 
 - Baixe a [última versão](https://github.com/gerencianet/gn-api-magento/archive/master.zip) do módulo.
 - Descompacte o arquivo baixado e copie as pastas app, lib e skin para dentro do diretório principal do Magento*.
-- Defina as permissões 755 e 644 para as pastas code e etc, respectivamente.
+- Defina as seguintes permissões:
+ 
+    775 para todos os diretórios;
+    644 para todos os arquivos; 
+    777 para app/etc/, var/ e media/
+
+isso seria equivalente a executar os comandos:
+
+    sudo find . -type d -exec chmod 755 {} \;
+    sudo find . -type f -exec chmod 644 {} \;
+    sudo chmod 777 -R app/etc/;
+    sudo chmod 777 -R var/;
+    sudo chmod 777 -R media/;
+
 - Atualize o cache da sua loja acessando `Sistema > Gerenciador de Cache > Atualizar Cache`.
 
 *Ao substituir as pastas no seu projeto, o sistema pode informar que alguns arquivos serão sobrescritos. Não se preocupe, pode confirmar o procedimento pois a instalação não afeterá nenhum arquivo já existente em seu projeto.
