@@ -21,7 +21,40 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
      */
     protected function _construct() {
     	parent::_construct();
-        $this->setTemplate('gerencianet/card/form.phtml');
+
+        $order = Mage::registry('current_order');
+        if (!$order) {
+            $order = Mage::getModel('checkout/session')->getQuote();
+        }
+        $address = $order->getBillingAddress();
+
+        $customerDocument = preg_replace( '/[^0-9]/', '', $order->getCustomerTaxvat());
+        if (strlen($customerDocument)==11) {
+            $juridical=false;
+        } else if (strlen($customerDocument)==14) {
+            $juridical = true;
+        } else {
+            $customerDocument = "";
+            $juridical=false;
+        }
+
+        $dataOrder = array(
+            'customer_cc_data_name' => $address->getFirstname() . " " . $address->getLastname(), 
+            'customer_cc_data_document' => $customerDocument, 
+            'customer_cc_data_juridical' => $juridical, 
+            'customer_cc_data_email'=>$order->getCustomerEmail(),
+            'customer_cc_data_birth'=>date('d/m/Y',strtotime($order->getCustomerDob())),
+            'customer_cc_data_phone_number'=>preg_replace( '/[^0-9]/', '', $address->getTelephone()),
+            'billing_cc_data_street'=>$address->getStreet1(),
+            'billing_cc_data_number'=>$address->getStreet2(),
+            'billing_cc_data_zipcode'=>preg_replace('/[^0-9\s]/', '',$address->getPostcode()),
+            'billing_cc_data_neighborhood'=>$address->getStreet4(),
+            'billing_cc_data_state'=>$address->getRegionCode(),
+            'billing_cc_data_city'=>$address->getCity(),
+            'billing_cc_data_complement'=>$address->getStreet3(),
+            );
+
+        $this->setData($dataOrder)->setTemplate('gerencianet/card/form.phtml');
     }
 
     /**
@@ -53,6 +86,9 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
      * Prepares layout for show on screen
      */
     protected function _prepareLayout(){
+
+        
+
     	$testmode = Mage::helper('gerencianet_transparent')->isSandbox();
     	$account_id = Mage::getStoreConfig('payment/gerencianet_transparent/account_id');
     	$debugMode = Mage::getStoreConfig('payment/gerencianet_transparent/debug');
@@ -104,7 +140,6 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
     public function getMethodFormBlock() {
         return $this->getLayout()->createBlock('payment/form_cc')
                         ->setMethod($this->getMethod());
-    }
-    
+    }    
 
 }

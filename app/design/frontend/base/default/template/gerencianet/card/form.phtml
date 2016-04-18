@@ -17,19 +17,175 @@
 
 $_code = $this->getMethodCode();
 $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
+
 ?>
+
 <ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none;">
+
 	<?php if ($isSandbox):	?>
 	<div class="alert-development">
 		<strong>ATEN&Ccedil;&Atilde;O!</strong>
 		<p>Essa loja est&aacute; em Modo Desenvolvimento. O pagamento de cart&atilde;o de cr&eacute;dito ser&aacute; confirmado automaticamente no ambiente de Sandbox da Gerencianet.</p>
 	</div>
 	<?php endif; ?>
+
+    <div class="pay-juridical-person">
+		<p><input type="checkbox" onchange="GerencianetTransparent.payCardAsJuridical(this)" id="<?php echo $_code ?>_data_pay_card_as_juridical" name="payment[data_pay_card_as_juridical]" value="1" <?php if ($this->customer_cc_data_juridical) { echo 'checked'; } ?> /> Pagar como Pessoa Jurídica.</p>
+		<div id="<?php echo $_code ?>_cc_juridical_data" <?php if (!$this->customer_cc_data_juridical) { echo 'class="gn-hide"'; } ?>>
+
+		<li>
+		<label for="<?php echo $_code ?>_cc_data_cnpj" class="required"><em>*</em><?php echo $this->__('CNPJ') ?></label>
+		<div class="input-box">
+			<input type="text" id="<?php echo $_code ?>_cc_data_cnpj" name="payment[cc_data_cnpj]" title="<?php echo $this->__('CNPJ') ?>" class="input-text validate-number validate-length" value="<?php if ($this->customer_cc_data_juridical) { echo $this->customer_cc_data_document; } ?>" maxlength="14" />
+		</div>
+		</li>
+		
+		<li>
+		<label for="<?php echo $_code ?>_cc_data_corporate_name" class="required"><em>*</em><?php echo $this->__('Razão Social') ?></label>
+			<div class="input-box">
+				<input type="text" id="<?php echo $_code ?>_cc_data_corporate_name" name="payment[cc_data_corporate_name]" title="<?php echo $this->__('Razão Social') ?>" class="input-text" value="<?php if ($this->customer_cc_data_juridical) { echo $this->customer_cc_data_name; } ?>" maxlength="255" />
+			</div>
+		</div>
+		</li>
+	</div>
+
+	<li <?php if (trim($this->customer_cc_data_name) != "" && !$this->customer_cc_data_juridical) { echo ' class="gn-hide"';} ?> >
+		<label for="<?php echo  $_code ?>_cc_data_name" class="required"><em>*</em><?php echo $this->__('Nome') ?></label>
+		<div class="input-box">
+			<input type="text" id="<?php echo $_code ?>_cc_data_name" name="payment[cc_data_name]" title="<?php echo $this->__('Name') ?>" class="input-text required-entry" value="<?php if (!$this->customer_cc_data_juridical) { echo $this->customer_cc_data_name; } ?>" maxlength="255" />
+		</div>
+	</li>
+    <li <?php if (trim($this->customer_cc_data_document) != "" && !$this->customer_cc_data_juridical) { echo ' class="gn-hide"';} ?> >
+		<label for="<?php echo $_code ?>_cc_data_cpf" class="required"><em>*</em><?php echo $this->__('CPF') ?></label>
+		<div class="input-box">
+			<input type="text" id="<?php echo $_code ?>_cc_data_cpf" name="payment[cc_data_cpf]" class="input-text required-entry" title="<?php echo $this->__('CPF') ?>" value="<?php if (!$this->customer_cc_data_juridical) { echo $this->customer_cc_data_document; } ?>" maxlength="11" />
+		</div>
+	</li>
+    <li <?php if (trim($this->customer_cc_data_email) != "") { echo ' class="gn-hide"';} ?>>
+		<label for="<?php echo $_code ?>_cc_data_email" class="required"><em>*</em><?php echo $this->__('E-mail') ?></label>
+		<div class="input-box">
+			<input type="text" id="<?php echo $_code ?>_cc_data_email" name="payment[cc_data_email]" class="input-text required-entry" title="<?php echo $this->__('E-mail') ?>" value="<?php echo $this->customer_cc_data_email; ?>" maxlength="255" />
+		</div>
+	</li>
+	<li <?php if (trim($this->customer_cc_data_birth) != "") { echo ' class="gn-hide"';} ?>>
+		<label for="<?php echo $_code ?>_cc_data_birth" class="required"><em>*</em><?php echo $this->__('Data de Nascimento (DD/MM/AAAA)') ?></label>
+		<div class="input-box">
+			<input type="text" id="<?php echo $_code ?>_cc_data_birth" name="payment[cc_data_birth]" class="input-text validate-date-au required-entry" title="<?php echo $this->__('Data de Nascimento') ?>" value="<?php echo $this->customer_cc_data_birth; ?>" maxlength="10" />
+		</div>
+	</li>
+    <li <?php if (trim($this->customer_cc_data_phone_number) != "") { echo ' class="gn-hide"';} ?>>
+		<label for="<?php echo $_code ?>_cc_data_phone_number" class="required"><em>*</em><?php echo $this->__('Telefone') ?></label>
+		<div class="input-box">
+			<input type="text" id="<?php echo $_code ?>_cc_data_phone_number" name="payment[cc_data_phone_number]" class="input-text required-entry" title="<?php echo $this->__('Phone Number') ?>" value="<?php echo $this->customer_cc_data_phone_number; ?>" maxlength="18" />
+		</div>
+	</li>
+
+	<li <?php if (trim($this->billing_cc_data_street) != "") { echo ' class="gn-hide"';} ?>>
+		<label for="<?php echo  $_code ?>_cc_data_street" class="required"><em>*</em><?php echo $this->__('Endereço de Cobrança') ?></label>
+		<div class="input-box">
+			<input type="text" id="<?php echo $_code ?>_cc_data_street" name="payment[cc_data_street]" title="<?php echo $this->__('Endereço') ?>" class="input-text required-entry" value="<?php echo $this->billing_cc_data_street; ?>" maxlength="255" />
+		</div>
+	</li>
+    <li <?php if (trim($this->billing_cc_data_number) != "") { echo ' class="gn-hide"';} ?>>
+		<label for="<?php echo $_code ?>_cc_data_number" class="required"><em>*</em><?php echo $this->__('Número do endereço de cobrança') ?></label>
+		<div class="input-box">
+			<input type="text" id="<?php echo $_code ?>_cc_data_number" name="payment[cc_data_number]" class="input-text required-entry" title="<?php echo $this->__('Número') ?>" value="<?php echo $this->billing_cc_data_number; ?>" maxlength="11" />
+		</div>
+	</li>
+    <li <?php if (trim($this->billing_cc_data_zipcode) != "") { echo ' class="gn-hide"';} ?>>
+		<label for="<?php echo $_code ?>_cc_data_zipcode" class="required"><em>*</em><?php echo $this->__('CEP do endereço de cobrança') ?></label>
+		<div class="input-box">
+			<input type="text" id="<?php echo $_code ?>_cc_data_zipcode" name="payment[cc_data_zipcode]" class="input-text required-entry" title="<?php echo $this->__('CEP') ?>" value="<?php echo $this->billing_cc_data_zipcode; ?>" maxlength="255" />
+		</div>
+	</li>
+	<li <?php if (trim($this->billing_cc_data_neighborhood) != "") { echo ' class="gn-hide"';} ?>>
+		<label for="<?php echo $_code ?>_cc_data_neighborhood" class="required"><em>*</em><?php echo $this->__('Bairro do endereço de cobrança') ?></label>
+		<div class="input-box">
+			<input type="text" id="<?php echo $_code ?>_cc_data_neighborhood" name="payment[cc_data_neighborhood]" class="input-text required-entry" title="<?php echo $this->__('Bairro') ?>" value="<?php echo $this->billing_cc_data_neighborhood; ?>" maxlength="255" />
+		</div>
+	</li>
+    <li <?php if (
+    	trim($this->billing_cc_data_state) == "AC" ||
+    	trim($this->billing_cc_data_state) == "AL" ||
+    	trim($this->billing_cc_data_state) == "AP" ||
+    	trim($this->billing_cc_data_state) == "AM" ||
+    	trim($this->billing_cc_data_state) == "BA" ||
+    	trim($this->billing_cc_data_state) == "CE" ||
+    	trim($this->billing_cc_data_state) == "DF" ||
+    	trim($this->billing_cc_data_state) == "ES" ||
+    	trim($this->billing_cc_data_state) == "GO" ||
+    	trim($this->billing_cc_data_state) == "MA" ||
+    	trim($this->billing_cc_data_state) == "MT" ||
+    	trim($this->billing_cc_data_state) == "MS" ||
+    	trim($this->billing_cc_data_state) == "MG" ||
+    	trim($this->billing_cc_data_state) == "PA" ||
+    	trim($this->billing_cc_data_state) == "PB" ||
+    	trim($this->billing_cc_data_state) == "PR" ||
+    	trim($this->billing_cc_data_state) == "PE" ||
+    	trim($this->billing_cc_data_state) == "PI" ||
+    	trim($this->billing_cc_data_state) == "RJ" ||
+    	trim($this->billing_cc_data_state) == "RN" ||
+    	trim($this->billing_cc_data_state) == "RS" ||
+    	trim($this->billing_cc_data_state) == "RO" ||
+    	trim($this->billing_cc_data_state) == "RR" ||
+    	trim($this->billing_cc_data_state) == "SC" ||
+    	trim($this->billing_cc_data_state) == "SP" ||
+    	trim($this->billing_cc_data_state) == "SE" ||
+    	trim($this->billing_cc_data_state) == "TO"
+	) { echo ' class="gn-hide"';} ?>>
+		<label for="<?php echo $_code ?>_cc_data_state" class="required"><em>*</em><?php echo $this->__('Estado') ?></label>
+		<div class="input-box">
+			<select id="<?php echo $_code ?>_cc_data_state" name="payment[cc_data_state]" class="input-select validate-select required-entry" >
+                <option value="">Selecione o Estado</option> 
+                <option value="AC" <?php if (trim($this->billing_cc_data_state) == "AC") { echo " selected "; } ?>>Acre</option> 
+                <option value="AL" <?php if (trim($this->billing_cc_data_state) == "AL") { echo " selected "; } ?>>Alagoas</option> 
+                <option value="AP" <?php if (trim($this->billing_cc_data_state) == "AP") { echo " selected "; } ?>>Amapá</option> 
+                <option value="AM" <?php if (trim($this->billing_cc_data_state) == "AM") { echo " selected "; } ?>>Amazonas</option> 
+                <option value="BA" <?php if (trim($this->billing_cc_data_state) == "BA") { echo " selected "; } ?>>Bahia</option> 
+                <option value="CE" <?php if (trim($this->billing_cc_data_state) == "CE") { echo " selected "; } ?>>Ceará</option> 
+                <option value="DF" <?php if (trim($this->billing_cc_data_state) == "DF") { echo " selected "; } ?>>Distrito Federal</option> 
+                <option value="ES" <?php if (trim($this->billing_cc_data_state) == "ES") { echo " selected "; } ?>>Espírito Santo</option> 
+                <option value="GO" <?php if (trim($this->billing_cc_data_state) == "GO") { echo " selected "; } ?>>Goiás</option> 
+                <option value="MA" <?php if (trim($this->billing_cc_data_state) == "MA") { echo " selected "; } ?>>Maranhão</option> 
+                <option value="MT" <?php if (trim($this->billing_cc_data_state) == "MT") { echo " selected "; } ?>>Mato Grosso</option> 
+                <option value="MS" <?php if (trim($this->billing_cc_data_state) == "MS") { echo " selected "; } ?>>Mato Grosso do Sul</option> 
+                <option value="MG" <?php if (trim($this->billing_cc_data_state) == "MG") { echo " selected "; } ?>>Minas Gerais</option> 
+                <option value="PA" <?php if (trim($this->billing_cc_data_state) == "PA") { echo " selected "; } ?>>Pará</option> 
+                <option value="PB" <?php if (trim($this->billing_cc_data_state) == "PB") { echo " selected "; } ?>>Paraíba</option> 
+                <option value="PR" <?php if (trim($this->billing_cc_data_state) == "PR") { echo " selected "; } ?>>Paraná</option> 
+                <option value="PE" <?php if (trim($this->billing_cc_data_state) == "PE") { echo " selected "; } ?>>Pernambuco</option> 
+                <option value="PI" <?php if (trim($this->billing_cc_data_state) == "PI") { echo " selected "; } ?>>Piauí</option> 
+                <option value="RJ" <?php if (trim($this->billing_cc_data_state) == "RJ") { echo " selected "; } ?>>Rio de Janeiro</option> 
+                <option value="RN" <?php if (trim($this->billing_cc_data_state) == "RN") { echo " selected "; } ?>>Rio Grande do Norte</option> 
+                <option value="RS" <?php if (trim($this->billing_cc_data_state) == "RS") { echo " selected "; } ?>>Rio Grande do Sul</option> 
+                <option value="RO" <?php if (trim($this->billing_cc_data_state) == "RO") { echo " selected "; } ?>>Rondônia</option> 
+                <option value="RR" <?php if (trim($this->billing_cc_data_state) == "RR") { echo " selected "; } ?>>Roraima</option> 
+                <option value="SC" <?php if (trim($this->billing_cc_data_state) == "SC") { echo " selected "; } ?>>Santa Catarina</option> 
+                <option value="SP" <?php if (trim($this->billing_cc_data_state) == "SP") { echo " selected "; } ?>>São Paulo</option> 
+                <option value="SE" <?php if (trim($this->billing_cc_data_state) == "SE") { echo " selected "; } ?>>Sergipe</option> 
+                <option value="TO" <?php if (trim($this->billing_cc_data_state) == "TO") { echo " selected "; } ?>>Tocantins</option> 
+            </select>
+		</div>
+	</li>
+	<li <?php if (trim($this->billing_cc_data_city) != "") { echo ' class="gn-hide"';} ?>>
+		<label for="<?php echo $_code ?>_cc_data_city" class="required"><em>*</em><?php echo $this->__('Cidade') ?></label>
+		<div class="input-box">
+			<input type="text" id="<?php echo $_code ?>_cc_data_city" name="payment[cc_data_city]" class="input-text required-entry" title="<?php echo $this->__('Cidade') ?>" value="<?php echo $this->billing_cc_data_city; ?>" maxlength="255" />
+		</div>
+	</li>
+    <li class="gn-hide">
+		<label for="<?php echo $_code ?>_cc_data_complement" class="required"><em>*</em><?php echo $this->__('Complemento') ?></label>
+		<div class="input-box">
+			<input type="text" id="<?php echo $_code ?>_cc_data_complement" name="payment[cc_data_complement]" class="input-text" title="<?php echo $this->__('Complemento') ?>" value="<?php echo $this->billing_cc_data_complement; ?>" maxlength="55" />
+		</div>
+	</li>
+
 	<li class="first">
 		<?php $_ccType = $this->getInfoData('cc_type') ?>
 		<ul class="card-logo">
 		<?php foreach ($this->getCcAvailableTypes() as $_typeCode => $_typeName): ?>
 			<li>
+
 				<label class="brand-label" title="<?php echo $_typeName ?>">
 					<input name="payment[cc_type]" type="radio" value="<?php echo $_typeCode ?>" id="<?php echo $_code ?>_cc_type" class="validate-one-required-by-name" onclick="javascript: GerencianetTransparent.calculateInstallments();" />
 					<img src="<?php echo $this->getSkinUrl('images/gerencianet/'.$_typeCode.'.png') ?>" />
@@ -101,6 +257,9 @@ Validation.defaultOptions.immediate = true;
 </script>
 
 <style type="text/css">
+.gn-hide { display: none; }
+.pay-juridical-person { color: #707070; border: 1px solid #CCC; margin-top: 20px; margin-bottom: 20px; padding: 10px; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; }
+.pay-juridical-person p { color: #707070; margin: 0; padding: 0; font-size: 13px; }
 .alert-development { color: #c90000; border: 1px solid #c90000; margin-top: 20px; margin-bottom: 20px; padding: 10px; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; }
 .alert-development p { color: #707070; margin: 0; padding: 0; font-size: 13px; }
 .card-logo input { position: absolute; top: 15px; left: 4px; }

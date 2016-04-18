@@ -44,6 +44,21 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
 		$quote = Mage::getModel('checkout/session')->getQuote();
 		$additionaldata['card']['cc_token'] = $data->getCcToken();
 		$additionaldata['card']['cc_installments'] = $data->getCcInstallments();
+	    $additionaldata['juridical']['data_pay_card_as_juridical'] = $data->getDataPayCardAsJuridical();
+	    $additionaldata['juridical']['cc_data_corporate_name'] = $data->getCcDataCorporateName();
+	    $additionaldata['juridical']['cc_data_cnpj'] = $data->getCcDataCnpj();
+		$additionaldata['customer']['cc_data_name'] = $data->getCcDataName();
+	    $additionaldata['customer']['cc_data_cpf'] = $data->getCcDataCpf();
+	    $additionaldata['customer']['cc_data_email'] = $data->getCcDataEmail();
+	    $additionaldata['customer']['cc_data_birth'] = $data->getCcDataBirth();
+	    $additionaldata['customer']['cc_data_phone_number'] = $data->getCcDataPhoneNumber();
+	    $additionaldata['billing']['cc_data_street'] = $data->getCcDataStreet();
+	    $additionaldata['billing']['cc_data_number'] = $data->getCcDataNumber();
+	    $additionaldata['billing']['cc_data_zipcode'] = $data->getCcDataZipcode();
+	    $additionaldata['billing']['cc_data_neighborhood'] = $data->getCcDataNeighborhood();
+	    $additionaldata['billing']['cc_data_state'] = $data->getCcDataState();
+	    $additionaldata['billing']['cc_data_city'] = $data->getCcDataCity();
+	    $additionaldata['billing']['cc_data_complement'] = $data->getCcDataComplement();
 		
 		$info->setAdditionalData(serialize($additionaldata));
 		
@@ -66,7 +81,7 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
 	 */
 	public function authorize(Varien_Object $payment, $amount)
 	{
-		if ($this->validateData()) {	
+		if ($this->validateData('card')) {	
 			$pay = $this->payCharge();
 			$payData = unserialize($this->getOrder()->getPayment()->getAdditionalData());
 			Mage::log('PAY CHARGE CARD: ' . var_export($pay,true),0,'gerencianet.log');
@@ -88,6 +103,7 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
 	 */
 	protected function getPaymentData() {
 		$payment = unserialize($this->getOrder()->getPayment()->getAdditionalData());
+
 		$return = array( 'credit_card' => array() );
 		
 		if($payment['card']['cc_installments']) {
@@ -97,9 +113,9 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
 		if($payment['card']['cc_token']) {
 			$return['credit_card']['payment_token'] = $payment['card']['cc_token'];
 		}
-		
-		$return['credit_card']['billing_address'] = $this->getBillingAddress();
-		$return['credit_card']['customer'] = $this->getCustomer();
+
+		$return['credit_card']['billing_address'] = $this->getBillingAddress('card');
+		$return['credit_card']['customer'] = $this->getCustomer('card');
 		
 		$return['credit_card'] = $this->checkDiscount($return['credit_card']);
 		

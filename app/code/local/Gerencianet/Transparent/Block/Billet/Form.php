@@ -21,7 +21,45 @@ class Gerencianet_Transparent_Block_Billet_Form extends Mage_Payment_Block_Form 
      */
     protected function _construct() {
     	parent::_construct();
-        $this->setTemplate('gerencianet/billet/form.phtml');
+    	$order = $this->getOrder();
+		$address = $this->getOrder()->getBillingAddress();
+
+		$customerDocument = preg_replace( '/[^0-9]/', '', $order->getCustomerTaxvat());
+		if (strlen($customerDocument)==11) {
+			$juridical=false;
+		} else if (strlen($customerDocument)==14) {
+			$juridical = true;
+		} else {
+			$customerDocument = "";
+			$juridical=false;
+		}
+    	
+		$dataOrder = array(
+            'customer_data_name' => $address->getFirstname() . " " . $address->getLastname(), 
+            'customer_data_document' => $customerDocument, 
+            'customer_data_juridical' => $juridical, 
+            'customer_data_email'=>$order->getCustomerEmail(),
+            'customer_data_phone_number'=>preg_replace( '/[^0-9]/', '', $address->getTelephone())
+        );
+		
+        $this->setData($dataOrder)->setTemplate('gerencianet/billet/form.phtml');
     }
+
+    /**+
+	 * Get current order object
+	 * @return Mage_Sales_Model_Order
+	 */
+	public function getOrder() {
+		if (!$this->_order) {
+			$this->_order = Mage::registry('current_order');
+			if (!$this->_order) {
+				$this->_order = Mage::getModel('checkout/session')->getQuote();
+				if (!$this->_order) {
+					return false;
+				}
+			}
+		}
+		return $this->_order;
+	}
 
 }

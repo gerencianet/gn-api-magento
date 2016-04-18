@@ -64,6 +64,14 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	public function isAvailable($quote = null)
 	{
 		$available = parent::isAvailable($quote);
+
+		$order = Mage::registry('current_order');
+        if (!$order) {
+            $order = Mage::getModel('checkout/session')->getQuote();
+        }
+		if ($order->getGrandTotal()<5) {
+			return false;
+		}
 		return $available;
 	}
 
@@ -72,10 +80,12 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * @param Varien_Object $payment
 	 * @param double $amount
 	 */
-	public function validateData() {
+	public function validateData($paymentType) {
 		try {
-			$this->getBillingAddress();
-			$this->getCustomer();
+			if ($paymentType=="card") {
+				$this->getBillingAddress($paymentType);
+			}
+			$this->getCustomer($paymentType);
 		} catch (Exception $e) {
 			Mage::throwException($e->getMessage());
 			return false;
@@ -132,7 +142,21 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			return $this->getApi()->payCharge($params,$this->getBody());
 		} catch(Exception $e) {
 			Mage::log('PAY CHARGE ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
-			Mage::throwException($e->getMessage());
+
+			if ($e->getMessage()) {
+				$e_message = $e->getMessage();
+			} else {
+				$e_message = "";
+			}
+
+			if ($e->getCode()) {
+				$e_code = $e->getCode();
+			} else {
+				$e_code = "";
+			}
+
+			//Mage::throwException($e);
+			Mage::throwException($this->errorHelper($e_message,$e_code,$e));
 		}
 	}
 
@@ -229,19 +253,82 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * Retrieves customer's data for pay charge
 	 * @return array
 	 */
-	public function getCustomer() {
-		$order = $this->getOrder();
-		$address = $this->getOrder()->getBillingAddress();
-		$customer = array(
-			'name' => $address->getFirstname() . " " . $address->getLastname(),
-			'cpf' => preg_replace( '/[^0-9]/', '', $order->getCustomerTaxvat()),
-			'email' => $order->getCustomerEmail(),
-			'birth' => date('Y-m-d',strtotime($order->getCustomerDob())),
-			'phone_number' => preg_replace( '/[^0-9]/', '', $address->getTelephone()),
-			'address' => $this->getShippingAddress()
-		);
+	public function getCustomer($paymentType) {
+		$formData = unserialize($this->getOrder()->getPayment()->getAdditionalData());
+		$payBilletAsJuridical = false;
+		$payCardAsJuridical = false;
 
-		Mage::getModel('gerencianet_transparent/validator')->validate($customer);
+		if (isset($formData['juridical']['data_pay_billet_as_juridical'])) {
+			
+			if ($formData['juridical']['data_pay_billet_as_juridical']) {
+			
+				Mage::getModel('gerencianet_transparent/validator')->validateJuridicalPerson( $formData['juridical']['data_corporate_name'], $formData['juridical']['data_cnpj'], $paymentType);
+				$juridical_data = array (
+				  'corporate_name' => $formData['juridical']['data_corporate_name'],
+				  'cnpj' => $formData['juridical']['data_cnpj']
+				);
+				$payBilletAsJuridical = true;
+			}
+		}
+
+		if (isset($formData['juridical']['data_pay_card_as_juridical'])) {
+			
+			if ($formData['juridical']['data_pay_card_as_juridical']) {
+			
+				Mage::getModel('gerencianet_transparent/validator')->validateJuridicalPerson( $formData['juridical']['cc_data_corporate_name'], $formData['juridical']['cc_data_cnpj'], $paymentType);
+				$juridical_data = array (
+				  'corporate_name' => $formData['juridical']['cc_data_corporate_name'],
+				  'cnpj' => $formData['juridical']['cc_data_cnpj']
+				);
+				$payCardAsJuridical = true;
+			}
+		}
+
+		if ($paymentType=="billet") {
+			if ($payBilletAsJuridical) {
+				$customer = array(
+					'name' => $formData['customer']['data_name'],
+					'cpf' => $formData['customer']['data_cpf'],
+					'email' => $formData['customer']['data_email'],
+					'phone_number' => $formData['customer']['data_phone_number'],
+					'juridical_person' => $juridical_data
+				);
+			} else {
+				$customer = array(
+					'name' => $formData['customer']['data_name'],
+					'cpf' => $formData['customer']['data_cpf'],
+					'email' => $formData['customer']['data_email'],
+					'phone_number' => $formData['customer']['data_phone_number']
+				);
+			}
+		} else {
+			$birth_date = $formData['customer']['cc_data_birth'];
+			if (strpos($birth_date, '/') !== false) {
+				$birth_date = date("Y-m-d", strtotime(str_replace('/', '-', $birth_date)));
+			}
+
+			if ($payCardAsJuridical) {
+				$customer = array(
+					'name' => $formData['customer']['cc_data_name'],
+					'cpf' => $formData['customer']['cc_data_cpf'],
+					'email' => $formData['customer']['cc_data_email'],
+					'birth' => $birth_date,
+					'phone_number' => $formData['customer']['cc_data_phone_number'],
+					'juridical_person' => $juridical_data
+				);
+			} else {
+				$customer = array(
+					'name' => $formData['customer']['cc_data_name'],
+					'cpf' => $formData['customer']['cc_data_cpf'],
+					'email' => $formData['customer']['cc_data_email'],
+					'birth' => $birth_date,
+					'phone_number' => $formData['customer']['cc_data_phone_number']
+				);
+			}
+
+		}
+
+		Mage::getModel('gerencianet_transparent/validator')->validate($customer, $paymentType);
 
 		return $customer;
 	}
@@ -250,22 +337,25 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * Retrieves billing address data for pay charge
 	 * @return array
 	 */
-	public function getBillingAddress() {
-		$address = $this->getOrder()->getBillingAddress();
-		$return = array(
-			'street' => $address->getStreet1(),
-			'number' => $address->getStreet2(),
-			'zipcode' => preg_replace('/[^0-9\s]/', '',$address->getPostcode()),
-			'neighborhood' => $address->getStreet4(),
-			'state' => $address->getRegionCode(),
-			'city' => $address->getCity()
-		);
+	public function getBillingAddress($paymentType) {
+		$formData = unserialize($this->getOrder()->getPayment()->getAdditionalData());
+		if ($paymentType=="card") {
+			$address = $this->getOrder()->getBillingAddress($paymentType);
 
-		if($address->getStreet3())
-			$return['complement'] = $address->getStreet3();
+			$return = array(
+				'street' => $formData['billing']['cc_data_street'],
+				'number' => $formData['billing']['cc_data_number'],
+				'zipcode' => $formData['billing']['cc_data_zipcode'],
+				'neighborhood' => $formData['billing']['cc_data_neighborhood'],
+				'state' => $formData['billing']['cc_data_state'],
+				'city' => $formData['billing']['cc_data_city'],
+			);
 
-		Mage::getModel('gerencianet_transparent/validator')->validate($return);
+			if($formData['billing']['cc_data_complement'] != "")
+				$return['complement'] = $formData['billing']['cc_data_complement'];
 
+			Mage::getModel('gerencianet_transparent/validator')->validate($return, $paymentType);
+		}
 		return $return;
 	}
 
@@ -273,7 +363,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * Retrieves shipping address data for pay charge
 	 * @return array
 	 */
-	public function getShippingAddress() {
+	public function getShippingAddress($paymentType) {
 		$address = $this->getOrder()->getShippingAddress();
 		$return = array(
 				'street' => $address->getStreet1(),
@@ -287,7 +377,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		if($address->getStreet3())
 			$return['complement'] = $address->getStreet3();
 
-		Mage::getModel('gerencianet_transparent/validator')->validate($return);
+		Mage::getModel('gerencianet_transparent/validator')->validate($return, $paymentType);
 
 		return $return;
 	}
@@ -385,6 +475,193 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		}
 
 		return $paymentData;
+	}
+
+	public function errorHelper($message, $code, $error) {
+		
+		if (strpos($error, '/') !== false) {
+			$property = explode("/",$error);
+			$propertyName = end($property);
+		} else {
+			$propertyName="";
+		}
+
+		if ($code!="") {
+			if ($message!="" && $propertyName=="") {
+				$messageShow = $this->getErrorMessage(intval($code), $message, $message);
+			} else {
+				$messageShow = $this->getErrorMessage(intval($code), $propertyName, $message);
+			}
+		} else {
+			if ($message!="") {
+				$messageShow = $message;
+			} else {
+				$messageShow = $this->getErrorMessage(1, $propertyName, $message);
+			}
+		}
+
+		return $messageShow;
+	}
+
+
+	public function getErrorMessage($error_code, $property, $originalMessage) {
+		$messageErrorDefault = 'Ocorreu um erro ao tentar realizar a sua requisição. Verifique os campos informados nos formulários e, se o erro persistir, entre contato com o proprietário da loja.';
+		switch($error_code) {
+			case 3500000:
+				$message = 'Erro interno do servidor.';
+				break;
+			case 3500001:
+				$message = $messageErrorDefault;
+				break;
+			case 3500002:
+				$message = $messageErrorDefault;
+				break;
+			case 3500007:
+				$message = 'O tipo de pagamento informado não está disponível.';
+				break;
+			case 3500008:
+				$message = 'Requisição não autorizada.';
+				break;
+			case 3500010:
+				$message = $messageErrorDefault;
+				break;
+			case 3500021:
+				$message = 'Não é permitido parcelamento para assinaturas.';
+				break;
+			case 3500030:
+				$message = 'Esta transação já possui uma forma de pagamento definida.';
+				break;
+			case 3500034:
+				$message = 'O campo ' . $this->getFieldName($property) . ' do endereço de pagamento não está preenchido corretamente.';
+				break;
+			case 3500042:
+				$message = $messageErrorDefault;
+				break;
+			case 3500044:
+				$message = 'A transação não pode ser paga. Entre em contato com o vendedor.';
+				break;
+			case 4600002:
+				$message = $messageErrorDefault;
+				break;
+			case 4600012:
+				$message = 'Ocorreu um erro ao tentar realizar o pagamento: ' . $property;
+				break;
+			case 4600022:
+				$message = $messageErrorDefault;
+				break;
+			case 4600026:
+				$message = 'cpf inválido';
+				break;
+			case 4600029:
+				$message = 'pedido já existe';
+				break;
+			case 4600032:
+				$message = $messageErrorDefault;
+				break;
+			case 4600035:
+				$message = 'Serviço indisponível para a conta. Por favor, solicite que o recebedor entre em contato com o suporte Gerencianet.';
+				break;
+			case 4600037:
+				$message = 'O valor da emissão é superior ao limite operacional da conta. Por favor, solicite que o recebedor entre em contato com o suporte Gerencianet.';
+				break;
+			case 4600111:
+				$message = 'valor de cada parcela deve ser igual ou maior que R$5,00';
+				break;
+			case 4600142:
+				$message = 'Transação não processada por conter incoerência nos dados cadastrais.';
+				break;
+			case 4600148:
+				$message = 'já existe um pagamento cadastrado para este identificador.';
+				break;
+			case 4600196:
+				$message = $messageErrorDefault;
+				break;
+			case 4600204:
+				$message = 'cpf deve ter 11 números';
+				break;
+			case 4600209:
+				$message = 'Limite de emissões diárias excedido. Por favor, solicite que o recebedor entre em contato com o suporte Gerencianet.';
+				break;
+			case 4600210:
+				$message = 'não é possível emitir três emissões idênticas. Por favor, entre em contato com nosso suporte para orientações sobre o uso correto dos serviços Gerencianet.';
+				break;
+			case 4600212:
+				$message = 'Número de telefone já associado a outro CPF. Não é possível cadastrar o mesmo telefone para mais de um CPF.';
+				break;
+			case 4600219:
+				$message = 'Ocorreu um erro ao validar seus dados: ' . $property;
+				break;
+			case 4600224:
+				$message = $messageErrorDefault;
+				break;
+			case 4600254:
+				$message = 'identificador da recorrência não foi encontrado';
+				break;
+			case 4600257:
+				$message = 'pagamento recorrente já executado';
+				break;
+			case 4600329:
+				$message = 'código de segurança deve ter três digitos';
+				break;
+			case 4699999:
+				$message = 'falha inesperada';
+				break;
+			default:
+				$message = $originalMessage;
+				break;
+		}
+		return $message;
+	}
+	
+	public function getFieldName($name) {
+		$field = trim($name);
+		switch($field) {
+			case "neighborhood":
+				return 'Bairro';
+				break;
+			case "street":
+				return 'Endereço';
+				break;
+			case "state":
+				return 'Estado';
+				break;
+			case "complement":
+				return 'Complemento';
+				break;
+			case "number":
+				return 'Número';
+				break;
+			case "city":
+				return 'Cidade';
+				break;
+			case "zipcode":
+				return 'CEP';
+				break;
+			case "name":
+				return 'Nome';
+				break;
+			case "cpf":
+				return 'CPF';
+				break;
+			case "phone_number":
+				return 'Telefone de contato';
+				break;
+			case "email":
+				return 'Email';
+				break;
+			case "cnpj":
+				return 'CNPJ';
+				break;
+			case "corporate_name":
+				return 'Razão Social';
+				break;
+			case "birth":
+				return 'Data de nascimento';
+				break;
+			default:
+				return '';
+				break;
+		}
 	}
 
 }

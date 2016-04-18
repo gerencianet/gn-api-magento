@@ -47,7 +47,7 @@ class Gerencianet_Transparent_Model_Observer
         if (in_array($payment->getMethodInstance()->getCode(),array('gerencianet_billet','gerencianet_card'))) {
             # changes order state to PENDING
             $order = $payment->getOrder();
-            $changeTo = Mage_Sales_Model_Order::STATE_PROCESSING;
+            $changeTo = Mage_Sales_Model_Order::STATE_PENDING_PAYMENT;
             $comment = utf8_encode('Pedido Recebido');
             $order->setState($changeTo, 'gerencianet_new', $comment, $notified = false);
             $order->save();

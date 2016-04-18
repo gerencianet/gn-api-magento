@@ -21,6 +21,8 @@ class Gerencianet_Transparent_Model_Validator {
 	protected $_messages = array(
 			'name'			=> "Motivo: O nome informado não é válido.\nPor favor, informe nome e sobrenome válidos!",
 			'cpf'			=> "Motivo: O CPF informado não é válido.\nPor favor, informe um número de CPF válido!",
+			'corporate'		=> "Motivo: A Razão Social informada não é válida.\nPor favor, informe uma Razão Social válida!",
+			'cnpj'			=> "Motivo: O CNPJ informado não é válido.\nPor favor, informe um número de CNPJ válido!",
 			'email'			=> "Motivo: O e-mail informado não é válido.\nPor favor, informe um e-mail no padrão: seu@email.com!",
 			'birth'			=> "Motivo: Data de aniversário inválida.\nPor favor, informe uma data válida!",
 			'street'		=> "Motivo: Endereço não informado.\nPor favor, informe um endereço válido!",
@@ -31,7 +33,13 @@ class Gerencianet_Transparent_Model_Validator {
 	        'zipcode'		=> "Motivo: O CEP informado não é válido.\nPor favor, informe um CEP válido com 8 dígitos!",
 			);
 	
-	protected $_validators = array(
+	protected $_validators_billet = array(
+			'name'			=> '_name',
+			'cpf'			=> '_cpf',
+			'email'			=> '_email',
+		);
+
+	protected $_validators_card = array(
 			'name'			=> '_name',
 			'cpf'			=> '_cpf',
 			'email'			=> '_email',
@@ -49,12 +57,13 @@ class Gerencianet_Transparent_Model_Validator {
 	 * @param array $data
 	 * @return boolean
 	 */
-	public function validate($data) {
+	public function validate($data, $paymentType) {
+
 		if (!is_array($data))
 			return false;
 		
 		foreach ($data as $field=>$value) {
-			if (!$this->isValid($field, $value))
+			if (!$this->isValid($field, $value, $paymentType))
 				return false;
 		}
 		
@@ -62,15 +71,42 @@ class Gerencianet_Transparent_Model_Validator {
 	}
 	
 	/**
+	 * Validate Juridical Person
+	 * @param array $data
+	 * @return boolean
+	 */
+	public function validateJuridicalPerson($corporate_name, $cnpj, $paymentType) {
+		if (!$this->_empty($corporate_name)) {
+			$this->_sendError('corporate', $paymentType);
+			return false;
+		}
+		if (!$this->_cnpj($cnpj)) {
+			$this->_sendError('cnpj', $paymentType);
+			return false;
+		}
+		
+		return true;
+	}
+	
+
+	/**
 	 * Check a field has valid data
 	 * @param string $field
 	 * @param string|int $data
 	 * @return boolean
 	 */
-	protected function isValid($field,$data) {
-		if (isset($this->_validators[$field])) {
-			if (!$this->{$this->_validators[$field]}($data)) {
-				$this->_sendError($field);
+	protected function isValid($field,$data,$paymentType) {
+		if ($paymentType=="card") {
+			if (isset($this->_validators_card[$field])) {
+				if (!$this->{$this->_validators_card[$field]}($data)) {
+					$this->_sendError($field, $paymentType);
+				}
+			}			
+		} else {
+			if (isset($this->_validators_billet[$field])) {
+				if (!$this->{$this->_validators_billet[$field]}($data)) {
+					$this->_sendError($field, $paymentType);
+				}
 			}
 		}
 		return true;
@@ -156,6 +192,39 @@ class Gerencianet_Transparent_Model_Validator {
 		}
 		return true;
 	}
+
+	/**
+	 * Validates CNPJ data
+	 * @param string $data
+	 * @return boolean
+	 */
+	protected function _cnpj($cnpj) {
+		if(empty($cnpj)) {
+			return false;
+		}
+		
+		$cnpj = preg_replace('/[^0-9]/', '', (string) $cnpj);
+		
+		if (strlen($cnpj) != 14)
+			return false;
+		
+		for ($i = 0, $j = 5, $soma = 0; $i < 12; $i++)
+		{
+			$soma += $cnpj{$i} * $j;
+			$j = ($j == 2) ? 9 : $j - 1;
+		}
+		$resto = $soma % 11;
+		if ($cnpj{12} != ($resto < 2 ? 0 : 11 - $resto))
+			return false;
+		
+		for ($i = 0, $j = 6, $soma = 0; $i < 13; $i++)
+		{
+			$soma += $cnpj{$i} * $j;
+			$j = ($j == 2) ? 9 : $j - 1;
+		}
+		$resto = $soma % 11;
+		return $cnpj{13} == ($resto < 2 ? 0 : 11 - $resto);
+	}
 	
 	/**
 	 * Validates zipcode fields
@@ -187,7 +256,7 @@ class Gerencianet_Transparent_Model_Validator {
 	 * Send error message
 	 * @param Exception $msg
 	 */
-	protected function _sendError($msg) {
+	protected function _sendError($msg, $paymentType) {
 		Mage::throwException(Mage::helper('gerencianet_transparent')->__("Erro ao efetuar o pagamento!\n" . $this->_messages[$msg]));
 	}
 	
