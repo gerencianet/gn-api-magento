@@ -13,6 +13,7 @@
  * @author     AV5 Tecnologia <anderson@av5.com.br>
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
+ //v0.1.8.1
 var GerencianetTransparent = function GerencianetTransparent(){};
 GerencianetTransparent.onlyNumbers = function(elm){
 	value = elm.value;
@@ -47,6 +48,7 @@ GerencianetTransparent.payCardAsJuridical = function(element) {
 };
 
 GerencianetTransparent.getPaymentToken = function() {
+
 	var type 		= $$('input:checked[name="payment[cc_type]"]').first().value;
 	var number		= document.getElementById('gerencianet_card_cc_number').value;
 	var cvv			= document.getElementById('gerencianet_card_cc_cid').value;
@@ -59,6 +61,7 @@ GerencianetTransparent.getPaymentToken = function() {
 
     var callback = function(error, response) {
 		if(error) {
+			alert("Os dados digitados do cartão são inválidos. Verifique as informações e tente novamente.");
 		  GerencianetTransparent.sendError(error);
 		} else {
 		  document.getElementById('gerencianet_card_token').value = response.data.payment_token;

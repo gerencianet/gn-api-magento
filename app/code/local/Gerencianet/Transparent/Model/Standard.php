@@ -65,13 +65,13 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	{
 		$available = parent::isAvailable($quote);
 
-		$order = Mage::registry('current_order');
+		/*$order = Mage::registry('current_order');
         if (!$order) {
             $order = Mage::getModel('checkout/session')->getQuote();
         }
 		if ($order->getGrandTotal()<5) {
 			return false;
-		}
+		}*/
 		return $available;
 	}
 
@@ -532,7 +532,11 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				$message = 'Esta transação já possui uma forma de pagamento definida.';
 				break;
 			case 3500034:
-				$message = 'O campo ' . $this->getFieldName($property) . ' do endereço de pagamento não está preenchido corretamente.';
+				if (trim($property)=="credit_card") {
+					$message = 'Os dados digitados do cartão são inválidos. Verifique as informações e tente novamente.';
+				} else {
+					$message = 'O campo ' . $this->getFieldName($property) . ' do endereço de pagamento não está preenchido corretamente.' . $property . " - ";
+				}
 				break;
 			case 3500042:
 				$message = $messageErrorDefault;
