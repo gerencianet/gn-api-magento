@@ -65,13 +65,13 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	{
 		$available = parent::isAvailable($quote);
 
-		/*$order = Mage::registry('current_order');
+		$order = Mage::registry('current_order');
         if (!$order) {
             $order = Mage::getModel('checkout/session')->getQuote();
         }
 		if ($order->getGrandTotal()<5) {
 			return false;
-		}*/
+		}
 		return $available;
 	}
 
