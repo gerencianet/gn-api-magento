@@ -13,8 +13,10 @@
  * @author     AV5 Tecnologia <anderson@av5.com.br>
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
- //v0.1.8.1
+ //v0.1.8.2
 var GerencianetTransparent = function GerencianetTransparent(){};
+var checkToken, cardOwner, cardNumber, cardCvv, cardExpM, cardExpY;
+
 GerencianetTransparent.onlyNumbers = function(elm){
 	value = elm.value;
 	value = value.replace(/\D/g,"");
@@ -129,9 +131,26 @@ GerencianetTransparent.addFieldsObservers = function() {
         Element.observe(ccCvvElm,'keyup',function(e){GerencianetTransparent.onlyNumbers(this);});
     }
 };
+/*
+GerencianetTransparent.cardPaymentOwnerValidate = function(owner) {
+	cardOwner = owner;
+}*/
+
+GerencianetTransparent.cardPaymentValidate = function() {
+	if (document.getElementById('gerencianet_card_cc_number').value.length >=14 && 
+		document.getElementById('gerencianet_card_cc_owner').value!="" && 
+		document.getElementById('gerencianet_card_cc_cid').value.length>=3 && 
+		document.getElementById('gerencianet_card_cc_expiration').value!="" && 
+		document.getElementById('gerencianet_card_cc_expiration_yr').value!="") {
+		checkToken = GerencianetTransparent.getPaymentToken();
+	}
+
+	return true;
+}
 
 GerencianetTransparent.rebuildSave = function() {
 	/* MAGENTO CHECKOUT METHODS SAVING */
+
 	if (typeof OSCPayment !== "undefined") { // One Step Checkout Brasil 6 Pro
 	    OSCPayment._savePayment = OSCPayment.savePayment;
 	    OSCPayment.savePayment = function() {
@@ -206,7 +225,7 @@ GerencianetTransparent.rebuildSave = function() {
 	    Review.prototype._save = Review.prototype.save;
 	    Review.prototype.save = function() {
 	    	if (payment.currentMethod == 'gerencianet_card') {
-	        	checkToken = GerencianetTransparent.getPaymentToken();
+	        	//checkToken = GerencianetTransparent.getPaymentToken();
             	if(!checkToken)
             		return false;
 	        }

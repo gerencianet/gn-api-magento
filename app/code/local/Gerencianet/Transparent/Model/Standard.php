@@ -535,7 +535,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				if (trim($property)=="credit_card") {
 					$message = 'Os dados digitados do cartão são inválidos. Verifique as informações e tente novamente.';
 				} else {
-					$message = 'O campo ' . $this->getFieldName($property) . ' do endereço de pagamento não está preenchido corretamente.' . $property . " - ";
+					$message = 'O campo ' . $this->getFieldName($property) . ' do endereço de pagamento não está preenchido corretamente.';
 				}
 				break;
 			case 3500042:

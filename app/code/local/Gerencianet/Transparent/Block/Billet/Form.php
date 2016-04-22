@@ -21,8 +21,8 @@ class Gerencianet_Transparent_Block_Billet_Form extends Mage_Payment_Block_Form 
      */
     protected function _construct() {
     	parent::_construct();
-    	$order = $this->getOrder();
-		$address = $this->getOrder()->getBillingAddress();
+    	$order = Mage::getModel('checkout/session')->getQuote();
+		$address = $order->getBillingAddress();
 
 		$customerDocument = preg_replace( '/[^0-9]/', '', $order->getCustomerTaxvat());
 		if (strlen($customerDocument)==11) {
@@ -33,12 +33,20 @@ class Gerencianet_Transparent_Block_Billet_Form extends Mage_Payment_Block_Form 
 			$customerDocument = "";
 			$juridical=false;
 		}
+
+		if ($order->getCustomerEmail()) {
+            $email = $order->getCustomerEmail();
+        } else if ($address->getEmail()) {
+            $email = $address->getEmail();
+        } else {
+            $email = "";
+        }
     	
 		$dataOrder = array(
             'customer_data_name' => $address->getFirstname() . " " . $address->getLastname(), 
             'customer_data_document' => $customerDocument, 
             'customer_data_juridical' => $juridical, 
-            'customer_data_email'=>$order->getCustomerEmail(),
+            'customer_data_email'=>$email,
             'customer_data_phone_number'=>preg_replace( '/[^0-9]/', '', $address->getTelephone())
         );
 		

@@ -22,10 +22,7 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
     protected function _construct() {
     	parent::_construct();
 
-        $order = Mage::registry('current_order');
-        if (!$order) {
-            $order = Mage::getModel('checkout/session')->getQuote();
-        }
+        $order = Mage::getModel('checkout/session')->getQuote();
         $address = $order->getBillingAddress();
 
         $customerDocument = preg_replace( '/[^0-9]/', '', $order->getCustomerTaxvat());
@@ -38,20 +35,34 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
             $juridical=false;
         }
 
+        if ($order->getCustomerEmail()) {
+            $email = $order->getCustomerEmail();
+        } else if ($address->getEmail()) {
+            $email = $address->getEmail();
+        } else {
+            $email = "";
+        }
+
+        if ($order->getCustomerDob()) {
+            $dt_birth = date('d/m/Y',strtotime($order->getCustomerDob()));
+        } else {
+            $dt_birth = "";
+        }
+
         $dataOrder = array(
             'customer_cc_data_name' => $address->getFirstname() . " " . $address->getLastname(), 
             'customer_cc_data_document' => $customerDocument, 
             'customer_cc_data_juridical' => $juridical, 
-            'customer_cc_data_email'=>$order->getCustomerEmail(),
-            'customer_cc_data_birth'=>date('d/m/Y',strtotime($order->getCustomerDob())),
-            'customer_cc_data_phone_number'=>preg_replace( '/[^0-9]/', '', $address->getTelephone()),
-            'billing_cc_data_street'=>$address->getStreet1(),
-            'billing_cc_data_number'=>$address->getStreet2(),
-            'billing_cc_data_zipcode'=>preg_replace('/[^0-9\s]/', '',$address->getPostcode()),
-            'billing_cc_data_neighborhood'=>$address->getStreet4(),
-            'billing_cc_data_state'=>$address->getRegionCode(),
-            'billing_cc_data_city'=>$address->getCity(),
-            'billing_cc_data_complement'=>$address->getStreet3(),
+            'customer_cc_data_email' => $email,
+            'customer_cc_data_birth' => $dt_birth,
+            'customer_cc_data_phone_number' => preg_replace( '/[^0-9]/', '', $address->getTelephone()),
+            'billing_cc_data_street' => $address->getStreet1(),
+            'billing_cc_data_number' => $address->getStreet2(),
+            'billing_cc_data_zipcode' => preg_replace('/[^0-9\s]/', '',$address->getPostcode()),
+            'billing_cc_data_neighborhood' => $address->getStreet4(),
+            'billing_cc_data_state' => $address->getRegionCode(),
+            'billing_cc_data_city' => $address->getCity(),
+            'billing_cc_data_complement' => $address->getStreet3(),
             );
 
         $this->setData($dataOrder)->setTemplate('gerencianet/card/form.phtml');
@@ -127,7 +138,7 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
     	if($head) {
     		$head->append($jsBlock);
     	}
-    
+
     	return parent::_prepareLayout();
     }
 

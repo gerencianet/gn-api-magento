@@ -17,10 +17,100 @@
 
 $_code = $this->getMethodCode();
 $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
-
 ?>
 
-<ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none;">
+<script>
+		if (document.getElementById('gerencianet_card_cc_data_name')) {
+			<?php if ($this->customer_cc_data_name!="") { ?>
+				document.getElementById('gerencianet_card_cc_data_name').value = "<?php echo $this->customer_cc_data_name; ?>";
+			<?php } ?>
+		}
+		if (document.getElementById('gerencianet_card_cc_data_cpf')) {
+			<?php if ($this->customer_cc_data_document!="") { ?>
+				document.getElementById('gerencianet_card_cc_data_cpf').value = "<?php echo $this->customer_cc_data_document; ?>";
+			<?php } ?>
+		}
+		if (document.getElementById('gerencianet_card_cc_data_email')) {
+			<?php if ($this->customer_cc_data_email!="") { ?>
+				document.getElementById('gerencianet_card_cc_data_email').value = "<?php echo $this->customer_cc_data_email; ?>";
+			<?php } ?>
+		}
+		if (document.getElementById('gerencianet_card_cc_data_birth')) {
+			<?php if ($this->customer_cc_data_birth!="") { ?>
+				document.getElementById('gerencianet_card_cc_data_birth').value = "<?php echo $this->customer_cc_data_birth; ?>";
+			<?php } ?>
+		}
+		if (document.getElementById('gerencianet_card_cc_data_phone_number')) {
+			<?php if ($this->customer_cc_data_phone_number!="") { ?>
+				document.getElementById('gerencianet_card_cc_data_phone_number').value = "<?php echo $this->customer_cc_data_phone_number; ?>";
+			<?php } ?>
+		}
+		if (document.getElementById('gerencianet_card_cc_data_street')) {
+			<?php if ($this->billing_cc_data_street!="") { ?>
+				document.getElementById('gerencianet_card_cc_data_street').value = "<?php echo $this->billing_cc_data_street; ?>";
+			<?php } ?>
+		}
+		if (document.getElementById('gerencianet_card_cc_data_number')) {
+			<?php if ($this->billing_cc_data_number!="") { ?>
+				document.getElementById('gerencianet_card_cc_data_number').value = "<?php echo $this->billing_cc_data_number; ?>";
+			<?php } ?>
+		}
+		if (document.getElementById('gerencianet_card_cc_data_zipcode')) {
+			<?php if ($this->billing_cc_data_zipcode!="") { ?>
+				document.getElementById('gerencianet_card_cc_data_zipcode').value = "<?php echo $this->billing_cc_data_zipcode; ?>";
+			<?php } ?>
+		}
+		if (document.getElementById('gerencianet_card_cc_data_neighborhood')) {
+			<?php if ($this->billing_cc_data_neighborhood!="") { ?>
+				document.getElementById('gerencianet_card_cc_data_neighborhood').value = "<?php echo $this->billing_cc_data_neighborhood; ?>";
+			<?php } ?>
+		}
+		if (document.getElementById('gerencianet_card_cc_data_state')) {
+			<?php if (
+		    	trim($this->billing_cc_data_state) == "AC" ||
+		    	trim($this->billing_cc_data_state) == "AL" ||
+		    	trim($this->billing_cc_data_state) == "AP" ||
+		    	trim($this->billing_cc_data_state) == "AM" ||
+		    	trim($this->billing_cc_data_state) == "BA" ||
+		    	trim($this->billing_cc_data_state) == "CE" ||
+		    	trim($this->billing_cc_data_state) == "DF" ||
+		    	trim($this->billing_cc_data_state) == "ES" ||
+		    	trim($this->billing_cc_data_state) == "GO" ||
+		    	trim($this->billing_cc_data_state) == "MA" ||
+		    	trim($this->billing_cc_data_state) == "MT" ||
+		    	trim($this->billing_cc_data_state) == "MS" ||
+		    	trim($this->billing_cc_data_state) == "MG" ||
+		    	trim($this->billing_cc_data_state) == "PA" ||
+		    	trim($this->billing_cc_data_state) == "PB" ||
+		    	trim($this->billing_cc_data_state) == "PR" ||
+		    	trim($this->billing_cc_data_state) == "PE" ||
+		    	trim($this->billing_cc_data_state) == "PI" ||
+		    	trim($this->billing_cc_data_state) == "RJ" ||
+		    	trim($this->billing_cc_data_state) == "RN" ||
+		    	trim($this->billing_cc_data_state) == "RS" ||
+		    	trim($this->billing_cc_data_state) == "RO" ||
+		    	trim($this->billing_cc_data_state) == "RR" ||
+		    	trim($this->billing_cc_data_state) == "SC" ||
+		    	trim($this->billing_cc_data_state) == "SP" ||
+		    	trim($this->billing_cc_data_state) == "SE" ||
+		    	trim($this->billing_cc_data_state) == "TO") { ?>
+				document.getElementById('gerencianet_card_cc_data_state').value = "<?php echo $this->billing_cc_data_state; ?>";
+			<?php } ?>
+		}
+		if (document.getElementById('gerencianet_card_cc_data_city')) {
+			<?php if ($this->billing_cc_data_city!="") { ?>
+				document.getElementById('gerencianet_card_cc_data_city').value = "<?php echo $this->billing_cc_data_city; ?>";
+			<?php } ?>
+		}
+		if (document.getElementById('gerencianet_card_cc_data_complement')) {
+			<?php if ($this->billing_cc_data_complement!="") { ?>
+				document.getElementById('gerencianet_card_cc_data_complement').value = "<?php echo $this->billing_cc_data_complement; ?>";
+			<?php } ?>
+		}
+	
+</script>
+
+<ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none;"><!-- v0.1.8.2 -->
 
 	<?php if ($isSandbox):	?>
 	<div class="alert-development">
@@ -52,56 +142,56 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 	<li <?php if (trim($this->customer_cc_data_name) != "" && !$this->customer_cc_data_juridical) { echo ' class="gn-hide"';} ?> >
 		<label for="<?php echo  $_code ?>_cc_data_name" class="required"><em>*</em><?php echo $this->__('Nome') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_cc_data_name" name="payment[cc_data_name]" title="<?php echo $this->__('Name') ?>" class="input-text required-entry" value="<?php if (!$this->customer_cc_data_juridical) { echo $this->customer_cc_data_name; } ?>" maxlength="255" />
+			<input type="text" id="<?php echo $_code ?>_cc_data_name" name="payment[cc_data_name]" title="<?php echo $this->__('Name') ?>" class="input-text " value="" maxlength="255" />
 		</div>
 	</li>
     <li <?php if (trim($this->customer_cc_data_document) != "" && !$this->customer_cc_data_juridical) { echo ' class="gn-hide"';} ?> >
 		<label for="<?php echo $_code ?>_cc_data_cpf" class="required"><em>*</em><?php echo $this->__('CPF') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_cc_data_cpf" name="payment[cc_data_cpf]" class="input-text required-entry" title="<?php echo $this->__('CPF') ?>" value="<?php if (!$this->customer_cc_data_juridical) { echo $this->customer_cc_data_document; } ?>" maxlength="11" />
+			<input type="text" id="<?php echo $_code ?>_cc_data_cpf" name="payment[cc_data_cpf]" class="input-text " title="<?php echo $this->__('CPF') ?>" value="" maxlength="11" />
 		</div>
 	</li>
     <li <?php if (trim($this->customer_cc_data_email) != "") { echo ' class="gn-hide"';} ?>>
-		<label for="<?php echo $_code ?>_cc_data_email" class="required"><em>*</em><?php echo $this->__('E-mail') ?></label>
+		<label for="<?php echo $_code ?>_cc_data_email" class="required"><em>*</em><?php echo $this->__('Email') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_cc_data_email" name="payment[cc_data_email]" class="input-text required-entry" title="<?php echo $this->__('E-mail') ?>" value="<?php echo $this->customer_cc_data_email; ?>" maxlength="255" />
+			<input type="text" id="<?php echo $_code ?>_cc_data_email" name="payment[cc_data_email]" class="input-text " title="<?php echo $this->__('E-mail') ?>" value="" maxlength="255" />
 		</div>
 	</li>
 	<li <?php if (trim($this->customer_cc_data_birth) != "") { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo $_code ?>_cc_data_birth" class="required"><em>*</em><?php echo $this->__('Data de Nascimento (DD/MM/AAAA)') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_cc_data_birth" name="payment[cc_data_birth]" class="input-text validate-date-au required-entry" title="<?php echo $this->__('Data de Nascimento') ?>" value="<?php echo $this->customer_cc_data_birth; ?>" maxlength="10" />
+			<input type="text" id="<?php echo $_code ?>_cc_data_birth" name="payment[cc_data_birth]" class="input-text validate-date-au " title="<?php echo $this->__('Data de Nascimento') ?>" value="" maxlength="10" />
 		</div>
 	</li>
     <li <?php if (trim($this->customer_cc_data_phone_number) != "") { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo $_code ?>_cc_data_phone_number" class="required"><em>*</em><?php echo $this->__('Telefone') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_cc_data_phone_number" name="payment[cc_data_phone_number]" class="input-text required-entry" title="<?php echo $this->__('Phone Number') ?>" value="<?php echo $this->customer_cc_data_phone_number; ?>" maxlength="18" />
+			<input type="text" id="<?php echo $_code ?>_cc_data_phone_number" name="payment[cc_data_phone_number]" class="input-text " title="<?php echo $this->__('Phone Number') ?>" value="" maxlength="18" />
 		</div>
 	</li>
 
 	<li <?php if (trim($this->billing_cc_data_street) != "") { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo  $_code ?>_cc_data_street" class="required"><em>*</em><?php echo $this->__('Endereço de Cobrança') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_cc_data_street" name="payment[cc_data_street]" title="<?php echo $this->__('Endereço') ?>" class="input-text required-entry" value="<?php echo $this->billing_cc_data_street; ?>" maxlength="255" />
+			<input type="text" id="<?php echo $_code ?>_cc_data_street" name="payment[cc_data_street]" title="<?php echo $this->__('Endereço') ?>" class="input-text " value="" maxlength="255" />
 		</div>
 	</li>
     <li <?php if (trim($this->billing_cc_data_number) != "") { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo $_code ?>_cc_data_number" class="required"><em>*</em><?php echo $this->__('Número do endereço de cobrança') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_cc_data_number" name="payment[cc_data_number]" class="input-text required-entry" title="<?php echo $this->__('Número') ?>" value="<?php echo $this->billing_cc_data_number; ?>" maxlength="11" />
+			<input type="text" id="<?php echo $_code ?>_cc_data_number" name="payment[cc_data_number]" class="input-text " title="<?php echo $this->__('Número') ?>" value="" maxlength="11" />
 		</div>
 	</li>
     <li <?php if (trim($this->billing_cc_data_zipcode) != "") { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo $_code ?>_cc_data_zipcode" class="required"><em>*</em><?php echo $this->__('CEP do endereço de cobrança') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_cc_data_zipcode" name="payment[cc_data_zipcode]" class="input-text required-entry" title="<?php echo $this->__('CEP') ?>" value="<?php echo $this->billing_cc_data_zipcode; ?>" maxlength="255" />
+			<input type="text" id="<?php echo $_code ?>_cc_data_zipcode" name="payment[cc_data_zipcode]" class="input-text " title="<?php echo $this->__('CEP') ?>" value="" maxlength="255" />
 		</div>
 	</li>
 	<li <?php if (trim($this->billing_cc_data_neighborhood) != "") { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo $_code ?>_cc_data_neighborhood" class="required"><em>*</em><?php echo $this->__('Bairro do endereço de cobrança') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_cc_data_neighborhood" name="payment[cc_data_neighborhood]" class="input-text required-entry" title="<?php echo $this->__('Bairro') ?>" value="<?php echo $this->billing_cc_data_neighborhood; ?>" maxlength="255" />
+			<input type="text" id="<?php echo $_code ?>_cc_data_neighborhood" name="payment[cc_data_neighborhood]" class="input-text " title="<?php echo $this->__('Bairro') ?>" value="" maxlength="255" />
 		</div>
 	</li>
     <li <?php if (
@@ -135,7 +225,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 	) { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo $_code ?>_cc_data_state" class="required"><em>*</em><?php echo $this->__('Estado') ?></label>
 		<div class="input-box">
-			<select id="<?php echo $_code ?>_cc_data_state" name="payment[cc_data_state]" class="input-select validate-select required-entry" >
+			<select id="<?php echo $_code ?>_cc_data_state" name="payment[cc_data_state]" class="input-select validate-select " >
                 <option value="">Selecione o Estado</option> 
                 <option value="AC" <?php if (trim($this->billing_cc_data_state) == "AC") { echo " selected "; } ?>>Acre</option> 
                 <option value="AL" <?php if (trim($this->billing_cc_data_state) == "AL") { echo " selected "; } ?>>Alagoas</option> 
@@ -170,13 +260,13 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 	<li <?php if (trim($this->billing_cc_data_city) != "") { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo $_code ?>_cc_data_city" class="required"><em>*</em><?php echo $this->__('Cidade') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_cc_data_city" name="payment[cc_data_city]" class="input-text required-entry" title="<?php echo $this->__('Cidade') ?>" value="<?php echo $this->billing_cc_data_city; ?>" maxlength="255" />
+			<input type="text" id="<?php echo $_code ?>_cc_data_city" name="payment[cc_data_city]" class="input-text " title="<?php echo $this->__('Cidade') ?>" value="" maxlength="255" />
 		</div>
 	</li>
     <li class="gn-hide">
 		<label for="<?php echo $_code ?>_cc_data_complement" class="required"><em>*</em><?php echo $this->__('Complemento') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_cc_data_complement" name="payment[cc_data_complement]" class="input-text" title="<?php echo $this->__('Complemento') ?>" value="<?php echo $this->billing_cc_data_complement; ?>" maxlength="55" />
+			<input type="text" id="<?php echo $_code ?>_cc_data_complement" name="payment[cc_data_complement]" class="input-text" title="<?php echo $this->__('Complemento') ?>" value="" maxlength="55" />
 		</div>
 	</li>
 
@@ -197,20 +287,20 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 	<li>
 		<label for="<?php echo $_code ?>_cc_owner" class="required"><em>*</em><?php echo $this->__('Name on Card') ?></label>
 		<div class="input-box">
-			<input type="text" title="<?php echo $this->__('Name on Card') ?>" class="input-text required-entry" id="<?php echo $_code ?>_cc_owner" name="payment[cc_owner]" value="<?php echo $this->htmlEscape($this->getInfoData('cc_owner')) ?>" />
+			<input type="text" title="<?php echo $this->__('Name on Card') ?>" class="input-text " id="<?php echo $_code ?>_cc_owner" name="payment[cc_owner]" value="<?php echo $this->htmlEscape($this->getInfoData('cc_owner')) ?>" onchange="javascript: GerencianetTransparent.cardPaymentValidate();" />
 		</div>
 	</li>
 	<li>
 		<label for="<?php echo $_code ?>_cc_number" class="required"><em>*</em><?php echo $this->__('Credit Card Number') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_cc_number" name="payment[cc_number]" title="<?php echo $this->__('Credit Card Number') ?>" class="input-text required-entry" value="" maxlength="16" />
+			<input type="text" id="<?php echo $_code ?>_cc_number" name="payment[cc_number]" title="<?php echo $this->__('Credit Card Number') ?>" class="input-text " value="" maxlength="16" onchange="javascript: GerencianetTransparent.cardPaymentValidate();" />
 		</div>
 	</li>
 	<li id="<?php echo $_code ?>_cc_type_exp_div">
 		<label for="<?php echo $_code ?>_expiration" class="required"><em>*</em><?php echo $this->__('Expiration Date') ?></label>
 		<div class="input-box">
 			<div class="v-fix">
-				<select id="<?php echo $_code ?>_cc_expiration" name="payment[cc_exp_month]" class="month validate-cc-exp required-entry">
+				<select id="<?php echo $_code ?>_cc_expiration" name="payment[cc_exp_month]" class="month validate-cc-exp " onchange="javascript: GerencianetTransparent.cardPaymentValidate();">
 				<?php $_ccExpMonth = $this->getInfoData('cc_exp_month') ?>
 				<?php foreach ($this->getCcMonths() as $k=>$v): ?>
 					<option value="<?php echo $k?$k:'' ?>"<?php if($k==$_ccExpMonth): ?> selected="selected"<?php endif ?>><?php echo $v ?></option>
@@ -218,7 +308,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 				</select>
 			</div>
 			<div class="v-fix">
-				<select id="<?php echo $_code ?>_cc_expiration_yr" name="payment[cc_exp_year]" class="year required-entry">
+				<select id="<?php echo $_code ?>_cc_expiration_yr" name="payment[cc_exp_year]" class="year " onchange="javascript: GerencianetTransparent.cardPaymentValidate();">
 				<?php $_ccExpYear = $this->getInfoData('cc_exp_year') ?>
 				<?php foreach ($this->getCcYears() as $k=>$v): ?>
 					<option value="<?php echo $k?$k:'' ?>"<?php if($k==$_ccExpYear): ?> selected="selected"<?php endif ?>><?php echo $v ?></option>
@@ -233,7 +323,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 		<label for="<?php echo $_code ?>_cc_cid" class="required"><em>*</em><?php echo $this->__('Card Verification Number') ?></label>
 		<div class="input-box">
 			<div class="v-fix">
-				<input type="text" title="<?php echo $this->__('Card Verification Number') ?>" class="input-text cvv validate-digits required-entry" size="5" id="<?php echo $_code ?>_cc_cid" name="payment[cc_cid]" value="" maxlength="4" />
+				<input type="text" title="<?php echo $this->__('Card Verification Number') ?>" class="input-text cvv validate-digits " size="5" id="<?php echo $_code ?>_cc_cid" name="payment[cc_cid]" value="" maxlength="4" onchange="javascript: GerencianetTransparent.cardPaymentValidate();" />
 			</div>
 			<a href="#" class="cvv-what-is-this"><?php echo $this->__('What is this?') ?></a>
 		</div>
