@@ -265,7 +265,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				Mage::getModel('gerencianet_transparent/validator')->validateJuridicalPerson( $formData['juridical']['data_corporate_name'], $formData['juridical']['data_cnpj'], $paymentType);
 				$juridical_data = array (
 				  'corporate_name' => $formData['juridical']['data_corporate_name'],
-				  'cnpj' => $formData['juridical']['data_cnpj']
+				  'cnpj' => preg_replace( '/[^0-9]/', '',$formData['juridical']['data_cnpj'])
 				);
 				$payBilletAsJuridical = true;
 			}
@@ -278,7 +278,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				Mage::getModel('gerencianet_transparent/validator')->validateJuridicalPerson( $formData['juridical']['cc_data_corporate_name'], $formData['juridical']['cc_data_cnpj'], $paymentType);
 				$juridical_data = array (
 				  'corporate_name' => $formData['juridical']['cc_data_corporate_name'],
-				  'cnpj' => $formData['juridical']['cc_data_cnpj']
+				  'cnpj' => preg_replace( '/[^0-9]/', '',$formData['juridical']['cc_data_cnpj'])
 				);
 				$payCardAsJuridical = true;
 			}
@@ -288,17 +288,17 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			if ($payBilletAsJuridical) {
 				$customer = array(
 					'name' => $formData['customer']['data_name'],
-					'cpf' => $formData['customer']['data_cpf'],
+					'cpf' => preg_replace( '/[^0-9]/', '', $formData['customer']['data_cpf']),
 					'email' => $formData['customer']['data_email'],
-					'phone_number' => $formData['customer']['data_phone_number'],
+					'phone_number' => preg_replace( '/[^0-9]/', '',$formData['customer']['data_phone_number']),
 					'juridical_person' => $juridical_data
 				);
 			} else {
 				$customer = array(
 					'name' => $formData['customer']['data_name'],
-					'cpf' => $formData['customer']['data_cpf'],
+					'cpf' => preg_replace( '/[^0-9]/', '',$formData['customer']['data_cpf']),
 					'email' => $formData['customer']['data_email'],
-					'phone_number' => $formData['customer']['data_phone_number']
+					'phone_number' => preg_replace( '/[^0-9]/', '',$formData['customer']['data_phone_number'])
 				);
 			}
 		} else {
@@ -310,19 +310,19 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			if ($payCardAsJuridical) {
 				$customer = array(
 					'name' => $formData['customer']['cc_data_name'],
-					'cpf' => $formData['customer']['cc_data_cpf'],
+					'cpf' => preg_replace( '/[^0-9]/', '',$formData['customer']['cc_data_cpf']),
 					'email' => $formData['customer']['cc_data_email'],
 					'birth' => $birth_date,
-					'phone_number' => $formData['customer']['cc_data_phone_number'],
+					'phone_number' => preg_replace( '/[^0-9]/', '',$formData['customer']['cc_data_phone_number']),
 					'juridical_person' => $juridical_data
 				);
 			} else {
 				$customer = array(
 					'name' => $formData['customer']['cc_data_name'],
-					'cpf' => $formData['customer']['cc_data_cpf'],
+					'cpf' => preg_replace( '/[^0-9]/', '',$formData['customer']['cc_data_cpf']),
 					'email' => $formData['customer']['cc_data_email'],
 					'birth' => $birth_date,
-					'phone_number' => $formData['customer']['cc_data_phone_number']
+					'phone_number' => preg_replace( '/[^0-9]/', '',$formData['customer']['cc_data_phone_number'])
 				);
 			}
 
@@ -534,7 +534,9 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			case 3500034:
 				if (trim($property)=="credit_card") {
 					$message = 'Os dados digitados do cartão são inválidos. Verifique as informações e tente novamente.';
-				} else {
+				} else if (trim($property)=="phone_number") {
+					$message = 'O telefone digitado não é válido. Por favor, verifique se o DDD informado é válido e se o número está no padrão (XX)XXXX-XXXX.';
+				}else {
 					$message = 'O campo ' . $this->getFieldName($property) . ' do endereço de pagamento não está preenchido corretamente.';
 				}
 				break;

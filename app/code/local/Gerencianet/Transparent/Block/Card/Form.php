@@ -49,13 +49,18 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
             $dt_birth = "";
         }
 
+        $phone_number = preg_replace( '/[^0-9]/', '', $address->getTelephone());
+        if (strlen($phone_number)<10 || strlen($phone_number)>11) {
+            $phone_number = "";
+        }
+
         $dataOrder = array(
             'customer_cc_data_name' => $address->getFirstname() . " " . $address->getLastname(), 
             'customer_cc_data_document' => $customerDocument, 
             'customer_cc_data_juridical' => $juridical, 
             'customer_cc_data_email' => $email,
             'customer_cc_data_birth' => $dt_birth,
-            'customer_cc_data_phone_number' => preg_replace( '/[^0-9]/', '', $address->getTelephone()),
+            'customer_cc_data_phone_number' => preg_replace( '/[^0-9]/', '', $phone_number),
             'billing_cc_data_street' => $address->getStreet1(),
             'billing_cc_data_number' => $address->getStreet2(),
             'billing_cc_data_zipcode' => preg_replace('/[^0-9\s]/', '',$address->getPostcode()),

@@ -164,7 +164,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 		</div>
 	</li>
     <li <?php if (trim($this->customer_cc_data_phone_number) != "") { echo ' class="gn-hide"';} ?>>
-		<label for="<?php echo $_code ?>_cc_data_phone_number" class="required"><em>*</em><?php echo $this->__('Telefone') ?></label>
+		<label for="<?php echo $_code ?>_cc_data_phone_number" class="required"><em>*</em><?php echo $this->__('Telefone (XX)XXXX-XXXX') ?></label>
 		<div class="input-box">
 			<input type="text" id="<?php echo $_code ?>_cc_data_phone_number" name="payment[cc_data_phone_number]" class="input-text " title="<?php echo $this->__('Phone Number') ?>" value="" maxlength="18" />
 		</div>

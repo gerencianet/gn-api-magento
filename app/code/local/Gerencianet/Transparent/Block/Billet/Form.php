@@ -41,13 +41,18 @@ class Gerencianet_Transparent_Block_Billet_Form extends Mage_Payment_Block_Form 
         } else {
             $email = "";
         }
+
+        $phone_number = preg_replace( '/[^0-9]/', '', $address->getTelephone());
+        if (strlen($phone_number)<10 || strlen($phone_number)>11) {
+        	$phone_number = "";
+        }
     	
 		$dataOrder = array(
             'customer_data_name' => $address->getFirstname() . " " . $address->getLastname(), 
             'customer_data_document' => $customerDocument, 
             'customer_data_juridical' => $juridical, 
             'customer_data_email'=>$email,
-            'customer_data_phone_number'=>preg_replace( '/[^0-9]/', '', $address->getTelephone())
+            'customer_data_phone_number'=>$phone_number
         );
 		
         $this->setData($dataOrder)->setTemplate('gerencianet/billet/form.phtml');

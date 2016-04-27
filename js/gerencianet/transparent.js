@@ -225,7 +225,7 @@ GerencianetTransparent.rebuildSave = function() {
 	    Review.prototype._save = Review.prototype.save;
 	    Review.prototype.save = function() {
 	    	if (payment.currentMethod == 'gerencianet_card') {
-	        	//checkToken = GerencianetTransparent.getPaymentToken();
+	        	checkToken = GerencianetTransparent.getPaymentToken();
             	if(!checkToken)
             		return false;
 	        }

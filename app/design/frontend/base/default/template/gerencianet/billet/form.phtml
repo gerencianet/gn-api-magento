@@ -20,7 +20,6 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 ?>
 
 
-
 <ul class="form-list billet-payment" id="payment_form_<?php echo $_code ?>" style="display:none;"><!-- v0.1.8.2 -->
 
 	<script>
@@ -29,9 +28,9 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 			document.getElementById('gerencianet_billet_data_name').value = "<?php echo $this->customer_data_name; ?>";
 		<?php } ?>
 	}
-	if (document.getElementById('gerencianet_billet_data_document')) {
+	if (document.getElementById('gerencianet_billet_data_cpf')) {
 		<?php if ($this->customer_data_document!="") { ?>
-			document.getElementById('gerencianet_billet_data_document').value = "<?php echo $this->customer_data_document; ?>";
+			document.getElementById('gerencianet_billet_data_cpf').value = "<?php echo $this->customer_data_document; ?>";
 		<?php } ?>
 	}
 	if (document.getElementById('gerencianet_billet_data_email')) {
@@ -73,8 +72,8 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 			<div class="input-box">
 				<input type="text" id="<?php echo $_code ?>_data_corporate_name" name="payment[data_corporate_name]" title="<?php echo $this->__('Razão Social') ?>" class="input-text" value="<?php if ($this->customer_data_juridical) { echo $this->customer_data_name; } ?>" maxlength="255" />
 			</div>
-		</div>
 		</li>
+		</div>
 	</div>
 
     <li <?php if (trim($this->customer_data_name) != "" && !$this->customer_data_juridical) { echo ' class="gn-hide"';} ?>>
@@ -96,7 +95,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 		</div>
 	</li>
     <li <?php if (trim($this->customer_data_phone_number) != "") { echo ' class="gn-hide"';} ?>>
-		<label for="<?php echo $_code ?>_data_phone_number" class="required"><em>*</em><?php echo $this->__('Telefone') ?></label>
+		<label for="<?php echo $_code ?>_data_phone_number" class="required"><em>*</em><?php echo $this->__('Telefone (XX)XXXX-XXXX') ?></label>
 		<div class="input-box">
 			<input type="text" id="<?php echo $_code ?>_data_phone_number" name="payment[data_phone_number]" class="input-text " title="<?php echo $this->__('Phone Number') ?>" value="" maxlength="18" />
 		</div>
