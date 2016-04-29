@@ -46,9 +46,21 @@ class Gerencianet_Transparent_Block_Billet_Form extends Mage_Payment_Block_Form 
         if (strlen($phone_number)<10 || strlen($phone_number)>11) {
         	$phone_number = "";
         }
+
+        if ($order->getCustomerName()) {
+            $name = $order->getCustomerName();
+        } else if ($order->getCustomerFirstname!="" && $order->getCustomerLastname()!="") {
+            $name = $order->getCustomerFirstname() . ' ' . $order->getCustomerLastname();
+        } else {
+            $name = $address->getFirstname() . " " . $address->getLastname();
+        }
+
+        if (strlen($name)<5) {
+        	$name = "";
+        }
     	
 		$dataOrder = array(
-            'customer_data_name' => $address->getFirstname() . " " . $address->getLastname(), 
+            'customer_data_name' => $name, 
             'customer_data_document' => $customerDocument, 
             'customer_data_juridical' => $juridical, 
             'customer_data_email'=>$email,

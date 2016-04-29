@@ -54,8 +54,20 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
             $phone_number = "";
         }
 
+        if ($order->getCustomerName()) {
+            $name = $order->getCustomerName();
+        } else if ($order->getCustomerFirstname!="" && $order->getCustomerLastname()!="") {
+            $name = $order->getCustomerFirstname() . ' ' . $order->getCustomerLastname();
+        } else {
+            $name = $address->getFirstname() . " " . $address->getLastname();
+        }
+
+        if (strlen($name)<5) {
+            $name = "";
+        }
+
         $dataOrder = array(
-            'customer_cc_data_name' => $address->getFirstname() . " " . $address->getLastname(), 
+            'customer_cc_data_name' => $name, 
             'customer_cc_data_document' => $customerDocument, 
             'customer_cc_data_juridical' => $juridical, 
             'customer_cc_data_email' => $email,
@@ -122,7 +134,7 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
     	    <script type='text/javascript' src='".Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS, true) . 'gerencianet/transparent.js'."'></script>
     	    <script type='text/javascript'>
     	    //<![CDATA[
-    	    window.onload = function(){
+    	    
 				var s=document.createElement('script');
 				s.type='text/javascript';
 				var v=parseInt(Math.random()*1000000);
@@ -134,7 +146,7 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
 				};
     			$"."gn={validForm:true,processed:false,done:{},ready:function(fn){ $"."gn.done=fn; }};
 				$"."gn.ready(function(checkout) {});
-			};
+			
 		//]]>
 		</script>");
     			

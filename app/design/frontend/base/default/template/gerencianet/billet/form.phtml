@@ -22,29 +22,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 
 <ul class="form-list billet-payment" id="payment_form_<?php echo $_code ?>" style="display:none;"><!-- v0.1.8.2 -->
 
-	<script>
-	if (document.getElementById('gerencianet_billet_data_name')) {
-		<?php if ($this->customer_data_name!="") { ?>
-			document.getElementById('gerencianet_billet_data_name').value = "<?php echo $this->customer_data_name; ?>";
-		<?php } ?>
-	}
-	if (document.getElementById('gerencianet_billet_data_cpf')) {
-		<?php if ($this->customer_data_document!="") { ?>
-			document.getElementById('gerencianet_billet_data_cpf').value = "<?php echo $this->customer_data_document; ?>";
-		<?php } ?>
-	}
-	if (document.getElementById('gerencianet_billet_data_email')) {
-		<?php if ($this->customer_data_email!="") { ?>
-			document.getElementById('gerencianet_billet_data_email').value = "<?php echo $this->customer_data_email; ?>";
-		<?php } ?>
-	}
-	if (document.getElementById('gerencianet_billet_data_phone_number')) {
-		<?php if ($this->customer_data_phone_number!="") { ?>
-			document.getElementById('gerencianet_billet_data_phone_number').value = "<?php echo $this->customer_data_phone_number; ?>";
-		<?php } ?>
-	}
 
-	</script>
 	<?php if ($isSandbox):	?>
 	<div class="alert-development">
 		<strong>ATENÇÃO!</strong>
@@ -79,25 +57,25 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
     <li <?php if (trim($this->customer_data_name) != "" && !$this->customer_data_juridical) { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo $_code ?>_data_name" class="required"><em>*</em><?php echo $this->__('Nome') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_data_name" name="payment[data_name]" title="<?php echo $this->__('Name') ?>" class="input-text " value="" maxlength="255" />
+			<input type="text" id="<?php echo $_code ?>_data_name" name="payment[data_name]" title="<?php echo $this->__('Name') ?>" class="input-text " value="<?php echo $this->customer_data_name; ?>" maxlength="255" />
 		</div>
 	</li>
     <li <?php if (trim($this->customer_data_document) != "" && !$this->customer_data_juridical) { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo $_code ?>_data_cpf" class="required"><em>*</em><?php echo $this->__('CPF') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_data_cpf" name="payment[data_cpf]" class="input-text " title="<?php echo $this->__('CPF') ?>" value="" maxlength="11" />
+			<input type="text" id="<?php echo $_code ?>_data_cpf" name="payment[data_cpf]" class="input-text " title="<?php echo $this->__('CPF') ?>" value="<?php echo $this->customer_data_document; ?>" maxlength="11" />
 		</div>
 	</li>
     <li <?php if (trim($this->customer_data_email) != "") { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo $_code ?>_data_email" class="required"><em>*</em><?php echo $this->__('Email') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_data_email" name="payment[data_email]" class="input-text " title="<?php echo $this->__('E-mail') ?>" value="" maxlength="255" />
+			<input type="text" id="<?php echo $_code ?>_data_email" name="payment[data_email]" class="input-text " title="<?php echo $this->__('E-mail') ?>" value="<?php echo $this->customer_data_email; ?>" maxlength="255" />
 		</div>
 	</li>
     <li <?php if (trim($this->customer_data_phone_number) != "") { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo $_code ?>_data_phone_number" class="required"><em>*</em><?php echo $this->__('Telefone (XX)XXXX-XXXX') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_data_phone_number" name="payment[data_phone_number]" class="input-text " title="<?php echo $this->__('Phone Number') ?>" value="" maxlength="18" />
+			<input type="text" id="<?php echo $_code ?>_data_phone_number" name="payment[data_phone_number]" class="input-text " title="<?php echo $this->__('Phone Number') ?>" value="<?php echo $this->customer_data_phone_number; ?>" maxlength="18" />
 		</div>
 	</li>
 </ul>
@@ -108,3 +86,28 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 .alert-development { color: #c90000; border: 1px solid #c90000; margin-top: 20px; margin-bottom: 20px; padding: 10px; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; }
 .alert-development p { color: #707070; margin: 0; padding: 0; font-size: 13px; }
 </style>
+
+
+<script>
+		if (document.getElementById('gerencianet_billet_data_name')) {
+			<?php if ($this->customer_data_name!="") { ?>
+				document.getElementById('gerencianet_billet_data_name').value = "<?php echo $this->customer_data_name; ?>";
+			<?php } ?>
+		}
+		if (document.getElementById('gerencianet_billet_data_cpf')) {
+			<?php if ($this->customer_data_document!="") { ?>
+				document.getElementById('gerencianet_billet_data_cpf').value = "<?php echo $this->customer_data_document; ?>";
+			<?php } ?>
+		}
+		if (document.getElementById('gerencianet_billet_data_email')) {
+			<?php if ($this->customer_data_email!="") { ?>
+				document.getElementById('gerencianet_billet_data_email').value = "<?php echo $this->customer_data_email; ?>";
+			<?php } ?>
+		}
+		if (document.getElementById('gerencianet_billet_data_phone_number')) {
+			<?php if ($this->customer_data_phone_number!="") { ?>
+				document.getElementById('gerencianet_billet_data_phone_number').value = "<?php echo $this->customer_data_phone_number; ?>";
+			<?php } ?>
+		}
+
+</script>
