@@ -1,3 +1,9 @@
+# v0.1.9
+
+- Fix: Validação de campos
+- Fix: Preenchimento automático de dados
+- Fix: Compatibilidade com Checkout Venda Mais
+
 # v0.1.8
 
 - Added: Pagamento com CNPJ para Boleto e Cartão

@@ -20,8 +20,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 ?>
 
 
-<ul class="form-list billet-payment" id="payment_form_<?php echo $_code ?>" style="display:none;"><!-- v0.1.8.2 -->
-
+<ul class="form-list billet-payment" id="payment_form_<?php echo $_code ?>" style="display:none;"><!-- v0.1.9 -->
 
 	<?php if ($isSandbox):	?>
 	<div class="alert-development">
@@ -41,14 +40,14 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 		<li>
 		<label for="<?php echo $_code ?>_data_cnpj" class="required"><em>*</em><?php echo $this->__('CNPJ') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_data_cnpj" name="payment[data_cnpj]" title="<?php echo $this->__('CNPJ') ?>" class="input-text validate-number validate-length" value="<?php if ($this->customer_data_juridical) { echo $this->customer_data_document; } ?>" maxlength="14" />
+			<input type="text" id="<?php echo $_code ?>_data_cnpj" name="payment[data_cnpj]" title="<?php echo $this->__('CNPJ') ?>" class="input-text validate-length" value="<?php if ($this->customer_data_juridical) { echo $this->customer_data_document; } ?>" />
 		</div>
 		</li>
 
 		<li>
 		<label for="<?php echo $_code ?>_data_corporate_name" class="required"><em>*</em><?php echo $this->__('Razão Social') ?></label>
 			<div class="input-box">
-				<input type="text" id="<?php echo $_code ?>_data_corporate_name" name="payment[data_corporate_name]" title="<?php echo $this->__('Razão Social') ?>" class="input-text" value="<?php if ($this->customer_data_juridical) { echo $this->customer_data_name; } ?>" maxlength="255" />
+				<input type="text" id="<?php echo $_code ?>_data_corporate_name" name="payment[data_corporate_name]" title="<?php echo $this->__('Razão Social') ?>" class="input-text" value="<?php if ($this->customer_data_juridical) { if ($this->customer_data_razao_social) { echo $this->customer_data_razao_social; } else {echo $this->customer_data_name; } } ?>" maxlength="255" />
 			</div>
 		</li>
 		</div>
@@ -57,16 +56,16 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
     <li <?php if (trim($this->customer_data_name) != "" && !$this->customer_data_juridical) { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo $_code ?>_data_name" class="required"><em>*</em><?php echo $this->__('Nome') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_data_name" name="payment[data_name]" title="<?php echo $this->__('Name') ?>" class="input-text " value="<?php echo $this->customer_data_name; ?>" maxlength="255" />
+			<input type="text" id="<?php echo $_code ?>_data_name" name="payment[data_name]" title="<?php echo $this->__('Name') ?>" class="input-text " value="<?php if (!$this->customer_data_juridical) { echo $this->customer_data_name; } ?>" maxlength="255" />
 		</div>
 	</li>
-    <li <?php if (trim($this->customer_data_document) != "" && !$this->customer_data_juridical) { echo ' class="gn-hide"';} ?>>
+    <li id="gerencianet_cpf_row" <?php if (trim($this->customer_data_document) != "" && !$this->customer_data_juridical) { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo $_code ?>_data_cpf" class="required"><em>*</em><?php echo $this->__('CPF') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_data_cpf" name="payment[data_cpf]" class="input-text " title="<?php echo $this->__('CPF') ?>" value="<?php echo $this->customer_data_document; ?>" maxlength="11" />
+			<input type="text" id="<?php echo $_code ?>_data_cpf" name="payment[data_cpf]" class="input-text " title="<?php echo $this->__('CPF') ?>" value="<?php if (!$this->customer_data_juridical) { echo $this->customer_data_document; } ?>" />
 		</div>
 	</li>
-    <li <?php if (trim($this->customer_data_email) != "") { echo ' class="gn-hide"';} ?>>
+    <li id="gerencianet_email_row" <?php if (trim($this->customer_data_email) != "") { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo $_code ?>_data_email" class="required"><em>*</em><?php echo $this->__('Email') ?></label>
 		<div class="input-box">
 			<input type="text" id="<?php echo $_code ?>_data_email" name="payment[data_email]" class="input-text " title="<?php echo $this->__('E-mail') ?>" value="<?php echo $this->customer_data_email; ?>" maxlength="255" />
@@ -75,7 +74,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
     <li <?php if (trim($this->customer_data_phone_number) != "") { echo ' class="gn-hide"';} ?>>
 		<label for="<?php echo $_code ?>_data_phone_number" class="required"><em>*</em><?php echo $this->__('Telefone (XX)XXXX-XXXX') ?></label>
 		<div class="input-box">
-			<input type="text" id="<?php echo $_code ?>_data_phone_number" name="payment[data_phone_number]" class="input-text " title="<?php echo $this->__('Phone Number') ?>" value="<?php echo $this->customer_data_phone_number; ?>" maxlength="18" />
+			<input type="text" id="<?php echo $_code ?>_data_phone_number" name="payment[data_phone_number]" class="input-text " title="<?php echo $this->__('Phone Number') ?>" value="<?php echo $this->customer_data_phone_number; ?>" />
 		</div>
 	</li>
 </ul>
@@ -87,27 +86,218 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 .alert-development p { color: #707070; margin: 0; padding: 0; font-size: 13px; }
 </style>
 
+<script type="text/javascript"> 
 
-<script>
-		if (document.getElementById('gerencianet_billet_data_name')) {
-			<?php if ($this->customer_data_name!="") { ?>
-				document.getElementById('gerencianet_billet_data_name').value = "<?php echo $this->customer_data_name; ?>";
-			<?php } ?>
+if (jQuery!=undefined) 
+
+    jQuery(document).ready(function(e){  
+
+    	<?php if ($this->customer_data_juridical && $this->customer_data_document!="") { ?>
+			jQuery('#gerencianet_billet_juridical_data').removeClass("gn-hide");
+			jQuery('#gerencianet_billet_data_pay_billet_as_juridical').prop( "checked", true );
+		<?php } else { ?>
+			jQuery('#gerencianet_billet_juridical_data').addClass("gn-hide");
+			jQuery('#gerencianet_billet_data_pay_billet_as_juridical').prop( "checked", false );
+		<?php } ?>
+
+    	if (jQuery("#gerencianet_billet_data_email").val()=="") {
+    		if (jQuery("[name='billing[email]']")) {
+	    		jQuery("#gerencianet_billet_data_email").val(jQuery("[name='billing[email]']").val());
+	    	}
+    	}
+
+		if (jQuery("[name='billing[taxvat]']").val()!="") {
+			if (jQuery("#gerencianet_billet_data_cpf").val()=="" && verifyCPF(jQuery("[name='billing[taxvat]']").val())) {
+	    		jQuery("#gerencianet_billet_data_cpf").val(jQuery("[name='billing[taxvat]']").val());
+	    		if (jQuery("#gerencianet_billet_data_name").val()=="") {
+		    		jQuery("#gerencianet_billet_data_name").val(jQuery("[name='billing[firstname]']").val() + " " + jQuery("[name='billing[lastname]']").val());
+		    	}
+	    	} else if (jQuery("#gerencianet_billet_data_cnpj").val()=="" && verifyCNPJ(jQuery("[name='billing[taxvat]']").val())) {
+	    		jQuery("#gerencianet_billet_data_cnpj").val(jQuery("[name='billing[taxvat]']").val());
+	    		jQuery('#gerencianet_billet_juridical_data').removeClass("gn-hide");
+				jQuery('#gerencianet_billet_data_pay_billet_as_juridical').prop( "checked", true );
+				if (jQuery("#gerencianet_billet_data_corporate_name").val()=="" && jQuery("[name='billing[razao_social]']")) {
+		    		jQuery("#gerencianet_billet_data_corporate_name").val(jQuery("[name='billing[razao_social]']").val());
+		    	} else if (jQuery("#gerencianet_billet_data_corporate_name").val()=="") {
+		    		jQuery("#gerencianet_billet_data_corporate_name").val(jQuery("[name='billing[firstname]']").val() + " " + jQuery("[name='billing[lastname]']").val());
+		    	}
+	    	}
+    	}
+    	
+    	if (jQuery.mask) {
+	    	jQuery("#gerencianet_billet_data_cpf").mask("999.999.999-99",{
+	    		completed:function(){ 
+	    			if (!verifyCPF(this.val())) {
+	    				this.addClass( "validation-failed" );
+	    				alert("CPF inválido.");
+	    			} else {
+	    				this.removeClass( "validation-failed" );
+	    			}
+	    		},placeholder:"___.___.___-__"});
+
+	    	jQuery("#gerencianet_billet_data_cnpj").mask("99.999.999/9999-99",{
+	    		completed:function(){ 
+	    			if (!verifyCNPJ(this.val())) {
+	    				this.addClass( "validation-failed" );
+	    				alert("CNPJ inválido.");
+	    			} else {
+	    				this.removeClass( "validation-failed" );
+	    			}
+	    		},placeholder:"__.___.___/____-__"});
+
+			jQuery("#gerencianet_billet_data_phone_number").focusout(function(){
+			jQuery("#gerencianet_billet_data_phone_number").unmask();
+				var phone = jQuery("#gerencianet_billet_data_phone_number").val().replace(/[^\d]+/g,'');
+				if(phone.length > 10) {
+					jQuery("#gerencianet_billet_data_phone_number").mask("(99) 99999-999?9");
+				} else {
+					jQuery("#gerencianet_billet_data_phone_number").mask("(99) 9999-9999?9");
+				}
+			}).trigger("focusout");
 		}
-		if (document.getElementById('gerencianet_billet_data_cpf')) {
-			<?php if ($this->customer_data_document!="") { ?>
-				document.getElementById('gerencianet_billet_data_cpf').value = "<?php echo $this->customer_data_document; ?>";
-			<?php } ?>
+
+		jQuery('#gerencianet_billet_data_corporate_name').change(function() {
+			var pattern = new RegExp(/^[ ]*(?:[^\\s]+[ ]+)+[^\\s]+[ ]*$/);
+	        if (!pattern.test(jQuery(this).val())) {
+	        	jQuery(this).addClass( "validation-failed" );
+	        	alert("Razão Social inválida.");
+	        } else {
+				jQuery(this).removeClass( "validation-failed" );
+	        }
+		});
+
+		jQuery('#gerencianet_billet_data_name').change(function() {
+			var pattern = new RegExp(/^[ ]*(?:[^\\s]+[ ]+)+[^\\s]+[ ]*$/);
+	        if (!pattern.test(jQuery(this).val())) {
+	        	jQuery(this).addClass( "validation-failed" );
+	        	alert("Nome inválido.");
+	        } else {
+				jQuery(this).removeClass( "validation-failed" );
+	        }
+		});
+
+		if (verifyCPF(jQuery("#gerencianet_billet_data_cpf").val())) {
+			jQuery('#gerencianet_cpf_row').addClass("gn-hide");
+		} else {
+			jQuery('#gerencianet_cpf_row').removeClass("gn-hide");
 		}
-		if (document.getElementById('gerencianet_billet_data_email')) {
-			<?php if ($this->customer_data_email!="") { ?>
-				document.getElementById('gerencianet_billet_data_email').value = "<?php echo $this->customer_data_email; ?>";
-			<?php } ?>
+
+		if (verifyEmail(jQuery("#gerencianet_billet_data_email").val())) {
+			jQuery('#gerencianet_email_row').addClass("gn-hide");
+		} else {
+			jQuery('#gerencianet_email_row').removeClass("gn-hide");
 		}
-		if (document.getElementById('gerencianet_billet_data_phone_number')) {
-			<?php if ($this->customer_data_phone_number!="") { ?>
-				document.getElementById('gerencianet_billet_data_phone_number').value = "<?php echo $this->customer_data_phone_number; ?>";
-			<?php } ?>
-		}
+    
+    });
+
+    function verifyEmail(email) {
+    	var pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return pattern.test(email);
+    }
+	
+	function verifyCPF(cpf) {
+		if (cpf!=undefined) {
+	        cpf = cpf.replace(/[^\d]+/g,'');
+	        
+	        if(cpf == '' || cpf.length != 11) return false;
+	        
+	        var resto;
+	        var soma = 0;
+	        
+	        if (cpf == "00000000000" || cpf == "11111111111" || cpf == "22222222222" || cpf == "33333333333" || cpf == "44444444444" || cpf == "55555555555" || cpf == "66666666666" || cpf == "77777777777" || cpf == "88888888888" || cpf == "99999999999" || cpf == "12345678909") return false;
+	        
+	        for (i=1; i<=9; i++) soma = soma + parseInt(cpf.substring(i-1, i)) * (11 - i);
+	        resto = (soma * 10) % 11;
+	        
+	        if ((resto == 10) || (resto == 11))  resto = 0;
+	        if (resto != parseInt(cpf.substring(9, 10)) ) return false;
+	        
+	        soma = 0;
+	        for (i = 1; i <= 10; i++) soma = soma + parseInt(cpf.substring(i-1, i)) * (12 - i);
+	        resto = (soma * 10) % 11;
+	        
+	        if ((resto == 10) || (resto == 11))  resto = 0;
+	        if (resto != parseInt(cpf.substring(10, 11) ) ) return false;
+	        return true;
+	    } else {
+	    	return false;
+	    }
+    }
+	
+
+    function verifyCNPJ(cnpj) {
+    	if (cnpj!=undefined) {
+	        cnpj = cnpj.replace(/[^\d]+/g,'');
+
+	        if(cnpj == '' || cnpj.length != 14) return false;
+
+	        if (cnpj == "00000000000000" || cnpj == "11111111111111" || cnpj == "22222222222222" || cnpj == "33333333333333" || cnpj == "44444444444444" || cnpj == "55555555555555" || cnpj == "66666666666666" || cnpj == "77777777777777" || cnpj == "88888888888888" || cnpj == "99999999999999") return false;
+
+	        var tamanho = cnpj.length - 2
+	        var numeros = cnpj.substring(0,tamanho);
+	        var digitos = cnpj.substring(tamanho);
+	        var soma = 0;
+	        var pos = tamanho - 7;
+	        
+	        for (i = tamanho; i >= 1; i--) {
+	          soma += numeros.charAt(tamanho - i) * pos--;
+	          if (pos < 2)
+	                pos = 9;
+	        }
+	        
+	        var resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+	        
+	        if (resultado != digitos.charAt(0)) return false;
+
+	        tamanho = tamanho + 1;
+	        numeros = cnpj.substring(0,tamanho);
+	        soma = 0;
+	        pos = tamanho - 7;
+	        
+	        for (i = tamanho; i >= 1; i--) {
+	          soma += numeros.charAt(tamanho - i) * pos--;
+	          if (pos < 2) pos = 9;
+	        }
+	        
+	        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+	        
+	        if (resultado != digitos.charAt(1)) return false;
+
+	        return true; 
+        } else {
+	    	return false;
+	    }
+    }
+
+	if (document.getElementById('gerencianet_billet_data_cnpj')) {
+		<?php if ($this->customer_data_name!="" && $this->customer_data_juridical) { ?>
+			document.getElementById('gerencianet_billet_data_cnpj').value = "<?php echo $this->customer_data_document; ?>";
+		<?php } ?>
+	}
+	if (document.getElementById('gerencianet_billet_data_corporate_name')) {
+		<?php if ($this->customer_data_document!="" && $this->customer_data_juridical) { ?>
+			document.getElementById('gerencianet_billet_data_corporate_name').value = "<?php echo $this->customer_data_name; ?>";
+		<?php } ?>
+	}
+	if (document.getElementById('gerencianet_billet_data_name')) {
+		<?php if ($this->customer_data_name!="" && !$this->customer_data_juridical) { ?>
+			document.getElementById('gerencianet_billet_data_name').value = "<?php echo $this->customer_data_name; ?>";
+		<?php } ?>
+	}
+	if (document.getElementById('gerencianet_billet_data_cpf')) {
+		<?php if ($this->customer_data_document!="" && !$this->customer_data_juridical) { ?>
+			document.getElementById('gerencianet_billet_data_cpf').value = "<?php echo $this->customer_data_document; ?>";
+		<?php } ?>
+	}
+	if (document.getElementById('gerencianet_billet_data_email')) {
+		<?php if ($this->customer_data_email!="") { ?>
+			document.getElementById('gerencianet_billet_data_email').value = "<?php echo $this->customer_data_email; ?>";
+		<?php } ?>
+	}
+	if (document.getElementById('gerencianet_billet_data_phone_number')) {
+		<?php if ($this->customer_data_phone_number!="") { ?>
+			document.getElementById('gerencianet_billet_data_phone_number').value = "<?php echo $this->customer_data_phone_number; ?>";
+		<?php } ?>
+	}
 
 </script>

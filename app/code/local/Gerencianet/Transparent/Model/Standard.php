@@ -155,7 +155,6 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				$e_code = "";
 			}
 
-			//Mage::throwException($e);
 			Mage::throwException($this->errorHelper($e_message,$e_code,$e));
 		}
 	}

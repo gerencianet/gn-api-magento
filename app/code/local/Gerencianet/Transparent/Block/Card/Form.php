@@ -26,9 +26,9 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
         $address = $order->getBillingAddress();
 
         $customerDocument = preg_replace( '/[^0-9]/', '', $order->getCustomerTaxvat());
-        if (strlen($customerDocument)==11) {
+        if (strlen($customerDocument)==11 && $this->validaCPF($customerDocument)) {
             $juridical=false;
-        } else if (strlen($customerDocument)==14) {
+        } else if (strlen($customerDocument)==14 && $this->validaCNPJ($customerDocument)) {
             $juridical = true;
         } else {
             $customerDocument = "";
@@ -62,8 +62,14 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
             $name = $address->getFirstname() . " " . $address->getLastname();
         }
 
-        if (strlen($name)<5) {
+        if (strlen($name)<1 || !preg_match("/^[ ]*(?:[^\\s]+[ ]+)+[^\\s]+[ ]*$/",$name)) {
             $name = "";
+        }
+
+        if ($order->getCustomer()->getRazaoSocial()) {
+            $razaoSocial = $order->getCustomer()->getRazaoSocial();
+        } else {
+            $razaoSocial = "";
         }
 
         $dataOrder = array(
@@ -80,6 +86,7 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
             'billing_cc_data_state' => $address->getRegionCode(),
             'billing_cc_data_city' => $address->getCity(),
             'billing_cc_data_complement' => $address->getStreet3(),
+            'customer_cc_data_razao_social' => $razaoSocial
             );
 
         $this->setData($dataOrder)->setTemplate('gerencianet/card/form.phtml');
@@ -115,7 +122,14 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
      */
     protected function _prepareLayout(){
 
-        
+        $addToJS = "
+        <script type='text/javascript' src='".Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS, true)."gerencianet/jquery-1.12.3.min.js'; ?>'></script>
+        <script type='text/javascript' src='".Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS, true)."gerencianet/jquery.maskedinput.js'; ?>'></script>
+        <script type='text/javascript'>
+            //<![CDATA[
+            jQuery.noConflict();
+            //]]>
+        </script>";
 
     	$testmode = Mage::helper('gerencianet_transparent')->isSandbox();
     	$account_id = Mage::getStoreConfig('payment/gerencianet_transparent/account_id');
@@ -148,7 +162,9 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
 				$"."gn.ready(function(checkout) {});
 			
 		//]]>
-		</script>");
+		</script>
+
+        ".$addToJS);
     			
     	$head = Mage::app()->getLayout()->getBlock('after_body_start');
     
@@ -168,6 +184,93 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
     public function getMethodFormBlock() {
         return $this->getLayout()->createBlock('payment/form_cc')
                         ->setMethod($this->getMethod());
+    }
+
+    private function validaCPF($cpf) {
+        $soma = 0;
+      
+        if (strlen($cpf) <> 11)
+            return false;
+          
+        for ($i = 0; $i < 9; $i++) {         
+            $soma += (($i+1) * $cpf[$i]);
+        }
+
+        $d1 = ($soma % 11);
+          
+        if ($d1 == 10) {
+            $d1 = 0;
+        }
+          
+        $soma = 0;
+          
+
+        for ($i = 9, $j = 0; $i > 0; $i--, $j++) {
+            $soma += ($i * $cpf[$j]);
+        }
+          
+        $d2 = ($soma % 11);
+          
+        if ($d2 == 10) {
+            $d2 = 0;
+        }      
+         
+        if ($d1 == $cpf[9] && $d2 == $cpf[10]) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+   
+    private function validaCNPJ($cnpj) {
+   
+        if (strlen($cnpj) <> 14)
+            return false; 
+
+        $soma = 0;
+          
+        $soma += ($cnpj[0] * 5);
+        $soma += ($cnpj[1] * 4);
+        $soma += ($cnpj[2] * 3);
+        $soma += ($cnpj[3] * 2);
+        $soma += ($cnpj[4] * 9); 
+        $soma += ($cnpj[5] * 8);
+        $soma += ($cnpj[6] * 7);
+        $soma += ($cnpj[7] * 6);
+        $soma += ($cnpj[8] * 5);
+        $soma += ($cnpj[9] * 4);
+        $soma += ($cnpj[10] * 3);
+        $soma += ($cnpj[11] * 2); 
+
+        $d1 = $soma % 11; 
+        $d1 = $d1 < 2 ? 0 : 11 - $d1; 
+
+        $soma = 0;
+        $soma += ($cnpj[0] * 6); 
+        $soma += ($cnpj[1] * 5);
+        $soma += ($cnpj[2] * 4);
+        $soma += ($cnpj[3] * 3);
+        $soma += ($cnpj[4] * 2);
+        $soma += ($cnpj[5] * 9);
+        $soma += ($cnpj[6] * 8);
+        $soma += ($cnpj[7] * 7);
+        $soma += ($cnpj[8] * 6);
+        $soma += ($cnpj[9] * 5);
+        $soma += ($cnpj[10] * 4);
+        $soma += ($cnpj[11] * 3);
+        $soma += ($cnpj[12] * 2); 
+          
+          
+        $d2 = $soma % 11; 
+        $d2 = $d2 < 2 ? 0 : 11 - $d2; 
+          
+        if ($cnpj[12] == $d1 && $cnpj[13] == $d2) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }    
 
 }

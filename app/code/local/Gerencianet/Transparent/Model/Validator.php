@@ -76,7 +76,7 @@ class Gerencianet_Transparent_Model_Validator {
 	 * @return boolean
 	 */
 	public function validateJuridicalPerson($corporate_name, $cnpj, $paymentType) {
-		if (!$this->_empty($corporate_name)) {
+		if (!$this->_corporate($corporate_name)) {
 			$this->_sendError('corporate', $paymentType);
 			return false;
 		}
@@ -126,6 +126,21 @@ class Gerencianet_Transparent_Model_Validator {
 		return true;
 	}
 	
+	/**
+	 * Validates corporate field
+	 * @param string $data
+	 * @return boolean
+	 */
+	protected function _corporate($data) {
+		$validation = new Zend_Validate_Regex('/^[ ]*(?:[^\\s]+[ ]+)+[^\\s]+[ ]*$/');
+		if (!$validation->isValid($data) || str_word_count($data) < 2) {
+			return false;
+		}
+		
+		return true;
+	}
+	
+
 	/**
 	 * Validates email field
 	 * @param string $data

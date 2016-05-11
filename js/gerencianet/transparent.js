@@ -13,7 +13,7 @@
  * @author     AV5 Tecnologia <anderson@av5.com.br>
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
- //v0.1.8.2
+ //v0.1.9
 var GerencianetTransparent = function GerencianetTransparent(){};
 var checkToken, cardOwner, cardNumber, cardCvv, cardExpM, cardExpY;
 
