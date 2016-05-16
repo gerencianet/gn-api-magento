@@ -359,26 +359,6 @@ if (jQuery!=undefined)
 			}).trigger("focusout");
 		}
 
-		jQuery('#gerencianet_card_cc_data_corporate_name').change(function() {
-			var pattern = new RegExp(/^[ ]*(?:[^\\s]+[ ]+)+[^\\s]+[ ]*$/);
-	        if (!pattern.test(jQuery(this).val())) {
-	        	jQuery(this).addClass( "validation-failed" );
-	        	alert("Razão Social inválida.");
-	        } else {
-				jQuery(this).removeClass( "validation-failed" );
-	        }
-		});
-
-		jQuery('#gerencianet_card_cc_data_name').change(function() {
-			var pattern = new RegExp(/^[ ]*(?:[^\\s]+[ ]+)+[^\\s]+[ ]*$/);
-	        if (!pattern.test(jQuery(this).val())) {
-	        	jQuery(this).addClass( "validation-failed" );
-	        	alert("Nome inválido.");
-	        } else {
-				jQuery(this).removeClass( "validation-failed" );
-	        }
-		});
-
 		if (verifyCPF(jQuery("#gerencianet_card_cc_data_cpf").val())) {
 			jQuery('#gerencianet_cc_cpf_row').addClass("gn-hide");
 		} else {

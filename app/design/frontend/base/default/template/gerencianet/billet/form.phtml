@@ -34,7 +34,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
     </li>
 
     <div class="pay-juridical-person">
-		<p><input type="checkbox" onchange="GerencianetTransparent.payBilletAsJuridical(this)" id="<?php echo $_code ?>_data_pay_billet_as_juridical" name="payment[data_pay_billet_as_juridical]" value="1" <?php if ($this->customer_data_juridical) { echo 'checked'; } ?> /> Pagar como Pessoa Jurídica.</p>
+		<p><input type="checkbox" onchange="GerencianetBilletTransparent.payBilletAsJuridical(this)" id="<?php echo $_code ?>_data_pay_billet_as_juridical" name="payment[data_pay_billet_as_juridical]" value="1" <?php if ($this->customer_data_juridical) { echo 'checked'; } ?> /> Pagar como Pessoa Jurídica.</p>
 		<div id="<?php echo $_code ?>_juridical_data" <?php if (!$this->customer_data_juridical) { echo 'class="gn-hide"'; } ?>>
 
 		<li>
@@ -87,6 +87,16 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 </style>
 
 <script type="text/javascript"> 
+
+var GerencianetBilletTransparent = function GerencianetBilletTransparent(){};
+
+GerencianetBilletTransparent.payBilletAsJuridical = function(element) {
+	if (element.checked) {
+		document.getElementById('gerencianet_billet_juridical_data').style.display = 'block';
+	} else {
+		document.getElementById('gerencianet_billet_juridical_data').style.display = 'none';
+	}
+};
 
 if (jQuery!=undefined) 
 
@@ -155,26 +165,6 @@ if (jQuery!=undefined)
 				}
 			}).trigger("focusout");
 		}
-
-		jQuery('#gerencianet_billet_data_corporate_name').change(function() {
-			var pattern = new RegExp(/^[ ]*(?:[^\\s]+[ ]+)+[^\\s]+[ ]*$/);
-	        if (!pattern.test(jQuery(this).val())) {
-	        	jQuery(this).addClass( "validation-failed" );
-	        	alert("Razão Social inválida.");
-	        } else {
-				jQuery(this).removeClass( "validation-failed" );
-	        }
-		});
-
-		jQuery('#gerencianet_billet_data_name').change(function() {
-			var pattern = new RegExp(/^[ ]*(?:[^\\s]+[ ]+)+[^\\s]+[ ]*$/);
-	        if (!pattern.test(jQuery(this).val())) {
-	        	jQuery(this).addClass( "validation-failed" );
-	        	alert("Nome inválido.");
-	        } else {
-				jQuery(this).removeClass( "validation-failed" );
-	        }
-		});
 
 		if (verifyCPF(jQuery("#gerencianet_billet_data_cpf").val())) {
 			jQuery('#gerencianet_cpf_row').addClass("gn-hide");

@@ -33,14 +33,6 @@ GerencianetTransparent.sendLog = function(msg) {
 		console.log(msg);
 };
 
-GerencianetTransparent.payBilletAsJuridical = function(element) {
-	if (element.checked) {
-		document.getElementById('gerencianet_billet_juridical_data').style.display = 'block';
-	} else {
-		document.getElementById('gerencianet_billet_juridical_data').style.display = 'none';
-	}
-};
-
 GerencianetTransparent.payCardAsJuridical = function(element) {
 	if (element.checked) {
 		document.getElementById('gerencianet_card_cc_juridical_data').style.display = 'block';
