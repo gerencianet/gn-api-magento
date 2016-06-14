@@ -9,13 +9,13 @@
  *
  * @category   Payment
  * @package    Gerencianet_Transparent
- * @copyright  Copyright (c) 2015 Gerencianet (http://www.gerencianet.com.br)
- * @author     AV5 Tecnologia <anderson@av5.com.br>
+ * @copyright  Copyright (c) 2016 Gerencianet (http://www.gerencianet.com.br)
+ * @author     Gerencianet
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
- //v0.1.9
+ //v0.2.0
 var GerencianetTransparent = function GerencianetTransparent(){};
-var checkToken, cardOwner, cardNumber, cardCvv, cardExpM, cardExpY;
+var checkToken, cardOwner, cardNumber, cardCvv, cardExpM, cardExpY, generatedPaymentToken = null;
 
 GerencianetTransparent.onlyNumbers = function(elm){
 	value = elm.value;
@@ -41,37 +41,41 @@ GerencianetTransparent.payCardAsJuridical = function(element) {
 	}
 };
 
+
+var cardDataChange = true;
 GerencianetTransparent.getPaymentToken = function() {
-
-	var type 		= $$('input:checked[name="payment[cc_type]"]').first().value;
-	var number		= document.getElementById('gerencianet_card_cc_number').value;
-	var cvv			= document.getElementById('gerencianet_card_cc_cid').value;
-	var exp_month	= document.getElementById('gerencianet_card_cc_expiration').value;
-	var exp_year	= document.getElementById('gerencianet_card_cc_expiration_yr').value;
-
-	if (!type || !number || !cvv || !exp_month || !exp_year) {
-		return false;
-	}
-
-    var callback = function(error, response) {
-		if(error) {
-			alert("Os dados digitados do cartão são inválidos. Verifique as informações e tente novamente.");
-		  GerencianetTransparent.sendError(error);
-		} else {
-		  document.getElementById('gerencianet_card_token').value = response.data.payment_token;
-		  GerencianetTransparent.sendLog(response);
+	if (cardDataChange) {
+		cardDataChange=false;
+		var type 		= $$('input:checked[name="payment[cc_type]"]').first().value;
+		var number		= document.getElementById('gerencianet_card_cc_number').value;
+		var cvv			= document.getElementById('gerencianet_card_cc_cid').value;
+		var exp_month	= document.getElementById('gerencianet_card_cc_expiration').value;
+		var exp_year	= document.getElementById('gerencianet_card_cc_expiration_yr').value;
+		if (!type || !number || !cvv || !exp_month || !exp_year) {
+			return false;
 		}
-	};
 
-	$gn.checkout.getPaymentToken({
-		brand: type,
-		number: number,
-		cvv: cvv,
-		expiration_month: exp_month,
-		expiration_year: exp_year
-	}, callback);
+	    var callback = function(error, response) {
+			if(error) {
+				alert("Os dados digitados do cartão são inválidos. Verifique as informações e tente novamente.");
+			  GerencianetTransparent.sendError(error);
+			} else {
+			  document.getElementById('gerencianet_card_token').value = response.data.payment_token;
+			  generatedPaymentToken = response.data.payment_token;
+			  GerencianetTransparent.sendLog(response);
+			}
+		};
 
-	return true;
+		$gn.checkout.getPaymentToken({
+			brand: type,
+			number: number,
+			cvv: cvv,
+			expiration_month: exp_month,
+			expiration_year: exp_year
+		}, callback);
+
+		return true;
+	}
 };
 
 GerencianetTransparent.calculateInstallments = function() {
@@ -123,19 +127,17 @@ GerencianetTransparent.addFieldsObservers = function() {
         Element.observe(ccCvvElm,'keyup',function(e){GerencianetTransparent.onlyNumbers(this);});
     }
 };
-/*
-GerencianetTransparent.cardPaymentOwnerValidate = function(owner) {
-	cardOwner = owner;
-}*/
 
 GerencianetTransparent.cardPaymentValidate = function() {
 	if (document.getElementById('gerencianet_card_cc_number').value.length >=14 && 
-		document.getElementById('gerencianet_card_cc_owner').value!="" && 
+		document.getElementById('gerencianet_card_cc_data_name_card').value!="" && 
 		document.getElementById('gerencianet_card_cc_cid').value.length>=3 && 
 		document.getElementById('gerencianet_card_cc_expiration').value!="" && 
 		document.getElementById('gerencianet_card_cc_expiration_yr').value!="") {
+		cardDataChange = true;
 		checkToken = GerencianetTransparent.getPaymentToken();
 	}
+	
 
 	return true;
 }
@@ -148,8 +150,8 @@ GerencianetTransparent.rebuildSave = function() {
 	    OSCPayment.savePayment = function() {
 	    	if (OSCForm.validate()) {
 		    	if (OSCPayment.currentMethod == 'gerencianet_card') {
-		    		checkToken = GerencianetTransparent.getPaymentToken();
-	            	if(!checkToken)
+		    		GerencianetTransparent.getPaymentToken();
+	            	if (generatedPaymentToken == null)
 	            		return false;
 	            }
 		    	OSCPayment._savePayment();
@@ -160,8 +162,8 @@ GerencianetTransparent.rebuildSave = function() {
 	    OPC.prototype.save = function() {
 	    	if (this.validator.validate()) {
 	            if (payment.currentMethod == 'gerencianet_card') {
-	            	checkToken = GerencianetTransparent.getPaymentToken();
-	            	if(!checkToken)
+	            	GerencianetTransparent.getPaymentToken();
+	            	if (generatedPaymentToken == null)
 	            		return false;
 	            }
 	            this._save();
@@ -172,8 +174,8 @@ GerencianetTransparent.rebuildSave = function() {
 	    IWD.OPC.savePayment = function() {
 	    	IWD.OPC.Checkout.lockPlaceOrder();
 	        if (payment.currentMethod == 'gerencianet_card') {
-	        	checkToken = GerencianetTransparent.getPaymentToken();
-            	if(!checkToken)
+	        	GerencianetTransparent.getPaymentToken();
+            	if (generatedPaymentToken == null)
             		return false;
 	        }
 	        this._savePayment();
@@ -183,8 +185,8 @@ GerencianetTransparent.rebuildSave = function() {
 	    AWOnestepcheckoutForm.prototype.placeOrder = function() {
 	    	if (this.validate()) {
 		        if (awOSCPayment.currentMethod == 'gerencianet_card') {
-		        	checkToken = GerencianetTransparent.getPaymentToken();
-	            	if(!checkToken)
+		        	GerencianetTransparent.getPaymentToken();
+		        	if (generatedPaymentToken == null)
 	            		return false;
 		        }
 		        this._placeOrder();
@@ -194,8 +196,8 @@ GerencianetTransparent.rebuildSave = function() {
 	    FireCheckout.prototype._save = FireCheckout.prototype.save;
 	    FireCheckout.prototype.save = function() {
 	        if (payment.currentMethod == 'gerencianet_card') {
-	        	checkToken = GerencianetTransparent.getPaymentToken();
-            	if(!checkToken)
+	        	GerencianetTransparent.getPaymentToken();
+	        	if (generatedPaymentToken == null)
             		return false;
 	        }
             this._save();
@@ -206,8 +208,8 @@ GerencianetTransparent.rebuildSave = function() {
 	    	var validator = new Validation(this.form);
 	        if (this.validate() && validator.validate()) {
 		    	if (this.currentMethod == 'gerencianet_card') {
-		        	checkToken = GerencianetTransparent.getPaymentToken();
-	            	if(!checkToken)
+		    		GerencianetTransparent.getPaymentToken();
+		        	if (generatedPaymentToken == null)
 	            		return false;
 		        }
 	            this._save();
@@ -217,8 +219,8 @@ GerencianetTransparent.rebuildSave = function() {
 	    Review.prototype._save = Review.prototype.save;
 	    Review.prototype.save = function() {
 	    	if (payment.currentMethod == 'gerencianet_card') {
-	        	checkToken = GerencianetTransparent.getPaymentToken();
-            	if(!checkToken)
+	        	GerencianetTransparent.getPaymentToken();
+            	if (generatedPaymentToken == null)
             		return false;
 	        }
             this._save();

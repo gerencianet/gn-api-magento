@@ -1,3 +1,8 @@
+# v0.2.0
+- Novo layout para pagamentos
+- Fix: Validação de campos
+- Fix: Preenchimento automático de dados
+
 # v0.1.9
 
 - Fix: Validação de campos

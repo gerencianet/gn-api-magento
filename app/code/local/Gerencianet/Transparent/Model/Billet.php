@@ -10,8 +10,8 @@
 *
 * @category   Payment
 * @package    Gerencianet_Transparent
-* @copyright  Copyright (c) 2015 Gerencianet (http://www.gerencianet.com.br)
-* @author     AV5 Tecnologia <anderson@av5.com.br>
+* @copyright  Copyright (c) 2016 Gerencianet (http://www.gerencianet.com.br)
+* @author     Gerencianet
 * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
 */
 class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model_Standard {

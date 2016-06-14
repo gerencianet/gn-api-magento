@@ -28,12 +28,12 @@ class ApiRequest
 
         try {
             return $this->request->send($method, $route, ['json' => $body,
-            'headers' => ['Authorization' => 'Bearer '.$this->auth->accessToken, 'api-sdk' => 'magento-' . $composerData['version'], 'partner-token' => $partner_token]]);
+            'headers' => ['Authorization' => 'Bearer '.$this->auth->accessToken, 'api-sdk' => 'magento-v020-' . $composerData['version'], 'partner-token' => $partner_token]]);
         } catch (AuthorizationException $e) {
             $this->auth->authorize();
 
             return $this->request->send($method, $route, ['json' => $body,
-            'headers' => ['Authorization' => 'Bearer '.$this->auth->accessToken, 'api-sdk' => 'magento-' . $composerData['version'], 'partner-token' => $partner_token]]);
+            'headers' => ['Authorization' => 'Bearer '.$this->auth->accessToken, 'api-sdk' => 'magento-v020-' . $composerData['version'], 'partner-token' => $partner_token]]);
         }
     }
 
