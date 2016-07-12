@@ -106,7 +106,6 @@ GerencianetTransparent.calculateInstallments = function() {
                 onSuccess: function(transport) {
                     if (200 == transport.status) {
                     	$('installments').innerHTML = transport.responseText;
-                    	alert("ins: " + $('installmentSabe').val());
                     	if (installmentSelected!=null) {
                     		$("installments select").val($('installmentSabe').val());
                     	}
