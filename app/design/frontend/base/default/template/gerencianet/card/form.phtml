@@ -36,12 +36,13 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 					<?php foreach ($this->getCcAvailableTypes() as $_typeCode => $_typeName): ?>
 						<li>
 							<label class="brand-label" title="<?php echo $_typeName ?>">
-								<input name="payment[cc_type]" type="radio" value="<?php echo $_typeCode ?>" id="<?php echo $_code ?>_cc_type"  onclick="javascript: GerencianetTransparent.calculateInstallments(); GerencianetTransparent.cardPaymentValidate();" />
+								<input name="payment[cc_type]" type="radio" value="<?php echo $_typeCode ?>" id="<?php echo $_code ?>_cc_type"  onclick="javascript: GerencianetTransparent.calculateInstallments(); GerencianetTransparent.cardPaymentValidate(); saveBrandInFE('<?php echo $_typeCode ?>');" />
 								<img src="<?php echo $this->getSkinUrl('images/gerencianet/'.$_typeCode.'.png') ?>" class="gn-card-brand" />
 							</label>
 						</li>
 					<?php endforeach ?>
 					</ul>
+					<input type="hidden" id="brandSave" name="brandSave" value="" />
 				</div>
 				</div>
 			</li>
@@ -129,6 +130,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 						</select>
 					</div>
 				</div>
+				<input type="hidden" id="installmentSave" name="installmentSave" value="" />
 				<input type="hidden" id="<?php echo $_code; ?>_token" name="payment[cc_token]" value="" class="validate-payment-token" />
 			</li>
 		</div>
@@ -481,9 +483,28 @@ if (jQuery!=undefined)
 		} else {
 			jQuery('#gerencianet_cc_email_row').removeClass("gn-hide");
 		}
-    
+
+		if (brand=="visa" ||
+			brand=="mastercard" ||
+			brand=="amex" ||
+			brand=="jcb" ||
+			brand=="elo" ||
+			brand=="diners" ||
+			brand=="discover" ||
+			brand=="aura") {
+			brand = null;
+			var $radios = jQuery("input:radio[name='payment[cc_type]']");
+		    if($radios.is(':checked') === false && jQuery("#brandSave").val()!="") {
+		        $radios.filter('[value=' + jQuery("#brandSave").val() + ']').prop('checked', true);
+		    }
+			GerencianetTransparent.calculateInstallments();
+		}
     });
-	
+
+	function saveBrandInFE(brand) {
+		jQuery("#brandSave").val(brand);
+	}
+
 	function verifyEmail(email) {
     	var pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return pattern.test(email);
@@ -492,7 +513,7 @@ if (jQuery!=undefined)
 	function verifyCPF(cpf) {
 		if (cpf!=undefined) {
 	        cpf = cpf.replace(/[^\d]+/g,'');
-	        
+			
 	        if(cpf == '' || cpf.length != 11) return false;
 	        
 	        var resto;
@@ -587,6 +608,54 @@ if (jQuery!=undefined)
     var billing_cc_data_city = "<?php echo $this->billing_cc_data_city; ?>";
     var billing_cc_data_complement = "<?php echo $this->billing_cc_data_complement; ?>";
 
+    if (customer_cc_data_email=="") {
+    	if (document.getElementById('billing:email')) {
+    		customer_cc_data_email = document.getElementById('billing:email').value;
+    	}
+    }
+
+    if (customer_cc_data_phone_number=="") {
+    	if (document.getElementById('billing:telephone')) {
+    		customer_cc_data_phone_number = document.getElementById('billing:telephone').value;
+    	}
+    }
+
+    if (billing_cc_data_street=="") {
+    	if (document.getElementById('billing:street1')) {
+    		billing_cc_data_street = document.getElementById('billing:street1').value;
+    	}
+    }
+
+    if (billing_cc_data_number=="") {
+    	if (document.getElementById('billing:street2')) {
+    		billing_cc_data_number = document.getElementById('billing:street2').value;
+    	}
+    }
+
+    if (billing_cc_data_complement=="") {
+    	if (document.getElementById('billing:street3')) {
+    		billing_cc_data_complement = document.getElementById('billing:street3').value;
+    	}
+    }
+
+    if (billing_cc_data_neighborhood=="") {
+    	if (document.getElementById('billing:street4')) {
+    		billing_cc_data_neighborhood = document.getElementById('billing:street4').value;
+    	}
+    }
+
+    if (billing_cc_data_city=="") {
+    	if (document.getElementById('billing:city')) {
+    		billing_cc_data_city = document.getElementById('billing:city').value;
+    	}
+    }
+
+    if (billing_cc_data_zipcode=="") {
+    	if (document.getElementById('billing:postcode')) {
+    		billing_cc_data_zipcode = document.getElementById('billing:postcode').value;
+    	}
+    }
+
 	if (document.getElementById('gerencianet_card_cc_data_cnpj')) {
 		if (customer_cc_data_name!="" && customer_cc_data_juridical) { 
 			document.getElementById('gerencianet_card_cc_data_cnpj').value = customer_cc_data_document;
@@ -596,6 +665,7 @@ if (jQuery!=undefined)
 			}
 		}
 	}
+
 	if (document.getElementById('gerencianet_card_cc_data_corporate_name')) {
 		if (customer_cc_data_document!="" && customer_cc_data_juridical) {
 			document.getElementById('gerencianet_card_cc_data_corporate_name').value = customer_cc_data_name;
@@ -992,23 +1062,26 @@ if (jQuery!=undefined)
 	}
 
 	if (document.getElementById('billing:day')) {
-		document.getElementById('billing:day').onchange=function(){
+		jQuery("[name='billing[day]']").change(function() {
+		//document.getElementById('billing:day').onchange=function(){
 			birthCheck();
-		};
+		});
 	} else {
 		jQuery('#gerencianet_card_cc_data_birth').addClass("required-entry");
 	}
 	if (document.getElementById('billing:month')) {
-		document.getElementById('billing:month').onchange=function(){
+		jQuery("[name='billing[month]']").change(function() {
+		//document.getElementById('billing:month').onchange=function(){
 			birthCheck();
-		};
+		});
 	} else {
 		jQuery('#gerencianet_card_cc_data_birth').addClass("required-entry");
 	}
 	if (document.getElementById('billing:year')) {
-		document.getElementById('billing:year').onchange=function(){
+		jQuery("[name='billing[year]']").change(function() {
+		//document.getElementById('billing:year').onchange=function(){
 			birthCheck();
-		};
+		});
 	} else {
 		jQuery('#gerencianet_card_cc_data_birth').addClass("required-entry");
 	}
@@ -1067,7 +1140,8 @@ if (jQuery!=undefined)
 	}
 
 	if (document.getElementById('billing:postcode')) {
-		document.getElementById('billing:postcode').onchange=function(){
+		//document.getElementById('billing:postcode').onchange=function(){
+		jQuery("[name='billing[postcode]']").change(function() {
 			jQuery('#gerencianet_card_cc_data_zipcode').val(this.value);
 			if (validateZipcode(this.value)) {
 				jQuery('#gerencianet_card_cc_data_zipcode').removeClass("gn-inputs-error required-entry");
@@ -1078,13 +1152,14 @@ if (jQuery!=undefined)
 	            jQuery('#gerencianet_card_cc_data_zipcode').addClass("gn-inputs-error required-entry");
 	            jQuery('#gerencianet_cc_city_and_zipcode_row').show();
 			}
-		};
+		});
 	} else {
 		jQuery('#gerencianet_card_cc_data_zipcode').addClass("required-entry");
 	}
 
 	if (document.getElementById('billing:city')) {
-		document.getElementById('billing:city').onchange=function(){
+		//document.getElementById('billing:city').onchange=function(){
+		jQuery("[name='billing[city]']").change(function() {
 			jQuery('#gerencianet_card_cc_data_city').val(this.value);
 			if (validateCity(this.value)) {
 				jQuery('#gerencianet_card_cc_data_city').removeClass("gn-inputs-error required-entry");
@@ -1095,13 +1170,14 @@ if (jQuery!=undefined)
 	            jQuery('#gerencianet_card_cc_data_city').addClass("gn-inputs-error required-entry");
 	            jQuery('#gerencianet_cc_city_and_zipcode_row').show();
 			}
-		};
+		});
 	} else {
 		jQuery('#gerencianet_card_cc_data_city').addClass("required-entry");
 	}
 
 	if (document.getElementById('billing:street1')) {
-		document.getElementById('billing:street1').onchange=function(){
+		jQuery("[name='billing[street1]']").change(function() {
+		//document.getElementById('billing:street1').onchange=function(){
 			jQuery('#gerencianet_card_cc_data_street').val(this.value);
 			if (validateStreet(this.value)) {
 				jQuery('#gerencianet_card_cc_data_street').removeClass("gn-inputs-error required-entry");
@@ -1112,13 +1188,14 @@ if (jQuery!=undefined)
 	            jQuery('#gerencianet_card_cc_data_street').addClass("gn-inputs-error required-entry");
 	            jQuery('#gerencianet_cc_street_and_number_row').show();
 			}
-		};
+		});
 	} else {
 		jQuery('#gerencianet_card_cc_data_street').addClass("required-entry");
 	}
 
 	if (document.getElementById('billing:street2')) {
-		document.getElementById('billing:street2').onchange=function(){
+		jQuery("[name='billing[street2]']").change(function() {
+		//document.getElementById('billing:street2').onchange=function(){
 			jQuery('#gerencianet_card_cc_data_number').val(this.value);
 			if (validateStreetNumber(this.value)) {
 				jQuery('#gerencianet_card_cc_data_number').removeClass("gn-inputs-error required-entry");
@@ -1129,28 +1206,30 @@ if (jQuery!=undefined)
 	            jQuery('#gerencianet_card_cc_data_number').addClass("gn-inputs-error required-entry");
 	            jQuery('#gerencianet_cc_street_and_number_row').show();
 			}
-		};
+		});
 	} else {
 		jQuery('#gerencianet_card_cc_data_number').addClass("required-entry");
 	}
 
 	if (document.getElementById('billing:street3')) {
-		document.getElementById('billing:street3').onchange=function(){
-			jQuery('#gerencianet_card_cc_data_number').val(this.value);
+		jQuery("[name='billing[street3]']").change(function() {
+		//document.getElementById('billing:street3').onchange=function(){
+			jQuery('#gerencianet_card_cc_data_complement').val(this.value);
 			if (validateComplement(this.value)) {
-				jQuery('#gerencianet_card_cc_data_number').removeClass("gn-inputs-error");
+				jQuery('#gerencianet_card_cc_data_complement').removeClass("gn-inputs-error");
 	            if (validateNeighborhood(jQuery('#gerencianet_card_cc_data_neighborhood').val())) {
 		            jQuery('#gerencianet_cc_neighborhood_row').hide();
 		        }
 	        } else {
-	            jQuery('#gerencianet_card_cc_data_number').addClass("gn-inputs-error");
+	            jQuery('#gerencianet_card_cc_data_complement').addClass("gn-inputs-error");
 	            jQuery('#gerencianet_cc_neighborhood_row').show();
 			}
-		};
+		});
 	}
 
 	if (document.getElementById('billing:street4')) {
-		document.getElementById('billing:street4').onchange=function(){
+		jQuery("[name='billing[street4]']").change(function() {
+		//document.getElementById('billing:street4').onchange=function(){
 			jQuery('#gerencianet_card_cc_data_neighborhood').val(this.value);
 			if (validateNeighborhood(this.value)) {
 				jQuery('#gerencianet_card_cc_data_neighborhood').removeClass("gn-inputs-error required-entry");
@@ -1161,7 +1240,7 @@ if (jQuery!=undefined)
 	            jQuery('#gerencianet_card_cc_data_neighborhood').addClass("gn-inputs-error required-entry");
 	            jQuery('#gerencianet_cc_neighborhood_row').show();
 			}
-		};
+		});
 	} else {
 		jQuery('#gerencianet_card_cc_data_neighborhood').addClass("required-entry");
 	}

@@ -15,7 +15,7 @@
  */
  //v0.2.0
 var GerencianetTransparent = function GerencianetTransparent(){};
-var checkToken, cardOwner, cardNumber, cardCvv, cardExpM, cardExpY, generatedPaymentToken = null;
+var checkToken, cardOwner, cardNumber, cardCvv, cardExpM, cardExpY, generatedPaymentToken, brand, installmentSelected = null;
 
 GerencianetTransparent.onlyNumbers = function(elm){
 	value = elm.value;
@@ -106,6 +106,10 @@ GerencianetTransparent.calculateInstallments = function() {
                 onSuccess: function(transport) {
                     if (200 == transport.status) {
                     	$('installments').innerHTML = transport.responseText;
+                    	alert("ins: " + $('installmentSabe').val());
+                    	if (installmentSelected!=null) {
+                    		$("installments select").val($('installmentSabe').val());
+                    	}
                     }
 				},
                 onFailure: function() {}

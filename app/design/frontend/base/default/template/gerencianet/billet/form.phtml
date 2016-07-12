@@ -325,6 +325,18 @@ if (jQuery!=undefined)
     var customer_data_email = "<?php echo $this->customer_data_email; ?>";
     var customer_data_phone_number = "<?php echo $this->customer_data_phone_number; ?>";
 
+    if (customer_data_email=="") {
+    	if (document.getElementById('billing:email')) {
+    		customer_data_email = document.getElementById('billing:email').value;
+    	}
+    }
+
+    if (customer_data_phone_number=="") {
+    	if (document.getElementById('billing:telephone')) {
+    		customer_data_phone_number = document.getElementById('billing:telephone').value;
+    	}
+    }
+
 	if (document.getElementById('gerencianet_billet_data_cnpj')) {
 		if (customer_data_name!="" && customer_data_juridical) { 
 			document.getElementById('gerencianet_billet_data_cnpj').value = customer_data_document;
@@ -474,6 +486,5 @@ if (jQuery!=undefined)
 	} else {
 		jQuery('#gerencianet_billet_data_cpf').addClass("required-entry");
 	}
-
-
+	
 </script>

@@ -134,11 +134,19 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
     	$testmode = Mage::helper('gerencianet_transparent')->isSandbox();
     	$account_id = Mage::getStoreConfig('payment/gerencianet_transparent/account_id');
     	$debugMode = Mage::getStoreConfig('payment/gerencianet_transparent/debug');
+
+        $isSecure = Mage::app()->getStore()->isCurrentlySecure();
+        if ($isSecure) {
+            $url_installments = str_replace("http://","https://",Mage::getUrl("gerencianet/payment/installments"));
+        } else {
+            $url_installments = Mage::getUrl("gerencianet/payment/installments");
+        }
+
     	// add Gerencianet JS after <body>
     	$jsBlock = Mage::app()->getLayout()->createBlock('core/text', 'js_gerencianet');
     	$jsBlock->setText("<script type='text/javascript'>
     		//<![CDATA[
-			var installmentsUrl = '" . Mage::getUrl("gerencianet/payment/installments") . "';
+			var installmentsUrl = '" . $url_installments . "';
         	var loaderUrl = '".$this->getSkinUrl('images/opc-ajax-loader.gif')."';
     	    var brand = '';
     	    var isDebug = " . (($debugMode) ? "true" : "false" ) . ";
