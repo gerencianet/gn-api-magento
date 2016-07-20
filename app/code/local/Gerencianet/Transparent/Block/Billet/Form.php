@@ -137,7 +137,7 @@ class Gerencianet_Transparent_Block_Billet_Form extends Mage_Payment_Block_Form 
         if ($d1 == 10) {
             $d1 = 0;
         }
-          
+        
         $soma = 0;
           
 
