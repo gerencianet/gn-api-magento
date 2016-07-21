@@ -46,7 +46,11 @@ var cardDataChange = true;
 GerencianetTransparent.getPaymentToken = function() {
 	if (cardDataChange) {
 		cardDataChange=false;
-		var type 		= $$('input:checked[name="payment[cc_type]"]').first().value;
+		if ($$('input:checked[name="payment[cc_type]"]')) {
+			var type 		= $$('input:checked[name="payment[cc_type]"]').first().value;
+		} else {
+			var type 		= document.getElementById('brandSave').value;
+		}
 		var number		= document.getElementById('gerencianet_card_cc_number').value;
 		var cvv			= document.getElementById('gerencianet_card_cc_cid').value;
 		var exp_month	= document.getElementById('gerencianet_card_cc_expiration').value;
