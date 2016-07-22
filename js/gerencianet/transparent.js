@@ -13,7 +13,7 @@
  * @author     Gerencianet
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
- //v0.2.0
+ //v0.2.1
 var GerencianetTransparent = function GerencianetTransparent(){};
 var checkToken, cardOwner, cardNumber, cardCvv, cardExpM, cardExpY, generatedPaymentToken, brand, installmentSelected = null;
 
@@ -46,7 +46,7 @@ var cardDataChange = true;
 GerencianetTransparent.getPaymentToken = function() {
 	if (cardDataChange) {
 		cardDataChange=false;
-		if ($$('input:checked[name="payment[cc_type]"]')) {
+		if ($$('input:checked[name="payment[cc_type]"]') && typeof $$('input:checked[name="payment[cc_type]"]') !== undefined) {
 			var type 		= $$('input:checked[name="payment[cc_type]"]').first().value;
 		} else {
 			var type 		= document.getElementById('brandSave').value;
@@ -84,40 +84,43 @@ GerencianetTransparent.getPaymentToken = function() {
 
 GerencianetTransparent.calculateInstallments = function() {
     newBrand = $$('input:checked[name=\"payment[cc_type]\"]').first().value;
-    if(brand != newBrand || document.getElementById('gerencianet_card_cc_installments').length == 0) {
-        brand = newBrand;
-        document.getElementById('gerencianet_card_token').value = '';
+    if (document.getElementById('gerencianet_card_cc_installments') && typeof document.getElementById('gerencianet_card_cc_installments') !== undefined) {
 
-        if (newBrand === 'amex') {
-			document.getElementById('gerencianet_card_cc_cid').setAttribute('maxlength', 4);
-		} else {
-			document.getElementById('gerencianet_card_cc_cid').setAttribute('maxlength', 3);
-		}
+	    if(brand != newBrand || document.getElementById('gerencianet_card_cc_installments').length == 0) {
+	        brand = newBrand;
+	        document.getElementById('gerencianet_card_token').value = '';
 
-        if (newBrand === 'aura') {
-  		    document.getElementById('gerencianet_card_cc_number').setAttribute('maxlength', 19);
-		} else {
-		    document.getElementById('gerencianet_card_cc_number').setAttribute('maxlength', 16);
-		}
+	        if (newBrand === 'amex') {
+				document.getElementById('gerencianet_card_cc_cid').setAttribute('maxlength', 4);
+			} else {
+				document.getElementById('gerencianet_card_cc_cid').setAttribute('maxlength', 3);
+			}
 
-        new Ajax.Request( installmentsUrl, {
-                method: 'POST',
-                parameters: 'brand=' + brand,
-                evalScripts: true,
-                onLoading: function(transport) {
-                        $('installments').innerHTML = '<img src="'+loaderUrl+'" /> <span style=\"color: #888;\">Carregando Parcelas...</span>';
-                },
-                onSuccess: function(transport) {
-                    if (200 == transport.status) {
-                    	$('installments').innerHTML = transport.responseText;
-                    	if (installmentSelected!=null) {
-                    		$("installments select").val($('installmentSabe').val());
-                    	}
-                    }
-				},
-                onFailure: function() {}
-        });
-    }
+	        if (newBrand === 'aura') {
+	  		    document.getElementById('gerencianet_card_cc_number').setAttribute('maxlength', 19);
+			} else {
+			    document.getElementById('gerencianet_card_cc_number').setAttribute('maxlength', 16);
+			}
+
+	        new Ajax.Request( installmentsUrl, {
+	                method: 'POST',
+	                parameters: 'brand=' + brand,
+	                evalScripts: true,
+	                onLoading: function(transport) {
+	                        $('installments').innerHTML = '<img src="'+loaderUrl+'" /> <span style=\"color: #888;\">Carregando Parcelas...</span>';
+	                },
+	                onSuccess: function(transport) {
+	                    if (200 == transport.status) {
+	                    	$('installments').innerHTML = transport.responseText;
+	                    	if (installmentSelected!=null) {
+	                    		$("installments select").val($('installmentSabe').val());
+	                    	}
+	                    }
+					},
+	                onFailure: function() {}
+	        });
+	    }
+	}
 };
 
 GerencianetTransparent.addFieldsObservers = function() {

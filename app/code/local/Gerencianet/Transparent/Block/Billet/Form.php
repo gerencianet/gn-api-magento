@@ -23,6 +23,7 @@ class Gerencianet_Transparent_Block_Billet_Form extends Mage_Payment_Block_Form 
     	parent::_construct();
     	$order = Mage::getModel('checkout/session')->getQuote();
 		$address = $order->getBillingAddress();
+        $order_total = $order->getGrandTotal();
 
 		$customerDocument = preg_replace( '/[^0-9]/', '', $order->getCustomerTaxvat());
 		if (strlen($customerDocument)==11 && $this->validaCPF($customerDocument)) {
@@ -72,7 +73,8 @@ class Gerencianet_Transparent_Block_Billet_Form extends Mage_Payment_Block_Form 
             'customer_data_juridical' => $juridical, 
             'customer_data_email'=>$email,
             'customer_data_phone_number'=>$phone_number,
-            'customer_data_razao_social' => $razaoSocial
+            'customer_data_razao_social' => $razaoSocial,
+            'order_total' => $order_total
         );
 		
         $this->setData($dataOrder)->setTemplate('gerencianet/billet/form.phtml');

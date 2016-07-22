@@ -18,10 +18,16 @@
 $_code = $this->getMethodCode();
 $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 ?>
-
-<!-- v0.2.0 -->
+<!-- v0.2.1 -->
 <div class="gn-osc-payment-box">
 	<ul class="form-list billet-payment" id="payment_form_<?php echo $_code ?>" style="display:none;">
+		<?php if ($this->order_total<5):	?>
+		<div class="alert-development">
+			<strong>ATENÇÃO!</strong>
+			<p>O valor mínimo para pagar com a Gerencianet é R$5,00.</p>
+		</div>
+		<div style="display: none;">
+		<?php endif; ?>
 		<div class="gn-osc-billet-info">
 		<?php if ($isSandbox):	?>
 		<div class="alert-development">
@@ -85,6 +91,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 			</div>
 		</li>
 		</div>
+		<?php if ($this->order_total<5):	?> </div><?php endif; ?>
 	</ul>
 </div>
 <style type="text/css">

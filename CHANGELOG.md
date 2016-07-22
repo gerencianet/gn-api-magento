@@ -1,3 +1,7 @@
+# v0.2.1
+- Fix: Compatibilidade com IE11
+- Fix: Recarregar parcelas automaticamente
+
 # v0.2.0
 - Novo layout para pagamentos
 - Fix: Validação de campos

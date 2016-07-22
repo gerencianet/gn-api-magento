@@ -69,9 +69,9 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
         if (!$order) {
             $order = Mage::getModel('checkout/session')->getQuote();
         }
-		if ($order->getGrandTotal()<5) {
+		/*if ($order->getGrandTotal()<5) {
 			return false;
-		}
+		}*/
 		return $available;
 	}
 

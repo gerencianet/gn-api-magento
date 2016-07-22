@@ -18,9 +18,16 @@
 $_code = $this->getMethodCode();
 $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 ?>
-<!-- v0.2.0 -->
+<!-- v0.2.1 -->
 <div class="gn-osc-payment-box">
 	<ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none;">
+		<?php if ($this->order_total<5):	?>
+		<div class="alert-development">
+			<strong>ATENÇÃO!</strong>
+			<p>O valor mínimo para pagar com a Gerencianet é R$5,00.</p>
+		</div>
+		<div style="display: none;">
+		<?php endif; ?>
 		<div class="gn-osc-card-info">
 		<?php if ($isSandbox):	?>
 		<div class="alert-development">
@@ -37,7 +44,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 						<li>
 							<label class="brand-label" title="<?php echo $_typeName ?>">
 								<input name="payment[cc_type]" type="radio" value="<?php echo $_typeCode ?>" id="<?php echo $_code ?>_cc_type"  onclick="javascript: GerencianetTransparent.calculateInstallments(); GerencianetTransparent.cardPaymentValidate(); saveBrandInFE('<?php echo $_typeCode ?>');" />
-								<img src="<?php echo $this->getSkinUrl('images/gerencianet/'.$_typeCode.'.png') ?>" class="gn-card-brand" />
+								<img src="<?php echo $this->getSkinUrl('images/gerencianet/'.$_typeCode.'.png') ?>" class="gn-card-brand" id="brand_<?php echo $_typeCode ?>" />
 							</label>
 						</li>
 					<?php endforeach ?>
@@ -50,7 +57,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 				<div class="gn-osc-field-row">
 					<label for="<?php echo  $_code ?>_cc_data_name_card" class="required"><?php echo $this->__('NOME NO CARTÃO') ?></label>
 					<div class="input-box">
-						<input type="text" id="<?php echo $_code ?>_cc_data_name_card" name="payment[cc_data_name_card]" title="<?php echo $this->__('Name') ?>" class="input-text required-entry" value="<?php if (!$this->customer_cc_data_juridical) { echo $this->customer_cc_data_name; } ?>" maxlength="255" onchange="javascript: GerencianetTransparent.cardPaymentValidate();" />
+						<input type="text" id="<?php echo $_code ?>_cc_data_name_card" name="payment[cc_data_name_card]" title="<?php echo $this->__('Name') ?>" class="input-text required-entry" value="" maxlength="255" onchange="javascript: GerencianetTransparent.cardPaymentValidate();" />
 					</div>
 				</div>
 			</li>
@@ -291,8 +298,10 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 				</div>
 			</li>
 		</div>
+		<?php if ($this->order_total<5):	?> </div><?php endif; ?>
 	</ul>
 </div>
+
 
 <script type="text/javascript">
 //< ![CDATA[
@@ -471,6 +480,62 @@ if (jQuery!=undefined)
 				}
 			}).trigger("focusout");
 		}
+
+		jQuery( "#brand_visa" ).click(function() {
+		  	jQuery('input[name="payment[cc_type]"][value="visa"]').prop("checked", true);
+			saveBrandInFE('visa');
+			GerencianetTransparent.calculateInstallments();
+			GerencianetTransparent.cardPaymentValidate();
+		});
+
+		jQuery( "#brand_mastercard" ).click(function() {
+		  	jQuery('input[name="payment[cc_type]"][value="mastercard"]').prop("checked", true);
+			saveBrandInFE('mastercard');
+			GerencianetTransparent.calculateInstallments();
+			GerencianetTransparent.cardPaymentValidate();
+		});
+
+		jQuery( "#brand_amex" ).click(function() {
+		  	jQuery('input[name="payment[cc_type]"][value="amex"]').prop("checked", true);
+			saveBrandInFE('amex');
+			GerencianetTransparent.calculateInstallments();
+			GerencianetTransparent.cardPaymentValidate();
+		});
+
+		jQuery( "#brand_jcb" ).click(function() {
+		  	jQuery('input[name="payment[cc_type]"][value="jcb"]').prop("checked", true);
+			saveBrandInFE('jcb');
+			GerencianetTransparent.calculateInstallments();
+			GerencianetTransparent.cardPaymentValidate();
+		});
+
+		jQuery( "#brand_elo" ).click(function() {
+		  	jQuery('input[name="payment[cc_type]"][value="elo"]').prop("checked", true);
+			saveBrandInFE('elo');
+			GerencianetTransparent.calculateInstallments();
+			GerencianetTransparent.cardPaymentValidate();
+		});
+
+		jQuery( "#brand_diners" ).click(function() {
+		  	jQuery('input[name="payment[cc_type]"][value="diners"]').prop("checked", true);
+			saveBrandInFE('diners');
+			GerencianetTransparent.calculateInstallments();
+			GerencianetTransparent.cardPaymentValidate();
+		});
+
+		jQuery( "#brand_discover" ).click(function() {
+		  	jQuery('input[name="payment[cc_type]"][value="discover"]').prop("checked", true);
+			saveBrandInFE('discover');
+			GerencianetTransparent.calculateInstallments();
+			GerencianetTransparent.cardPaymentValidate();
+		});
+
+		jQuery( "#brand_aura" ).click(function() {
+		  	jQuery('input[name="payment[cc_type]"][value="aura"]').prop("checked", true);
+			saveBrandInFE('aura');
+			GerencianetTransparent.calculateInstallments();
+			GerencianetTransparent.cardPaymentValidate();
+		});
 
 		if (verifyCPF(jQuery("#gerencianet_card_cc_data_cpf").val())) {
 			jQuery('#gerencianet_cc_cpf_row').addClass("gn-hide");
@@ -674,14 +739,7 @@ if (jQuery!=undefined)
 
 	if (document.getElementById('gerencianet_card_cc_data_name')) {
 		if (customer_cc_data_name!="" && !customer_cc_data_juridical) {
-			document.getElementById('gerencianet_card_cc_data_name_card').value = customer_cc_data_name.toUpperCase();
 			document.getElementById('gerencianet_card_cc_data_name').value = customer_cc_data_name;
-		}
-	}
-
-	if (document.getElementById('gerencianet_card_cc_data_name_card')) {
-		if (customer_cc_data_name!="" && !customer_cc_data_juridical) {
-			document.getElementById('gerencianet_card_cc_data_name_card').value = customer_cc_data_name.toUpperCase();
 		}
 	}
 
@@ -1007,7 +1065,6 @@ if (jQuery!=undefined)
 				var full_name = this.value;
 			}
 			
-			jQuery('#gerencianet_card_cc_data_name_card').val(full_name.toUpperCase());
 			jQuery('#gerencianet_card_cc_data_name').val(full_name);
 			if (validateName(full_name)) {
 				jQuery('#gerencianet_card_cc_data_name').removeClass("gn-inputs-error required-entry");
@@ -1019,7 +1076,6 @@ if (jQuery!=undefined)
 
 			if (document.getElementById('billing:taxvat') && verifyCNPJ(document.getElementById('billing:taxvat').value)) {
 				jQuery('#gerencianet_card_cc_data_name').val("");
-				jQuery('#gerencianet_card_cc_data_name_card').val("");
 				if (document.getElementById('billing:firstname'))
 					jQuery('#gerencianet_card_cc_data_corporate_name').val(document.getElementById('billing:firstname').value);
 				jQuery('#gerencianet_cc_name_row').show();
@@ -1039,7 +1095,6 @@ if (jQuery!=undefined)
 			}
 			
 			jQuery('#gerencianet_card_cc_data_name').val(full_name);
-			jQuery('#gerencianet_card_cc_data_name_card').val(full_name.toUpperCase());
 			
 			if (validateName(full_name)) {
 				jQuery('#gerencianet_card_cc_data_name').removeClass("gn-inputs-error required-entry");
@@ -1051,7 +1106,6 @@ if (jQuery!=undefined)
 
 			if (document.getElementById('billing:taxvat') && verifyCNPJ(document.getElementById('billing:taxvat').value)) {
 				jQuery('#gerencianet_card_cc_data_name').val("");
-				jQuery('#gerencianet_card_cc_data_name_card').val("");
 				if (document.getElementById('billing:firstname'))
 					jQuery('#gerencianet_card_cc_data_corporate_name').val(document.getElementById('billing:firstname').value);
 				jQuery('#gerencianet_cc_name_row').show();

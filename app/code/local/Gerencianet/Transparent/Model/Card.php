@@ -81,17 +81,23 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
 	 */
 	public function authorize(Varien_Object $payment, $amount)
 	{
-		if ($this->validateData('card')) {	
-			$pay = $this->payCharge();
-			$payData = unserialize($this->getOrder()->getPayment()->getAdditionalData());
-			Mage::log('PAY CHARGE CARD: ' . var_export($pay,true),0,'gerencianet.log');
-			
-		    if ($pay['code'] == 200) {	
-    			$payData['charge_id'] = $pay['data']['charge_id'];
-    			$payment->setAdditionalData(serialize($payData));
-    			$payment->save();
-			} else {
-			    Mage::throwException($this->_getHelper()->__("Erro no pagamento por cartão!\nMotivo: " . $pay->error_description . ".\nPor favor tente novamente!"));
+		$quote = Mage::getModel('checkout/session')->getQuote();
+	    $order_total = $quote->getGrandTotal();
+	    if ($order_total<5) {
+	      	Mage::throwException($this->_getHelper()->__("O valor mínimo para pagar com a Gerencianet é R$5,00."));
+	    } else {
+			if ($this->validateData('card')) {	
+				$pay = $this->payCharge();
+				$payData = unserialize($this->getOrder()->getPayment()->getAdditionalData());
+				Mage::log('PAY CHARGE CARD: ' . var_export($pay,true),0,'gerencianet.log');
+				
+			    if ($pay['code'] == 200) {	
+	    			$payData['charge_id'] = $pay['data']['charge_id'];
+	    			$payment->setAdditionalData(serialize($payData));
+	    			$payment->save();
+				} else {
+				    Mage::throwException($this->_getHelper()->__("Erro no pagamento por cartão!\nMotivo: " . $pay->error_description . ".\nPor favor tente novamente!"));
+				}
 			}
 		}
 	}

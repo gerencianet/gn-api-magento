@@ -19,9 +19,9 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
   /**
    * Model Properties
    */
-  protected $_code 					= 'gerencianet_billet';
-  protected $_formBlockType 			= 'gerencianet_transparent/billet_form';
-  protected $_infoBlockType 			= 'gerencianet_transparent/billet_info';
+  protected $_code 					          = 'gerencianet_billet';
+  protected $_formBlockType 			    = 'gerencianet_transparent/billet_form';
+  protected $_infoBlockType 			    = 'gerencianet_transparent/billet_info';
   protected $_isGateway               = true;
   protected $_canAuthorize            = true;
   protected $_canCapture              = false;
@@ -64,20 +64,26 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
    */
   public function authorize(Varien_Object $payment, $amount)
   {
-    if ($this->validateData('billet')) {
-      $pay = $this->payCharge();
-      Mage::log('PAY CHARGE BILLET: ' . var_export($pay,true),0,'gerencianet.log');
+    $quote = Mage::getModel('checkout/session')->getQuote();
+    $order_total = $quote->getGrandTotal();
+    if ($order_total<5) {
+      Mage::throwException($this->_getHelper()->__("O valor mínimo para pagar com a Gerencianet é R$5,00."));
+    } else {
+      if ($this->validateData('billet')) {
+        $pay = $this->payCharge();
+        Mage::log('PAY CHARGE BILLET: ' . var_export($pay,true),0,'gerencianet.log');
 
-      if ($pay['code'] == 200) {
-        $add_data = unserialize($this->getOrder()->getPayment()->getAdditionalData());
-        $add_data['billet']['barcode'] = $pay['data']['barcode'];
-        $add_data['billet']['link'] = $pay['data']['link'];
-        $add_data['charge_id'] = $pay['data']['charge_id'];
+        if ($pay['code'] == 200) {
+          $add_data = unserialize($this->getOrder()->getPayment()->getAdditionalData());
+          $add_data['billet']['barcode'] = $pay['data']['barcode'];
+          $add_data['billet']['link'] = $pay['data']['link'];
+          $add_data['charge_id'] = $pay['data']['charge_id'];
 
-        $payment->setAdditionalData(serialize($add_data));
-        $payment->save();
-      } else {
-        Mage::throwException($this->_getHelper()->__("Erro na emissão do boleto!\nMotivo: " . $pay->error_description . ".\nPor favor tente novamente mais tarde!"));
+          $payment->setAdditionalData(serialize($add_data));
+          $payment->save();
+        } else {
+          Mage::throwException($this->_getHelper()->__("Erro na emissão do boleto!\nMotivo: " . $pay->error_description . ".\nPor favor tente novamente mais tarde!"));
+        }
       }
     }
 

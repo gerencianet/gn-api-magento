@@ -24,6 +24,7 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
 
         $order = Mage::getModel('checkout/session')->getQuote();
         $address = $order->getBillingAddress();
+        $order_total = $order->getGrandTotal();
 
         $customerDocument = preg_replace( '/[^0-9]/', '', $order->getCustomerTaxvat());
         if (strlen($customerDocument)==11 && $this->validaCPF($customerDocument)) {
@@ -86,7 +87,8 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
             'billing_cc_data_state' => $address->getRegionCode(),
             'billing_cc_data_city' => $address->getCity(),
             'billing_cc_data_complement' => $address->getStreet3(),
-            'customer_cc_data_razao_social' => $razaoSocial
+            'customer_cc_data_razao_social' => $razaoSocial,
+            'order_total' => $order_total
             );
 
         $this->setData($dataOrder)->setTemplate('gerencianet/card/form.phtml');
@@ -146,7 +148,7 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
     	// add Gerencianet JS after <body>
     	$jsBlock = Mage::app()->getLayout()->createBlock('core/text', 'js_gerencianet');
     	$jsBlock->setText($addToJS."<script type='text/javascript'>
-            //v 0.2.0.6
+            //v 0.2.1
     		//<![CDATA[
 			var installmentsUrl = '" . $url_installments . "';
         	var loaderUrl = '".$this->getSkinUrl('images/opc-ajax-loader.gif')."';
