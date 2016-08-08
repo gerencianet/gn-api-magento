@@ -34,14 +34,14 @@ class Gerencianet_Transparent_Model_Validator {
 			);
 	
 	protected $_validators_billet = array(
-			'name'			=> '_name',
-			'cpf'			=> '_cpf',
+			//'name'			=> '_name',
+			//'cpf'			=> '_cpf',
 			'email'			=> '_email',
 		);
 
 	protected $_validators_card = array(
-			'name'			=> '_name',
-			'cpf'			=> '_cpf',
+			//'name'			=> '_name',
+			//'cpf'			=> '_cpf',
 			'email'			=> '_email',
 			'birth'			=> '_birth',
 			'street'		=> '_empty',
@@ -82,6 +82,24 @@ class Gerencianet_Transparent_Model_Validator {
 		}
 		if (!$this->_cnpj($cnpj)) {
 			$this->_sendError('cnpj', $paymentType);
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Validate Individual Person
+	 * @param array $data
+	 * @return boolean
+	 */
+	public function validateIndividualPerson($name, $cpf, $paymentType) {
+		if (!$this->_name($name)) {
+			$this->_sendError('name', $paymentType);
+			return false;
+		}
+		if (!$this->_cpf($cpf)) {
+			$this->_sendError('cpf', $paymentType);
 			return false;
 		}
 		

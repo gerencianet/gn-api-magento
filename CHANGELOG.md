@@ -1,3 +1,6 @@
+# v0.2.2
+- Removida obrigatoriedade de CPF para cobranças pagas com CNPJ
+
 # v0.2.1
 - Fix: Compatibilidade com IE11
 - Fix: Recarregar parcelas automaticamente
