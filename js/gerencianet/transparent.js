@@ -83,6 +83,9 @@ GerencianetTransparent.getPaymentToken = function() {
 };
 
 GerencianetTransparent.calculateInstallments = function() {
+	if (document.getElementById('gn-payment-data-content-card') && typeof document.getElementById('gn-payment-data-content-card') !== undefined) {
+		document.getElementById("gn-payment-data-content-card").className = "gn-osc-card-info";
+	}
     newBrand = $$('input:checked[name=\"payment[cc_type]\"]').first().value;
     if (document.getElementById('gerencianet_card_cc_installments') && typeof document.getElementById('gerencianet_card_cc_installments') !== undefined) {
 

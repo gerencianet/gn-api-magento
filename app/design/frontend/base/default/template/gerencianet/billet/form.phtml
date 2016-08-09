@@ -40,68 +40,70 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 			<div class="gn-billet-info">O Boleto bancário será gerado assim que a compra for finalizada.</div>
 		</div>
 		
-	    <div class="pay-juridical-person-billet">
-			<p>Pagar como:</p>
-			<div class="gn-osc-clear">
-				<div style="float: left; width: 48%;">
-					<input type="radio" name="payment[data_pay_billet_as_juridical]" value="individual" <?php if (!$this->customer_data_juridical) { echo "checked "; } ?>> Pessoa Física
-				</div>
-				<div style="float: right; width: 48%;">
-					<input type="radio" name="payment[data_pay_billet_as_juridical]" value="juridical" <?php if ($this->customer_data_juridical) { echo "checked "; } ?>> Pessoa Jurídica
-				</div>
-			</div>
-		</div>
-
-	    <li id="gerencianet_billet_name_row">
-	    	<div class="gn-osc-field-row">
-	    		<div class="gn_individual_person">
-					<label for="<?php echo $_code ?>_data_name" class="required"><?php echo $this->__('NOME') ?></label>
-					<div class="input-box">
-						<input type="text" id="<?php echo $_code ?>_data_name" name="payment[data_name]" title="<?php echo $this->__('Name') ?>" class="input-text" value="<?php if (!$this->customer_data_juridical) { echo $this->customer_data_name; } ?>" maxlength="255" />
-					</div>
-				</div>
-				<div class="gn_juridical_person gn-hide">
-					<label for="<?php echo $_code ?>_data_corporate_name" class="required"><?php echo $this->__('RAZÃO SOCIAL') ?></label>
-					<div class="input-box">
-						<input type="text" id="<?php echo $_code ?>_data_corporate_name" name="payment[data_corporate_name]" title="<?php echo $this->__('Razão Social') ?>" class="input-text" value="<?php if ($this->customer_data_juridical) { if ($this->customer_data_razao_social) { echo $this->customer_data_razao_social; } else {echo $this->customer_data_name; } } ?>" maxlength="255" />
-					</div>
-				</div>
-			</div>
-		</li>
-	    <li id="gerencianet_billet_cpf_phone_row">
-	    	<div class="gn-osc-field-row">
-	    		<div class="gn-osc-clear">
+		<div id="gn-payment-data-content-billet">
+		    <div class="pay-juridical-person-billet">
+				<p>Pagar como:</p>
+				<div class="gn-osc-clear">
 					<div style="float: left; width: 48%;">
-						<div class="gn_individual_person">
-							<label for="<?php echo $_code ?>_data_cpf" class="required"><?php echo $this->__('CPF') ?></label>
-							<div class="input-box">
-								<input type="text" id="<?php echo $_code ?>_data_cpf" name="payment[data_cpf]" class="input-text" title="<?php echo $this->__('CPF') ?>" value="<?php if (!$this->customer_data_juridical) { echo $this->customer_data_document; } ?>" />
-							</div>
-						</div>
-						<div class="gn_juridical_person gn-hide">
-							<label for="<?php echo $_code ?>_data_cnpj" class="required"><?php echo $this->__('CNPJ') ?></label>
-							<div class="input-box">
-								<input type="text" id="<?php echo $_code ?>_data_cnpj" name="payment[data_cnpj]" title="<?php echo $this->__('CNPJ') ?>" class="input-text  <?php if ($this->customer_data_juridical) { echo  'required-entry'; } ?>" value="<?php if ($this->customer_data_juridical) { echo $this->customer_data_document; } ?>" />
-							</div>
-						</div>
+						<input type="radio" name="payment[data_pay_billet_as_juridical]" value="individual" <?php if (!$this->customer_data_juridical) { echo "checked "; } ?>> Pessoa Física
 					</div>
 					<div style="float: right; width: 48%;">
-						<label for="<?php echo $_code ?>_data_phone_number" class="required"><?php echo $this->__('TELEFONE') ?></label>
-						<div class="input-box">
-							<input type="text" id="<?php echo $_code ?>_data_phone_number" name="payment[data_phone_number]" class="input-text required-entry" title="<?php echo $this->__('Phone Number') ?>" value="<?php echo $this->customer_data_phone_number; ?>" />
-						</div>
+						<input type="radio" name="payment[data_pay_billet_as_juridical]" value="juridical" <?php if ($this->customer_data_juridical) { echo "checked "; } ?>> Pessoa Jurídica
 					</div>
 				</div>
 			</div>
-		</li>
-	    <li id="gerencianet_billet_email_row" <?php if (trim($this->customer_data_email) != "") { echo ' class="gn-hide"';} ?>>
-			<div class="gn-osc-field-row">
-				<label for="<?php echo $_code ?>_data_email" class="required"><?php echo $this->__('EMAIL') ?></label>
-				<div class="input-box">
-					<input type="text" id="<?php echo $_code ?>_data_email" name="payment[data_email]" class="input-text required-entry" title="<?php echo $this->__('E-mail') ?>" value="<?php echo $this->customer_data_email; ?>" maxlength="255" />
+
+		    <li id="gerencianet_billet_name_row">
+		    	<div class="gn-osc-field-row">
+		    		<div class="gn_individual_person">
+						<label for="<?php echo $_code ?>_data_name" class="required"><?php echo $this->__('NOME') ?></label>
+						<div class="input-box">
+							<input type="text" id="<?php echo $_code ?>_data_name" name="payment[data_name]" title="<?php echo $this->__('Name') ?>" class="input-text" value="<?php if (!$this->customer_data_juridical) { echo $this->customer_data_name; } ?>" maxlength="255" />
+						</div>
+					</div>
+					<div class="gn_juridical_person gn-hide">
+						<label for="<?php echo $_code ?>_data_corporate_name" class="required"><?php echo $this->__('RAZÃO SOCIAL') ?></label>
+						<div class="input-box">
+							<input type="text" id="<?php echo $_code ?>_data_corporate_name" name="payment[data_corporate_name]" title="<?php echo $this->__('Razão Social') ?>" class="input-text" value="<?php if ($this->customer_data_juridical) { if ($this->customer_data_razao_social) { echo $this->customer_data_razao_social; } else {echo $this->customer_data_name; } } ?>" maxlength="255" />
+						</div>
+					</div>
 				</div>
-			</div>
-		</li>
+			</li>
+		    <li id="gerencianet_billet_cpf_phone_row">
+		    	<div class="gn-osc-field-row">
+		    		<div class="gn-osc-clear">
+						<div style="float: left; width: 48%;">
+							<div class="gn_individual_person">
+								<label for="<?php echo $_code ?>_data_cpf" class="required"><?php echo $this->__('CPF') ?></label>
+								<div class="input-box">
+									<input type="text" id="<?php echo $_code ?>_data_cpf" name="payment[data_cpf]" class="input-text" title="<?php echo $this->__('CPF') ?>" value="<?php if (!$this->customer_data_juridical) { echo $this->customer_data_document; } ?>" />
+								</div>
+							</div>
+							<div class="gn_juridical_person gn-hide">
+								<label for="<?php echo $_code ?>_data_cnpj" class="required"><?php echo $this->__('CNPJ') ?></label>
+								<div class="input-box">
+									<input type="text" id="<?php echo $_code ?>_data_cnpj" name="payment[data_cnpj]" title="<?php echo $this->__('CNPJ') ?>" class="input-text  <?php if ($this->customer_data_juridical) { echo  'required-entry'; } ?>" value="<?php if ($this->customer_data_juridical) { echo $this->customer_data_document; } ?>" />
+								</div>
+							</div>
+						</div>
+						<div style="float: right; width: 48%;">
+							<label for="<?php echo $_code ?>_data_phone_number" class="required"><?php echo $this->__('TELEFONE') ?></label>
+							<div class="input-box">
+								<input type="text" id="<?php echo $_code ?>_data_phone_number" name="payment[data_phone_number]" class="input-text required-entry" title="<?php echo $this->__('Phone Number') ?>" value="<?php echo $this->customer_data_phone_number; ?>" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</li>
+		    <li id="gerencianet_billet_email_row" <?php if (trim($this->customer_data_email) != "") { echo ' class="gn-hide"';} ?>>
+				<div class="gn-osc-field-row">
+					<label for="<?php echo $_code ?>_data_email" class="required"><?php echo $this->__('EMAIL') ?></label>
+					<div class="input-box">
+						<input type="text" id="<?php echo $_code ?>_data_email" name="payment[data_email]" class="input-text required-entry" title="<?php echo $this->__('E-mail') ?>" value="<?php echo $this->customer_data_email; ?>" maxlength="255" />
+					</div>
+				</div>
+			</li>
+		</div>
 		</div>
 		<?php if ($this->order_total<5):	?> </div><?php endif; ?>
 	</ul>

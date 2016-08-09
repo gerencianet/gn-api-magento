@@ -141,7 +141,7 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 				<input type="hidden" id="<?php echo $_code; ?>_token" name="payment[cc_token]" value="" class="validate-payment-token" />
 			</li>
 		</div>
-		<div class="gn-osc-card-info" style="margin-top: 15px;">
+		<div id="gn-payment-data-content-card" class="gn-osc-card-info gn-hide" style="margin-top: 15px;">
 			<div id="gn-card-payment-data-title">
 				<label><?php echo $this->__('DADOS DE PAGAMENTO') ?></label>
 			</div>
@@ -882,7 +882,7 @@ if (jQuery!=undefined)
 		}
 	}
 
-	if (validateName(document.getElementById('gerencianet_card_cc_data_name').value) || validateNameBillet(jQuery('#gerencianet_card_cc_data_corporate_name').val())) {
+	if (validateName(document.getElementById('gerencianet_card_cc_data_name').value) || validateName(jQuery('#gerencianet_card_cc_data_corporate_name').val())) {
 		jQuery('#gerencianet_cc_name_row').hide();
 	}
 	if (validateEmail(document.getElementById('gerencianet_card_cc_data_email').value)) {
