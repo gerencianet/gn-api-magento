@@ -75,13 +75,15 @@ class Gerencianet_Transparent_Model_Validator {
 	 * @param array $data
 	 * @return boolean
 	 */
-	public function validateJuridicalPerson($corporate_name, $cnpj, $paymentType) {
+	public function validateJuridicalPerson($corporate_name, $cnpj, $paymentType, $alert = true) {
 		if (!$this->_corporate($corporate_name)) {
-			$this->_sendError('corporate', $paymentType);
+			if ($alert)
+				$this->_sendError('corporate', $paymentType);
 			return false;
 		}
 		if (!$this->_cnpj($cnpj)) {
-			$this->_sendError('cnpj', $paymentType);
+			if ($alert)
+				$this->_sendError('cnpj', $paymentType);
 			return false;
 		}
 		

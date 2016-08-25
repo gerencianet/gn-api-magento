@@ -44,11 +44,11 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
     $quote = Mage::getModel('checkout/session')->getQuote();
     $expires = Mage::getStoreConfig('payment/gerencianet_billet/duedate');
     $additionaldata['billet']['expires'] = date('Y-m-d',strtotime('+'.$expires.' days'));
-    $additionaldata['juridical']['data_pay_billet_as_juridical'] = $data->getDataPayBilletAsJuridical();
-    $additionaldata['juridical']['data_corporate_name'] = $data->getDataCorporateName();
-    $additionaldata['juridical']['data_cnpj'] = $data->getDataCnpj();
-    $additionaldata['customer']['data_name'] = $data->getDataName();
-    $additionaldata['customer']['data_cpf'] = $data->getDataCpf();
+    //$additionaldata['juridical']['data_pay_billet_as_juridical'] = $data->getDataPayBilletAsJuridical();
+    //$additionaldata['juridical']['data_corporate_name'] = $data->getDataCorporateName();
+    //$additionaldata['juridical']['data_cnpj'] = $data->getDataCnpj();
+    $additionaldata['customer']['data_name_corporate'] = $data->getDataNameCorporate();
+    $additionaldata['customer']['data_cpf_cnpj'] = $data->getDataCpfCnpj();
     $additionaldata['customer']['data_email'] = $data->getDataEmail();
     $additionaldata['customer']['data_phone_number'] = $data->getDataPhoneNumber();
     $info->setAdditionalData(serialize($additionaldata));

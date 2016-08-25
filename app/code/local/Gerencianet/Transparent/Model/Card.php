@@ -44,11 +44,11 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
 		$quote = Mage::getModel('checkout/session')->getQuote();
 		$additionaldata['card']['cc_token'] = $data->getCcToken();
 		$additionaldata['card']['cc_installments'] = $data->getCcInstallments();
-	    $additionaldata['juridical']['data_pay_card_as_juridical'] = $data->getDataPayCardAsJuridical();
-	    $additionaldata['juridical']['cc_data_corporate_name'] = $data->getCcDataCorporateName();
-	    $additionaldata['juridical']['cc_data_cnpj'] = $data->getCcDataCnpj();
-		$additionaldata['customer']['cc_data_name'] = $data->getCcDataName();
-	    $additionaldata['customer']['cc_data_cpf'] = $data->getCcDataCpf();
+	    //$additionaldata['juridical']['data_pay_card_as_juridical'] = $data->getDataPayCardAsJuridical();
+	    //$additionaldata['juridical']['cc_data_corporate_name'] = $data->getCcDataCorporateName();
+	    //$additionaldata['juridical']['cc_data_cnpj'] = $data->getCcDataCnpj();
+		$additionaldata['customer']['cc_data_name_corporate'] = $data->getCcDataNameCorporate();
+	    $additionaldata['customer']['cc_data_cpf_cnpj'] = $data->getCcDataCpfCnpj();
 	    $additionaldata['customer']['cc_data_email'] = $data->getCcDataEmail();
 	    $additionaldata['customer']['cc_data_birth'] = $data->getCcDataBirth();
 	    $additionaldata['customer']['cc_data_phone_number'] = $data->getCcDataPhoneNumber();

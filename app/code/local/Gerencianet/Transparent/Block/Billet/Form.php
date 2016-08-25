@@ -48,32 +48,41 @@ class Gerencianet_Transparent_Block_Billet_Form extends Mage_Payment_Block_Form 
         	$phone_number = "";
         }
 
-        if ($order->getCustomerName()) {
-            $name = $order->getCustomerName();
-        } else if ($order->getCustomerFirstname!="" && $order->getCustomerLastname()!="") {
-            $name = $order->getCustomerFirstname() . ' ' . $order->getCustomerLastname();
-        } else {
-            $name = $address->getFirstname() . " " . $address->getLastname();
-        }
+        if ($customerDocument!="") {
+            if ($juridical) {
+                if ($order->getCustomer()->getRazaoSocial()) {
+                    $name = $order->getCustomer()->getRazaoSocial();
+                } else {
+                    if ($order->getCustomerFirstname!="") {
+                        $name = $order->getCustomerFirstname();
+                    } else if ($address->getFirstname()!="") {
+                        $name = $address->getFirstname();
+                    }
+                }
+            } else {
+                if ($order->getCustomerName()) {
+                    $name = $order->getCustomerName();
+                } else if ($order->getCustomerFirstname!="" && $order->getCustomerLastname()!="") {
+                    $name = $order->getCustomerFirstname() . ' ' . $order->getCustomerLastname();
+                } else {
+                    $name = $address->getFirstname() . " " . $address->getLastname();
+                }
 
-        if (strlen($name)<1 || !preg_match("/^[ ]*(?:[^\\s]+[ ]+)+[^\\s]+[ ]*$/",$name)) {
+            }
+        } else {
+            $name="";
+        }
+            
+        if (strlen($name)<1 || !preg_match("/^[ ]*(?:[^\\s]+[ ]+)+[^\\s]+[ ]*$/",$name) || $name=="undefined") {
         	$name = "";
         }
 
-        if ($order->getCustomer()->getRazaoSocial()) {
-            $razaoSocial = $order->getCustomer()->getRazaoSocial();
-        } else {
-            $razaoSocial = "";
-        }
-
-    	
 		$dataOrder = array(
             'customer_data_name' => $name, 
             'customer_data_document' => $customerDocument, 
             'customer_data_juridical' => $juridical, 
             'customer_data_email'=>$email,
             'customer_data_phone_number'=>$phone_number,
-            'customer_data_razao_social' => $razaoSocial,
             'order_total' => $order_total
         );
 		

@@ -55,23 +55,34 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
             $phone_number = "";
         }
 
-        if ($order->getCustomerName()) {
-            $name = $order->getCustomerName();
-        } else if ($order->getCustomerFirstname!="" && $order->getCustomerLastname()!="") {
-            $name = $order->getCustomerFirstname() . ' ' . $order->getCustomerLastname();
+        if ($customerDocument!="") {
+            if ($juridical) {
+                if ($order->getCustomer()->getRazaoSocial()) {
+                    $name = $order->getCustomer()->getRazaoSocial();
+                } else {
+                    if ($order->getCustomerFirstname!="") {
+                        $name = $order->getCustomerFirstname();
+                    } else if ($address->getFirstname()!="") {
+                        $name = $address->getFirstname();
+                    }
+                }
+            } else {
+                if ($order->getCustomerName()) {
+                    $name = $order->getCustomerName();
+                } else if ($order->getCustomerFirstname!="" && $order->getCustomerLastname()!="") {
+                    $name = $order->getCustomerFirstname() . ' ' . $order->getCustomerLastname();
+                } else {
+                    $name = $address->getFirstname() . " " . $address->getLastname();
+                }
+            }
         } else {
-            $name = $address->getFirstname() . " " . $address->getLastname();
-        }
-
-        if (strlen($name)<1 || !preg_match("/^[ ]*(?:[^\\s]+[ ]+)+[^\\s]+[ ]*$/",$name)) {
             $name = "";
         }
 
-        if ($order->getCustomer()->getRazaoSocial()) {
-            $razaoSocial = $order->getCustomer()->getRazaoSocial();
-        } else {
-            $razaoSocial = "";
+        if (strlen($name)<1 || !preg_match("/^[ ]*(?:[^\\s]+[ ]+)+[^\\s]+[ ]*$/",$name) || $name=="undefined") {
+            $name = "";
         }
+
 
         $dataOrder = array(
             'customer_cc_data_name' => $name, 
@@ -87,7 +98,6 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
             'billing_cc_data_state' => $address->getRegionCode(),
             'billing_cc_data_city' => $address->getCity(),
             'billing_cc_data_complement' => $address->getStreet3(),
-            'customer_cc_data_razao_social' => $razaoSocial,
             'order_total' => $order_total
             );
 
@@ -148,7 +158,7 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
     	// add Gerencianet JS after <body>
     	$jsBlock = Mage::app()->getLayout()->createBlock('core/text', 'js_gerencianet');
     	$jsBlock->setText($addToJS."<script type='text/javascript'>
-            //v 0.2.2
+            //v 0.2.3
     		//<![CDATA[
 			var installmentsUrl = '" . $url_installments . "';
         	var loaderUrl = '".$this->getSkinUrl('images/opc-ajax-loader.gif')."';

@@ -1,3 +1,6 @@
+# v0.2.3
+- Fix: validação e autopreenchimento de CPF/CNPJ
+
 # v0.2.2
 - Removida obrigatoriedade de CPF para cobranças pagas com CNPJ
 
