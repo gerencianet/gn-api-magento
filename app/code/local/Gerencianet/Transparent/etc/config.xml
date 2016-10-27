@@ -19,7 +19,7 @@
 <config>
     <modules>
        <Gerencianet_Transparent>
-          <version>0.2.3</version>
+          <version>0.2.4</version>
        </Gerencianet_Transparent>
     </modules>
  
@@ -92,6 +92,8 @@
                 <model>gerencianet_transparent/billet</model>
                 <allowspecific>0</allowspecific>
                 <duedate>0</duedate>
+                <fine>0</fine>
+                <interest>0</interest>
                 <title>Boleto Bancário</title>
                 <payment_action>authorize</payment_action>
             </gerencianet_billet>

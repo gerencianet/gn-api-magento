@@ -28,7 +28,7 @@ class Request
         'base_url' => $this->config['baseUri'],
         'headers' => [
           'Content-Type' => 'application/json',
-          'api-sdk' => 'magento-v020-' . $composerData['version'],
+          'api-sdk' => 'magento-0.2.4',
           'partner-token' => $partner_token
           ],
       ]);

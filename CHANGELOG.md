@@ -1,3 +1,7 @@
+# v0.2.4
+- Added: Configuração de multa e Juros para Boleto Bancário
+- Fix: Gera transa~ção apenas com itens visíveis (não considera os produtos pais).
+
 # v0.2.3
 - Fix: validação e autopreenchimento de CPF/CNPJ
 

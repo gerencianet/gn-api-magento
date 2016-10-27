@@ -158,7 +158,7 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
     	// add Gerencianet JS after <body>
     	$jsBlock = Mage::app()->getLayout()->createBlock('core/text', 'js_gerencianet');
     	$jsBlock->setText($addToJS."<script type='text/javascript'>
-            //v 0.2.3
+            //v 0.2.4
     		//<![CDATA[
 			var installmentsUrl = '" . $url_installments . "';
         	var loaderUrl = '".$this->getSkinUrl('images/opc-ajax-loader.gif')."';

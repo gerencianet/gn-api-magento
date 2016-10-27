@@ -392,7 +392,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 */
 	public function getChargeBody() {
 		$order = $this->getOrder();
-		$items = $order->getItemsCollection();
+		$items = $order->getAllVisibleItems();
 		$return = array();
 		$orderTotal = 0;
 		foreach ($items as $it) {

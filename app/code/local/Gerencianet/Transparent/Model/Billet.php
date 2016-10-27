@@ -43,6 +43,18 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
     $info = $this->getInfoInstance();
     $quote = Mage::getModel('checkout/session')->getQuote();
     $expires = Mage::getStoreConfig('payment/gerencianet_billet/duedate');
+    $fine = floatval(Mage::getStoreConfig('payment/gerencianet_billet/fine'));
+    if ($fine>0 && $fine<=10) {
+      $additionaldata['billet']['fine'] = $fine;
+    } else {
+      $additionaldata['billet']['fine'] = '0';
+    }
+    $interest = floatval(Mage::getStoreConfig('payment/gerencianet_billet/interest'));
+    if ($interest>0 && $interest<=0.330) {
+      $additionaldata['billet']['interest'] = $interest;
+    } else {
+      $additionaldata['billet']['interest'] = '0';
+    }
     $additionaldata['billet']['expires'] = date('Y-m-d',strtotime('+'.$expires.' days'));
     //$additionaldata['juridical']['data_pay_billet_as_juridical'] = $data->getDataPayBilletAsJuridical();
     //$additionaldata['juridical']['data_corporate_name'] = $data->getDataCorporateName();
@@ -114,9 +126,24 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
          )
      );
 
-     if(count($instructions) > 0) {
+     if(floatval($add_data['billet']['fine'])!=0 && floatval($add_data['billet']['interest']!=0)) {
+       $return['banking_billet']['configurations'] = array(
+          'fine' => intval(floatval($add_data['billet']['fine'])*100),
+          'interest' => intval(floatval($add_data['billet']['interest'])*1000)
+        );
+     } else if(floatval($add_data['billet']['fine'])!=0) {
+       $return['banking_billet']['configurations'] = array(
+          'fine' => intval(floatval($add_data['billet']['fine'])*100)
+        );
+     } else if(floatval($add_data['billet']['interest']!=0)) {
+       $return['banking_billet']['configurations'] = array(
+          'interest' => intval(floatval($add_data['billet']['interest'])*1000)
+        );
+     } else if(count($instructions) > 0) {
        $return['banking_billet']['instructions'] = $instructions;
      }
+
+     
 
      $return['banking_billet'] = $this->checkDiscount($return['banking_billet']);
 

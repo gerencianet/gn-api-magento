@@ -90,7 +90,7 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 						$comment = utf8_encode('Pagamento Devolvido');
 						$order->addStatusHistoryComment($comment, 'gerencianet_refunded');
 					} else { // ORDER ALREADY PAID, MUST CREATE CREDIT MEMO
-					    $orderItem = $order->getItemsCollection();
+					    $orderItem = $order->getAllVisibleItems();
 					    $service = Mage::getModel('sales/service_order', $order);
 					    $qtys = array();
 					    foreach ($orderItem as $item) {
@@ -112,7 +112,7 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 						$order->getPayment()->setMessage("Pagamento cancelado.");
 						$order->cancel();
 					} else { // ORDER ALREADY PAID, MUST CREATE CREDIT MEMO
-					    $orderItem = $order->getItemsCollection();
+					    $orderItem = $order->getAllVisibleItems();
 					    $service = Mage::getModel('sales/service_order', $order);
 					    $qtys = array();
 					    foreach ($orderItem as $item) {
