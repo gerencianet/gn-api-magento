@@ -1,3 +1,6 @@
+# v0.2.5
+- Fix: Pacotes e kits de produtos passam a ser considerados nas emissões.
+
 # v0.2.4
 - Added: Configuração de multa e Juros para Boleto Bancário
 - Fix: Gera transa~ção apenas com itens visíveis (não considera os produtos pais).

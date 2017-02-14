@@ -392,17 +392,37 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 */
 	public function getChargeBody() {
 		$order = $this->getOrder();
-		$items = $order->getAllVisibleItems();
 		$return = array();
 		$orderTotal = 0;
-		foreach ($items as $it) {
-			$item = $order->getItemById($it->getItemId());
-			$orderTotal += $item->getBasePrice();
-			$return[] = array(
-					'name' => $item->getName(),
-					'value' => (int)number_format($item->getBasePrice(),2,'',''),
-					'amount' => $item->getQty()
-				);
+
+		foreach ($order->getAllItems() as $it) 
+		{
+		    //if a product has parents (simple product of configurable/bundled/grouped product) load his Parent product type
+		    if ($it->getParentItemId()) 
+		    {
+				$item = $order->getItemById($it->getItemId());
+				$parentItem = $order->getItemById($it->getParentItemId());
+				$orderTotal += $item->getBasePrice();
+
+				if(($parentItem->getProductType() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE) && ($item->getProductType() == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE))
+					$return[] = array(
+						'name' => $item->getName(),
+						'value' => (int)number_format($item->getBasePrice(),2,'',''),
+						'amount' => $item->getQty() * $parentItem->getQty()
+					);
+		    }
+		    else
+		    {
+				$item = $order->getItemById($it->getItemId());
+				$orderTotal += $item->getBasePrice();
+
+				if($item->getProductType() !== Mage_Catalog_Model_Product_Type::TYPE_BUNDLE)
+					$return[] = array(
+						'name' => $item->getName(),
+						'value' => (int)number_format($item->getBasePrice(),2,'',''),
+						'amount' => $item->getQty()
+					);
+			}
 		}
 
 		$returnData = array();
