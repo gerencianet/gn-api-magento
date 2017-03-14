@@ -19,7 +19,7 @@
 <config>
     <modules>
        <Gerencianet_Transparent>
-          <version>0.2.5</version>
+          <version>0.2.6</version>
        </Gerencianet_Transparent>
     </modules>
  

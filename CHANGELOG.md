@@ -1,3 +1,6 @@
+# v0.2.6
+- Fix: Converte preço de produto para Real brasileiro caso o preço base não esteja configurado com moeda BRL.
+
 # v0.2.5
 - Fix: Pacotes e kits de produtos passam a ser considerados nas emissões.
 

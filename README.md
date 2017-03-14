@@ -1,4 +1,4 @@
-# Módulo Oficial da Gerencianet para o Magento - Versão 0.2.5#
+# Módulo Oficial da Gerencianet para o Magento - Versão 0.2.6
 
 **Em caso de dúvidas, você pode verificar a [Documentação](https://docs.gerencianet.com.br) da API na Gerencianet e, necessitando de mais detalhes ou informações, entre em contato com nossa consultoria técnica, via nossos [Canais de Comunicação](https://gerencianet.com.br/central-de-ajuda).**
 

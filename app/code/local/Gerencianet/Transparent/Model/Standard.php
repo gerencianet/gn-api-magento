@@ -394,32 +394,37 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		$order = $this->getOrder();
 		$return = array();
 		$orderTotal = 0;
+		$baseCurrencyCode = Mage::app()->getStore()->getBaseCurrencyCode(); 
+		$currentCurrencyCode = Mage::app()->getStore()->getCurrentCurrencyCode();
 
 		foreach ($order->getAllItems() as $it) 
 		{
+			$item = $order->getItemById($it->getItemId());
+			if($baseCurrencyCode === 'BRL')
+				$itemBasePrice = $item->getBasePrice();
+			else
+				$itemBasePrice = Mage::helper('directory')->currencyConvert($item->getBasePrice(), $baseCurrencyCode, $currentCurrencyCode);
+
+			$orderTotal += $itemBasePrice;
+
 		    //if a product has parents (simple product of configurable/bundled/grouped product) load his Parent product type
 		    if ($it->getParentItemId()) 
 		    {
-				$item = $order->getItemById($it->getItemId());
 				$parentItem = $order->getItemById($it->getParentItemId());
-				$orderTotal += $item->getBasePrice();
 
 				if(($parentItem->getProductType() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE) && ($item->getProductType() == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE))
 					$return[] = array(
 						'name' => $item->getName(),
-						'value' => (int)number_format($item->getBasePrice(),2,'',''),
+						'value' => (int)number_format($itemBasePrice,2,'',''),
 						'amount' => $item->getQty() * $parentItem->getQty()
 					);
 		    }
 		    else
 		    {
-				$item = $order->getItemById($it->getItemId());
-				$orderTotal += $item->getBasePrice();
-
 				if($item->getProductType() !== Mage_Catalog_Model_Product_Type::TYPE_BUNDLE)
 					$return[] = array(
 						'name' => $item->getName(),
-						'value' => (int)number_format($item->getBasePrice(),2,'',''),
+						'value' => (int)number_format($itemBasePrice,2,'',''),
 						'amount' => $item->getQty()
 					);
 			}
