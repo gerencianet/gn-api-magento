@@ -35,6 +35,7 @@ isso seria equivalente a executar os comandos:
 ## Requisitos
 
  - PHP >= 5.4.0
+ - Magento 1.7.x, 1.8.x ou 1.9.x
 
 ## Configuração
 
