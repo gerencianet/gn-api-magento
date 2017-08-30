@@ -1,3 +1,6 @@
+# v0.3.0
+- Add: Metodo de pagamento por boleto no painel administrativo.
+
 # v0.2.6
 - Fix: Converte preço de produto para Real brasileiro caso o preço base não esteja configurado com moeda BRL.
 

@@ -54,4 +54,38 @@ class Gerencianet_Transparent_Model_Observer
         }
     }
     
+    public function adminPrepareLayoutBefore()
+    {
+        $this->_prepareLayoutBefore('admin');
+    }
+
+    public function frontendPrepareLayoutBefore()
+    {
+        $this->_prepareLayoutBefore('frontend');
+    }
+
+    protected function _prepareLayoutBefore($area)
+    {
+        switch($area){
+            case 'admin':
+                Mage::getModel('core/session')->setSessionQuote('adminhtml/session_quote');
+                break;
+
+            case 'frontend':
+                Mage::getModel('core/session')->setSessionQuote('checkout/session');
+                break;
+        }
+    }
+
+    public function prepareLayoutBefore(Varien_Event_Observer $observer)
+    {
+        $block = $observer->getEvent()->getBlock();
+        if ("head" == $block->getNameInLayout()) {
+            $block->addJs('gerencianet/jquery-1.12.3.min.js');
+            $block->addJs('gerencianet/jquery.maskedinput.js');
+            $block->addJs('gerencianet/jquery.noconflict.js');
+        }
+
+        return this;
+    }
 }

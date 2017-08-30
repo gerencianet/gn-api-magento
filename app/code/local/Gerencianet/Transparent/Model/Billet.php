@@ -41,7 +41,8 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
    */
   public function assignData($data) {
     $info = $this->getInfoInstance();
-    $quote = Mage::getModel('checkout/session')->getQuote();
+    $sessionInstance = Mage::getModel("core/session")->getSessionQuote();
+    $quote = Mage::getModel($sessionInstance)->getQuote();
     $expires = Mage::getStoreConfig('payment/gerencianet_billet/duedate');
     $fine = floatval(Mage::getStoreConfig('payment/gerencianet_billet/fine'));
     if ($fine>0 && $fine<=10) {
@@ -76,7 +77,8 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
    */
   public function authorize(Varien_Object $payment, $amount)
   {
-    $quote = Mage::getModel('checkout/session')->getQuote();
+    $sessionInstance = Mage::getModel("core/session")->getSessionQuote();
+    $quote = Mage::getModel($sessionInstance)->getQuote();
     $order_total = $quote->getGrandTotal();
     if ($order_total<5) {
       Mage::throwException($this->_getHelper()->__("O valor mínimo para pagar com a Gerencianet é R$5,00."));

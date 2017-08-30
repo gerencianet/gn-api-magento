@@ -21,7 +21,8 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 	 *
 	 */
 	protected function _expireAjax() {
-		if (!Mage::getSingleton('checkout/session')->getQuote()->hasItems()) {
+		$sessionInstance = Mage::getModel("core/session")->getSessionQuote();
+		if (!Mage::getSingleton($sessionInstance)->getQuote()->hasItems()) {
 			$this->getResponse()->setHeader('HTTP/1.1', '403 Session Expired');
 			exit;
 		}
@@ -80,7 +81,8 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 	public function installmentsAction() {
 		$brand = $this->getRequest()->getParam('brand');
 		$api = $this->getStandard()->getApi();
-    	$quote = Mage::getModel('checkout/session')->getQuote();
+    	$sessionInstance = Mage::getModel("core/session")->getSessionQuote();
+    	$quote = Mage::getModel($sessionInstance)->getQuote();
     	$params = array(
     			'total' => number_format($quote->getGrandTotal(),2,'',''),
     			'brand' => $brand

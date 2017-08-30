@@ -67,7 +67,8 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 
 		$order = Mage::registry('current_order');
         if (!$order) {
-            $order = Mage::getModel('checkout/session')->getQuote();
+            $sessionInstance = Mage::getModel("core/session")->getSessionQuote();
+            $order = Mage::getModel($sessionInstance)->getQuote();
         }
 		/*if ($order->getGrandTotal()<5) {
 			return false;
@@ -470,7 +471,8 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		if (!$this->_order) {
 			$this->_order = Mage::registry('current_order');
 			if (!$this->_order) {
-				$this->_order = Mage::getModel('checkout/session')->getQuote();
+				$sessionInstance = Mage::getModel("core/session")->getSessionQuote();
+				$this->_order = Mage::getModel($sessionInstance)->getQuote();
 				if (!$this->_order) {
 					return false;
 				}

@@ -21,7 +21,8 @@ class Gerencianet_Transparent_Block_Billet_Form extends Mage_Payment_Block_Form 
      */
     protected function _construct() {
     	parent::_construct();
-    	$order = Mage::getModel('checkout/session')->getQuote();
+        $sessionInstance = Mage::getModel("core/session")->getSessionQuote();
+    	$order = Mage::getModel($sessionInstance)->getQuote();
 		$address = $order->getBillingAddress();
         $order_total = $order->getGrandTotal();
 
@@ -124,7 +125,8 @@ class Gerencianet_Transparent_Block_Billet_Form extends Mage_Payment_Block_Form 
 		if (!$this->_order) {
 			$this->_order = Mage::registry('current_order');
 			if (!$this->_order) {
-				$this->_order = Mage::getModel('checkout/session')->getQuote();
+				$sessionInstance = Mage::getModel("core/session")->getSessionQuote();
+                $this->_order = Mage::getModel($sessionInstance)->getQuote();
 				if (!$this->_order) {
 					return false;
 				}

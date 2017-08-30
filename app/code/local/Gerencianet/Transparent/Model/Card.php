@@ -28,7 +28,7 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
     protected $_canCapturePartial       = false;
     protected $_canRefund               = false;
     protected $_canVoid                 = true;
-    protected $_canUseInternal          = true;
+    protected $_canUseInternal          = false;
     protected $_canUseCheckout          = true;
     protected $_canUseForMultishipping  = true;
 	
@@ -41,12 +41,10 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
      */
 	public function assignData($data) {
 		$info = $this->getInfoInstance();
-		$quote = Mage::getModel('checkout/session')->getQuote();
+		$sessionInstance = Mage::getModel("core/session")->getSessionQuote();
+		$quote = Mage::getModel($sessionInstance)->getQuote();
 		$additionaldata['card']['cc_token'] = $data->getCcToken();
 		$additionaldata['card']['cc_installments'] = $data->getCcInstallments();
-	    //$additionaldata['juridical']['data_pay_card_as_juridical'] = $data->getDataPayCardAsJuridical();
-	    //$additionaldata['juridical']['cc_data_corporate_name'] = $data->getCcDataCorporateName();
-	    //$additionaldata['juridical']['cc_data_cnpj'] = $data->getCcDataCnpj();
 		$additionaldata['customer']['cc_data_name_corporate'] = $data->getCcDataNameCorporate();
 	    $additionaldata['customer']['cc_data_cpf_cnpj'] = $data->getCcDataCpfCnpj();
 	    $additionaldata['customer']['cc_data_email'] = $data->getCcDataEmail();
@@ -81,7 +79,8 @@ class Gerencianet_Transparent_Model_Card extends Gerencianet_Transparent_Model_S
 	 */
 	public function authorize(Varien_Object $payment, $amount)
 	{
-		$quote = Mage::getModel('checkout/session')->getQuote();
+		$sessionInstance = Mage::getModel("core/session")->getSessionQuote();
+		$quote = Mage::getModel($sessionInstance)->getQuote();
 	    $order_total = $quote->getGrandTotal();
 	    if ($order_total<5) {
 	      	Mage::throwException($this->_getHelper()->__("O valor mínimo para pagar com a Gerencianet é R$5,00."));

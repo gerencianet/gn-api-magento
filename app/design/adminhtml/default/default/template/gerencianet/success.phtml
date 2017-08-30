@@ -1,0 +1,84 @@
+<?php 
+/**
+ * Gerencianet
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL).
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Payment
+ * @package    Gerencianet_Transparent
+ * @copyright  Copyright (c) 2015 Gerencianet (http://www.gerencianet.com.br)
+ * @author     AV5 Tecnologia <anderson@av5.com.br>
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+?>
+<div class="page-title">
+    <h1><?php echo $this->__('Your order has been received') ?></h1>
+</div>
+<?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+<p><strong><?php echo $this->__('Thank you for your purchase!') ?></strong></p>
+
+<?php if ($this->getOrderId()):?>
+<?php if ($this->getCanViewOrder()) :?>
+    <p><?php echo $this->__('Your order # is: %s.', sprintf('<a href="%s">%s</a>', $this->escapeHtml($this->getViewOrderUrl()), $this->escapeHtml($this->getOrderId()))) ?></p>
+<?php  else :?>
+    <p><?php echo $this->__('Your order # is: %s.', $this->escapeHtml($this->getOrderId())) ?>.</p>
+<?php endif;?>
+    <p><?php echo $this->__('You will receive an order confirmation email with details of your order and a link to track its progress.') ?></p>
+<?php if ($this->getViewOrder() && $this->getCanPrintOrder()) :?>
+    <p>
+        <?php echo $this->__('Click <a href="%s" onclick="this.target=\'_blank\'">here to print</a> a copy of your order confirmation.', $this->getPrintUrl()) ?>
+        <?php echo $this->getChildHtml() ?>
+    </p>
+<?php endif;?>
+<?php endif;?>
+
+<?php if ($this->getAgreementRefId()): ?>
+    <p><?php echo $this->__('Your billing agreement # is: %s.', sprintf('<a href="%s">%s</a>', $this->escapeHtml($this->getAgreementUrl()), $this->escapeHtml($this->getAgreementRefId())))?></p>
+<?php endif;?>
+
+<?php if ($profiles = $this->getRecurringProfiles()):?>
+<p><?php echo $this->__('Your recurring payment profiles:'); ?></p>
+<ul>
+<?php foreach($profiles as $profile):?>
+<?php $profileIdHtml = ($this->getCanViewProfiles() ? sprintf('<a href="%s">%s</a>', $this->escapeHtml($this->getProfileUrl($profile)), $this->escapeHtml($this->getObjectData($profile, 'reference_id'))) : $this->escapeHtml($this->getObjectData($profile, 'reference_id')));?>
+    <li><?php echo $this->__('Payment profile # %s: "%s".', $profileIdHtml, $this->escapeHtml($this->getObjectData($profile, 'schedule_description')))?></li>
+<?php endforeach;?>
+</ul>
+<?php endif;?>
+
+<!-- Start GERENCIANET_BILLET code -->
+<center>
+    <?php
+      $order = Mage::getModel('sales/order');
+      $order->loadByIncrementId($this->getOrderId());
+      $shipping_amount = $order->getBaseShippingAmount();
+      $tax_amount = $order->getBaseTaxAmount();
+      $discount_amount = $order->getBaseDiscountAmount();
+      $order_total = $order->getBaseSubtotal() + $tax_amount + $discount_amount + $shipping_amount;
+      $method = $order->getPayment()->getMethod();
+      
+      if (strpos($method, 'gerencianet_billet') !== false):
+      	$addData = unserialize($order->getPayment()->getAdditionalData()); 
+    ?>
+      	<a title="Imprimir Boleto" href="<?php echo $addData['billet']['link']; ?>" target='_blank'><img class="btn-imprimir" src="<?php echo $this->getSkinUrl('images/gerencianet/botao-imprimir.png'); ?>" /></a>
+    <?php endif; ?>
+    <br /><br />
+</center>
+<!-- Finish GERENCIANET_BILLET code -->
+
+<div class="buttons-set">
+    <button type="button" class="button" title="<?php echo $this->__('Continue Shopping') ?>" onclick="window.location='<?php echo $this->getUrl() ?>'"><span><span><?php echo $this->__('Continue Shopping') ?></span></span></button>
+</div>
+<style>
+.btn-imprimir{
+  display: inline-block;
+  margin-top: 20px;
+  width: 233px;
+  height: 51px;
+  outline: none;
+}
+</style>

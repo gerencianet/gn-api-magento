@@ -22,7 +22,8 @@ class Gerencianet_Transparent_Block_Card_Form extends Mage_Payment_Block_Form_Cc
     protected function _construct() {
     	parent::_construct();
 
-        $order = Mage::getModel('checkout/session')->getQuote();
+         $sessionInstance = Mage::getModel("core/session")->getSessionQuote();
+        $order = Mage::getModel($sessionInstance)->getQuote();
         $address = $order->getBillingAddress();
         $order_total = $order->getGrandTotal();
 
