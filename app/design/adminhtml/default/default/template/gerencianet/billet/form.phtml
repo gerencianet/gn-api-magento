@@ -18,8 +18,8 @@
 $_code = $this->getMethodCode();
 $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 ?>
-<!-- v0.3.0 -->
-<div class="gn-osc-payment-box">
+<!-- v0.4.0 -->
+<div class="gn-osc-billet-payment-box">
 	<ul class="form-list billet-payment" id="payment_form_<?php echo $_code ?>" style="display:none;">
 		<?php if ($this->order_total<5):	?>
 		<div class="alert-development">
@@ -86,11 +86,12 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 	</ul>
 </div>
 <style type="text/css">
-.gn-osc-payment-box {
+.gn-osc-billet-payment-box {
 	margin: 3px;
 	width: 100%;
+	display: table;
 }
-.gn-osc-payment-box input[type=text], .gn-osc-payment-box select {
+.gn-osc-billet-payment-box input[type=text], .gn-osc-billet-payment-box select {
 	width: 100%;
 }
 .gn-billet-info-row {

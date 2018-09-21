@@ -1,3 +1,7 @@
+# v0.4.0
+- Delete: Bandeiras jcb, aura e discover do checkout da Gerencianet.
+- Add: Bandeira hipertcard no checkout da Gerencianet.
+
 # v0.3.0
 - Add: Metodo de pagamento por boleto no painel administrativo.
 

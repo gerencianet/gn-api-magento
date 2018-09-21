@@ -18,8 +18,8 @@
 $_code = $this->getMethodCode();
 $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 ?>
-<!-- v0.3.0 -->
-<div class="gn-osc-payment-box">
+
+<div class="gn-osc-card-payment-box">
 	<ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none;">
 		<?php if ($this->order_total<5):	?>
 		<div class="alert-development">
@@ -322,11 +322,12 @@ Validation.defaultOptions.immediate = true;
 </script>
 
 <style type="text/css">
-.gn-osc-payment-box {
+.gn-osc-card-payment-box {
 	margin: 3px;
 	width: 100%;
+	display: table;
 }
-.gn-osc-payment-box input[type=text], .gn-osc-payment-box select {
+.gn-osc-card-payment-box input[type=text], .gn-osc-card-payment-box select {
 	width: 100%;
 }
 
@@ -508,13 +509,6 @@ if (jQuery!=undefined)
 			GerencianetTransparent.cardPaymentValidate();
 		});
 
-		jQuery( "#brand_jcb" ).click(function() {
-		  	jQuery('input[name="payment[cc_type]"][value="jcb"]').prop("checked", true);
-			saveBrandInFE('jcb');
-			GerencianetTransparent.calculateInstallments();
-			GerencianetTransparent.cardPaymentValidate();
-		});
-
 		jQuery( "#brand_elo" ).click(function() {
 		  	jQuery('input[name="payment[cc_type]"][value="elo"]').prop("checked", true);
 			saveBrandInFE('elo');
@@ -529,25 +523,12 @@ if (jQuery!=undefined)
 			GerencianetTransparent.cardPaymentValidate();
 		});
 
-		jQuery( "#brand_discover" ).click(function() {
-		  	jQuery('input[name="payment[cc_type]"][value="discover"]').prop("checked", true);
-			saveBrandInFE('discover');
+		jQuery( "#brand_hipercard" ).click(function() {
+		  	jQuery('input[name="payment[cc_type]"][value="hipercard"]').prop("checked", true);
+			saveBrandInFE('hipercard');
 			GerencianetTransparent.calculateInstallments();
 			GerencianetTransparent.cardPaymentValidate();
 		});
-
-		jQuery( "#brand_aura" ).click(function() {
-		  	jQuery('input[name="payment[cc_type]"][value="aura"]').prop("checked", true);
-			saveBrandInFE('aura');
-			GerencianetTransparent.calculateInstallments();
-			GerencianetTransparent.cardPaymentValidate();
-		});
-
-		/*if (verifyCPF(jQuery("#gerencianet_card_cc_data_cpf_cnpj").val()) || verifyCNPJ(jQuery("#gerencianet_card_cc_data_cpf_cnpj").val())) {
-			jQuery('#gerencianet_cc_cpf_cnpj_row').addClass("gn-hide");
-		} else {
-			jQuery('#gerencianet_cc_cpf_cnpj_row').removeClass("gn-hide");
-		}*/
 
 		if (verifyEmail(jQuery("#gerencianet_card_cc_data_email").val())) {
 			jQuery('#gerencianet_cc_email_row').addClass("gn-hide");
@@ -558,11 +539,9 @@ if (jQuery!=undefined)
 		if (brand=="visa" ||
 			brand=="mastercard" ||
 			brand=="amex" ||
-			brand=="jcb" ||
 			brand=="elo" ||
 			brand=="diners" ||
-			brand=="discover" ||
-			brand=="aura") {
+			brand=="hipercard") {
 			brand = null;
 			var $radios = jQuery("input:radio[name='payment[cc_type]']");
 		    if($radios.is(':checked') === false && jQuery("#brandSave").val()!="") {

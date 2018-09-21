@@ -23,11 +23,9 @@ class Gerencianet_Transparent_Model_Source_Cards extends Mage_Payment_Model_Sour
 			'visa' 			=> 'Visa',
 			'mastercard' 	=> 'Mastercard',
 			'amex' 			=> 'American Express',
-			'jcb'			=> 'JCB',
 			'elo'			=> 'Elo',
 			'diners'		=> 'Diners',
-			'discover'		=> 'Discover',
-			'aura'			=> 'Aura'
+			'hipercard' => 'Hipercard'
 		);
 
 	/**
