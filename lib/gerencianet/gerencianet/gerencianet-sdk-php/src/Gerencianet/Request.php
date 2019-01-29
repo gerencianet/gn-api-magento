@@ -28,7 +28,7 @@ class Request
         'base_url' => $this->config['baseUri'],
         'headers' => [
           'Content-Type' => 'application/json',
-          'api-sdk' => 'magento-0.4.0',
+          'api-sdk' => 'magento-0.4.1',
           'partner-token' => $partner_token
           ],
       ]);

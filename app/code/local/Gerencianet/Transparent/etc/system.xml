@@ -29,7 +29,7 @@
                     <show_in_store>1</show_in_store>
                     <fields>
                         <title_page translate="label">
-                            <label>Versão do Módulo: v0.4.0</label>
+                            <label>Versão do Módulo: v0.4.1</label>
                             <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
                             <sort_order>1</sort_order>
                             <show_in_default>1</show_in_default>

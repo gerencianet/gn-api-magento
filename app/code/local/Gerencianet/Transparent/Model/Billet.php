@@ -90,7 +90,7 @@ class Gerencianet_Transparent_Model_Billet extends Gerencianet_Transparent_Model
         if ($pay['code'] == 200) {
           $add_data = unserialize($this->getOrder()->getPayment()->getAdditionalData());
           $add_data['billet']['barcode'] = $pay['data']['barcode'];
-          $add_data['billet']['link'] = $pay['data']['link'];
+          $add_data['billet']['link'] = $pay['data']['pdf']['charge'];
           $add_data['charge_id'] = $pay['data']['charge_id'];
 
           $payment->setAdditionalData(serialize($add_data));
