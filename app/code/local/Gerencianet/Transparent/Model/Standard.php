@@ -15,9 +15,10 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-require_once Mage::getBaseDir('lib'). DS . 'gerencianet' . DS . 'autoload.php';
+require_once Mage::getBaseDir('lib') . DS . 'gerencianet' . DS . 'autoload.php';
 
-class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_Abstract {
+class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_Abstract
+{
 
 	/**
 	 * Model properties
@@ -47,13 +48,14 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	/**
 	 * Model constructor
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 		parent::__construct();
 		$this->_environment = Mage::getStoreConfig($this->_configPath . 'environment');
 		$this->_clientId = Mage::getStoreConfig($this->_configPath . 'client_id');
-    	$this->_clientSecret = Mage::getStoreConfig($this->_configPath . 'client_secret');
-    	$this->_sandboxClientId = Mage::getStoreConfig($this->_configPath . 'sandbox_client_id');
-    	$this->_sandboxClientSecret = Mage::getStoreConfig($this->_configPath . 'sandbox_client_secret');
+		$this->_clientSecret = Mage::getStoreConfig($this->_configPath . 'client_secret');
+		$this->_sandboxClientId = Mage::getStoreConfig($this->_configPath . 'sandbox_client_id');
+		$this->_sandboxClientSecret = Mage::getStoreConfig($this->_configPath . 'sandbox_client_secret');
 	}
 
 	/**
@@ -66,10 +68,10 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		$available = parent::isAvailable($quote);
 
 		$order = Mage::registry('current_order');
-        if (!$order) {
-            $sessionInstance = Mage::getModel("core/session")->getSessionQuote();
-            $order = Mage::getModel($sessionInstance)->getQuote();
-        }
+		if (!$order) {
+			$sessionInstance = Mage::getModel("core/session")->getSessionQuote();
+			$order = Mage::getModel($sessionInstance)->getQuote();
+		}
 		/*if ($order->getGrandTotal()<5) {
 			return false;
 		}*/
@@ -81,9 +83,10 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * @param Varien_Object $payment
 	 * @param double $amount
 	 */
-	public function validateData($paymentType) {
+	public function validateData($paymentType)
+	{
 		try {
-			if ($paymentType=="card") {
+			if ($paymentType == "card") {
 				$this->getBillingAddress($paymentType);
 			}
 			$this->getCustomer($paymentType);
@@ -98,26 +101,27 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * Returns API object
 	 * @return Gerencianet\Gerencianet
 	 */
-	public function getApi($env=NULL) {
-	    if ($env) {
-	        if ($env !== $this->_environment) {
-	            $this->_api = NULL;
-	        }
-	    } else {
-	        $env = $this->_environment;
-	    }
+	public function getApi($env = NULL)
+	{
+		if ($env) {
+			if ($env !== $this->_environment) {
+				$this->_api = NULL;
+			}
+		} else {
+			$env = $this->_environment;
+		}
 
 		if (!$this->_api) {
 
-    	    if ($env == self::ENV_TEST) {
-    	        $clientID = $this->_sandboxClientId;
-    	        $clientSecret = $this->_sandboxClientSecret;
-    	        $mode = true;
-    	    } else {
-    	        $clientID = $this->_clientId;
-    	        $clientSecret = $this->_clientSecret;
-    	        $mode = false;
-    	    }
+			if ($env == self::ENV_TEST) {
+				$clientID = $this->_sandboxClientId;
+				$clientSecret = $this->_sandboxClientSecret;
+				$mode = true;
+			} else {
+				$clientID = $this->_clientId;
+				$clientSecret = $this->_clientSecret;
+				$mode = false;
+			}
 
 			$options = array(
 				'client_id' => $clientID,
@@ -137,11 +141,12 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 *
 	 * @return ApiPayCharge
 	 */
-	public function payCharge() {
+	public function payCharge()
+	{
 		$params = array('id' => $this->createCharge());
 		try {
-			return $this->getApi()->payCharge($params,$this->getBody());
-		} catch(Exception $e) {
+			return $this->getApi()->payCharge($params, $this->getBody());
+		} catch (Exception $e) {
 			Mage::log('PAY CHARGE ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
 
 			if ($e->getMessage()) {
@@ -156,7 +161,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				$e_code = "";
 			}
 
-			Mage::throwException($this->errorHelper($e_message,$e_code,$e));
+			Mage::throwException($this->errorHelper($e_message, $e_code, $e));
 		}
 	}
 
@@ -165,13 +170,14 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 *
 	 * @return int
 	 */
-	public function createCharge() {
+	public function createCharge()
+	{
 		$body = $this->getChargeBody();
-		try{
+		try {
 			$charge = $this->getApi()->createCharge(array(), $body);
-			Mage::log('CHARGE: ' . var_export($charge,true),0,'gerencianet.log');
+			Mage::log('CHARGE: ' . var_export($charge, true), 0, 'gerencianet.log');
 			return $charge['data']['charge_id'];
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			Mage::log('CREATE CHARGE ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
 			Mage::throwException($e->getMessage());
 		}
@@ -182,14 +188,15 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * @param int $orderID
 	 * @param int $chargeID
 	 */
-	public function updateCharge($orderID, $chargeID) {
+	public function updateCharge($orderID, $chargeID)
+	{
 		$metadata = array(
 			'custom_id' => $orderID,
-			);
-		try{
+		);
+		try {
 			$charge = $this->getApi()->updateChargeMetadata(array('id' => $chargeID), $metadata);
-			Mage::log('UPDATE CHARGE METADATA: ' . var_export($charge,true),0,'gerencianet.log');
-		} catch(Exception $e) {
+			Mage::log('UPDATE CHARGE METADATA: ' . var_export($charge, true), 0, 'gerencianet.log');
+		} catch (Exception $e) {
 			Mage::log('UPDATE CHARGE ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
 			Mage::throwException($e->getMessage());
 		}
@@ -200,12 +207,13 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * @param string $token
 	 * @return array
 	 */
-	public function getNotification($token) {
-		try{
+	public function getNotification($token)
+	{
+		try {
 			$notification = $this->getApi(self::ENV_PRODUCTION)->getNotification(array('token' => $token), array());
-			Mage::log('NOTIFICATION: ' . var_export($notification,true),0,'gerencianet.log');
+			Mage::log('NOTIFICATION: ' . var_export($notification, true), 0, 'gerencianet.log');
 			return $notification['data'];
-		} catch(Exception $e) {
+		} catch (Exception $e) {
 			Mage::log('GET NOTIFICATION ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
 			Mage::throwException($e->getMessage());
 		}
@@ -216,22 +224,24 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * @param string $token
 	 * @return array
 	 */
-	public function getNotificationSB($token) {
-			try{
-	    	$notification = $this->getApi(self::ENV_TEST)->getNotification(array('token' => $token), array());
-	    	Mage::log('NOTIFICATION SANDBOX: ' . var_export($notification,true),0,'gerencianet.log');
-	    	return $notification['data'];
-	    } catch(Exception $e) {
-				Mage::log('GET NOTIFICATION SANDBOX ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
-				Mage::throwException($e->getMessage());
-			}
+	public function getNotificationSB($token)
+	{
+		try {
+			$notification = $this->getApi(self::ENV_TEST)->getNotification(array('token' => $token), array());
+			Mage::log('NOTIFICATION SANDBOX: ' . var_export($notification, true), 0, 'gerencianet.log');
+			return $notification['data'];
+		} catch (Exception $e) {
+			Mage::log('GET NOTIFICATION SANDBOX ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
+			Mage::throwException($e->getMessage());
+		}
 	}
 
 	/**
 	 * Retrieve order's charge ID
 	 * @return int
 	 */
-	public function getChargeId() {
+	public function getChargeId()
+	{
 		$payData = $this->getOrder()->getPayment()->getAdditonalData();
 		$payData = unserialize($payData);
 		return $payData['charge_id'];
@@ -241,11 +251,12 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * Get payment data for pay charge
 	 * @return array
 	 */
-	public function getBody() {
+	public function getBody()
+	{
 		$body = array(
 			'payment' => $this->getPaymentData()
 		);
-		Mage::log('BODY PAYMENT: ' . var_export($body,true),0,'gerencianet.log');
+		Mage::log('BODY PAYMENT: ' . var_export($body, true), 0, 'gerencianet.log');
 		return $body;
 	}
 
@@ -253,59 +264,58 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * Retrieves customer's data for pay charge
 	 * @return array
 	 */
-	public function getCustomer($paymentType) {
+	public function getCustomer($paymentType)
+	{
 		$formData = unserialize($this->getOrder()->getPayment()->getAdditionalData());
 		$payBilletAsJuridical = false;
 		$payCardAsJuridical = false;
 
 		if (isset($formData['customer']['data_cpf_cnpj'])) {
-						
-			$validateJuridical = Mage::getModel('gerencianet_transparent/validator')->validateJuridicalPerson( $formData['customer']['data_name_corporate'], $formData['customer']['data_cpf_cnpj'], $paymentType, false);
+
+			$validateJuridical = Mage::getModel('gerencianet_transparent/validator')->validateJuridicalPerson($formData['customer']['data_name_corporate'], $formData['customer']['data_cpf_cnpj'], $paymentType, false);
 
 			if ($validateJuridical) {
-				$juridical_data = array (
-				  'corporate_name' => $formData['customer']['data_name_corporate'],
-				  'cnpj' => preg_replace( '/[^0-9]/', '',$formData['customer']['data_cpf_cnpj'])
+				$juridical_data = array(
+					'corporate_name' => $formData['customer']['data_name_corporate'],
+					'cnpj' => preg_replace('/[^0-9]/', '', $formData['customer']['data_cpf_cnpj'])
 				);
 				$payBilletAsJuridical = true;
-			
 			} else {
 
-				$validateIndividual = Mage::getModel('gerencianet_transparent/validator')->validateIndividualPerson( $formData['customer']['data_name_corporate'], preg_replace( '/[^0-9]/', '',$formData['customer']['data_cpf_cnpj']), $paymentType);
+				$validateIndividual = Mage::getModel('gerencianet_transparent/validator')->validateIndividualPerson($formData['customer']['data_name_corporate'], preg_replace('/[^0-9]/', '', $formData['customer']['data_cpf_cnpj']), $paymentType);
 			}
 		}
 
 		if (isset($formData['customer']['cc_data_cpf_cnpj'])) {
 
-			$validateJuridical = Mage::getModel('gerencianet_transparent/validator')->validateJuridicalPerson( $formData['customer']['cc_data_name_corporate'], preg_replace( '/[^0-9]/', '',$formData['customer']['cc_data_cpf_cnpj']), $paymentType, false);
-			
+			$validateJuridical = Mage::getModel('gerencianet_transparent/validator')->validateJuridicalPerson($formData['customer']['cc_data_name_corporate'], preg_replace('/[^0-9]/', '', $formData['customer']['cc_data_cpf_cnpj']), $paymentType, false);
+
 			if ($validateJuridical) {
-			
-				$juridical_data = array (
-				  'corporate_name' => $formData['customer']['cc_data_name_corporate'],
-				  'cnpj' => preg_replace( '/[^0-9]/', '',$formData['customer']['cc_data_cpf_cnpj'])
+
+				$juridical_data = array(
+					'corporate_name' => $formData['customer']['cc_data_name_corporate'],
+					'cnpj' => preg_replace('/[^0-9]/', '', $formData['customer']['cc_data_cpf_cnpj'])
 				);
 				$payCardAsJuridical = true;
-				
 			} else {
-				$validateIndividual = Mage::getModel('gerencianet_transparent/validator')->validateIndividualPerson( $formData['customer']['cc_data_name_corporate'], preg_replace( '/[^0-9]/', '',$formData['customer']['cc_data_cpf_cnpj']), $paymentType);
+				$validateIndividual = Mage::getModel('gerencianet_transparent/validator')->validateIndividualPerson($formData['customer']['cc_data_name_corporate'], preg_replace('/[^0-9]/', '', $formData['customer']['cc_data_cpf_cnpj']), $paymentType);
 			}
 		}
 
-		if ($paymentType=="billet") {
+		if ($paymentType == "billet") {
 
 			if ($payBilletAsJuridical) {
 				$customer = array(
 					'email' => $formData['customer']['data_email'],
-					'phone_number' => preg_replace( '/[^0-9]/', '',$formData['customer']['data_phone_number']),
+					'phone_number' => preg_replace('/[^0-9]/', '', $formData['customer']['data_phone_number']),
 					'juridical_person' => $juridical_data
 				);
 			} else {
 				$customer = array(
 					'name' => $formData['customer']['data_name_corporate'],
-					'cpf' => preg_replace( '/[^0-9]/', '',$formData['customer']['data_cpf_cnpj']),
+					'cpf' => preg_replace('/[^0-9]/', '', $formData['customer']['data_cpf_cnpj']),
 					'email' => $formData['customer']['data_email'],
-					'phone_number' => preg_replace( '/[^0-9]/', '',$formData['customer']['data_phone_number'])
+					'phone_number' => preg_replace('/[^0-9]/', '', $formData['customer']['data_phone_number'])
 				);
 			}
 		} else {
@@ -318,19 +328,18 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				$customer = array(
 					'email' => $formData['customer']['cc_data_email'],
 					'birth' => $birth_date,
-					'phone_number' => preg_replace( '/[^0-9]/', '',$formData['customer']['cc_data_phone_number']),
+					'phone_number' => preg_replace('/[^0-9]/', '', $formData['customer']['cc_data_phone_number']),
 					'juridical_person' => $juridical_data
 				);
 			} else {
 				$customer = array(
 					'name' => $formData['customer']['cc_data_name_corporate'],
-					'cpf' => preg_replace( '/[^0-9]/', '',$formData['customer']['cc_data_cpf_cnpj']),
+					'cpf' => preg_replace('/[^0-9]/', '', $formData['customer']['cc_data_cpf_cnpj']),
 					'email' => $formData['customer']['cc_data_email'],
 					'birth' => $birth_date,
-					'phone_number' => preg_replace( '/[^0-9]/', '',$formData['customer']['cc_data_phone_number'])
+					'phone_number' => preg_replace('/[^0-9]/', '', $formData['customer']['cc_data_phone_number'])
 				);
 			}
-
 		}
 
 		Mage::getModel('gerencianet_transparent/validator')->validate($customer, $paymentType);
@@ -342,9 +351,10 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * Retrieves billing address data for pay charge
 	 * @return array
 	 */
-	public function getBillingAddress($paymentType) {
+	public function getBillingAddress($paymentType)
+	{
 		$formData = unserialize($this->getOrder()->getPayment()->getAdditionalData());
-		if ($paymentType=="card") {
+		if ($paymentType == "card") {
 			$address = $this->getOrder()->getBillingAddress($paymentType);
 
 			$return = array(
@@ -356,7 +366,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				'city' => $formData['billing']['cc_data_city'],
 			);
 
-			if($formData['billing']['cc_data_complement'] != "")
+			if ($formData['billing']['cc_data_complement'] != "")
 				$return['complement'] = $formData['billing']['cc_data_complement'];
 
 			Mage::getModel('gerencianet_transparent/validator')->validate($return, $paymentType);
@@ -368,18 +378,19 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * Retrieves shipping address data for pay charge
 	 * @return array
 	 */
-	public function getShippingAddress($paymentType) {
+	public function getShippingAddress($paymentType)
+	{
 		$address = $this->getOrder()->getShippingAddress();
 		$return = array(
-				'street' => $address->getStreet1(),
-				'number' => $address->getStreet2(),
-				'zipcode' => preg_replace('/[^0-9\s]/', '',$address->getPostcode()),
-				'neighborhood' => $address->getStreet4(),
-				'state' => $address->getRegionCode(),
-				'city' => $address->getCity()
+			'street' => $address->getStreet1(),
+			'number' => $address->getStreet2(),
+			'zipcode' => preg_replace('/[^0-9\s]/', '', $address->getPostcode()),
+			'neighborhood' => $address->getStreet4(),
+			'state' => $address->getRegionCode(),
+			'city' => $address->getCity()
 		);
 
-		if($address->getStreet3())
+		if ($address->getStreet3())
 			$return['complement'] = $address->getStreet3();
 
 		Mage::getModel('gerencianet_transparent/validator')->validate($return, $paymentType);
@@ -391,41 +402,38 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * Generates charge body
 	 * @return array
 	 */
-	public function getChargeBody() {
+	public function getChargeBody()
+	{
 		$order = $this->getOrder();
 		$return = array();
 		$orderTotal = 0;
-		$baseCurrencyCode = Mage::app()->getStore()->getBaseCurrencyCode(); 
+		$baseCurrencyCode = Mage::app()->getStore()->getBaseCurrencyCode();
 		$currentCurrencyCode = Mage::app()->getStore()->getCurrentCurrencyCode();
 
-		foreach ($order->getAllItems() as $it) 
-		{
+		foreach ($order->getAllItems() as $it) {
 			$item = $order->getItemById($it->getItemId());
-			if($baseCurrencyCode === 'BRL')
+			if ($baseCurrencyCode === 'BRL')
 				$itemBasePrice = $item->getBasePrice();
 			else
 				$itemBasePrice = Mage::helper('directory')->currencyConvert($item->getBasePrice(), $baseCurrencyCode, $currentCurrencyCode);
 
 			$orderTotal += $itemBasePrice;
 
-		    //if a product has parents (simple product of configurable/bundled/grouped product) load his Parent product type
-		    if ($it->getParentItemId()) 
-		    {
+			//if a product has parents (simple product of configurable/bundled/grouped product) load his Parent product type
+			if ($it->getParentItemId()) {
 				$parentItem = $order->getItemById($it->getParentItemId());
 
-				if(($parentItem->getProductType() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE) && ($item->getProductType() == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE))
+				if (($parentItem->getProductType() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE) && ($item->getProductType() == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE))
 					$return[] = array(
 						'name' => $item->getName(),
-						'value' => (int)number_format($itemBasePrice,2,'',''),
+						'value' => (int)number_format($itemBasePrice, 2, '', ''),
 						'amount' => $item->getQty() * $parentItem->getQty()
 					);
-		    }
-		    else
-		    {
-				if($item->getProductType() !== Mage_Catalog_Model_Product_Type::TYPE_BUNDLE)
+			} else {
+				if ($item->getProductType() !== Mage_Catalog_Model_Product_Type::TYPE_BUNDLE)
 					$return[] = array(
 						'name' => $item->getName(),
-						'value' => (int)number_format($itemBasePrice,2,'',''),
+						'value' => (int)number_format($itemBasePrice, 2, '', ''),
 						'amount' => $item->getQty()
 					);
 			}
@@ -437,26 +445,26 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			$price = $order->getShippingAddress()->getShippingAmount();
 			$orderTotal += $price;
 			$returnData['shippings'] = array(array(
-						'name' => $title,
-						'value'=> (int)number_format($price,2,'','')
-					));
+				'name' => $title,
+				'value' => (int)number_format($price, 2, '', '')
+			));
 		}
 
 		# Add taxes as a charge's item
 		if ($orderTotal < $order->getBaseTotal()) {
 			$taxValue = $order->getBaseTotal() - $orderTotal;
 			$return[] = array(
-					'name' => 'Taxa/Imposto',
-					'value' => (int)number_format($taxValue,2,'',''),
-					'amount' => 1
-				);
+				'name' => 'Taxa/Imposto',
+				'value' => (int)number_format($taxValue, 2, '', ''),
+				'amount' => 1
+			);
 		}
 
 		$returnData['items'] = $return;
 
 		$notification_url = 'gerencianet/payment/notification';
 		if (Mage::helper('gerencianet_transparent')->isSandbox()) {
-		    $notification_url .= 'sb';
+			$notification_url .= 'sb';
 		}
 		$returnData['metadata'] = array('notification_url' => Mage::getUrl($notification_url));
 
@@ -467,7 +475,8 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * Get current order object
 	 * @return Mage_Sales_Model_Order
 	 */
-	public function getOrder() {
+	public function getOrder()
+	{
 		if (!$this->_order) {
 			$this->_order = Mage::registry('current_order');
 			if (!$this->_order) {
@@ -486,45 +495,47 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	 * @param array $paymentData
 	 * @return array
 	 */
-	public function checkDiscount($paymentData) {
+	public function checkDiscount($paymentData)
+	{
 		$order = $this->getOrder();
 		$discount = false;
 		if ($order->getDiscountAmount()) {
-			$discount = (int)number_format($order->getDiscountAmount(),2,'','');
+			$discount = (int)number_format($order->getDiscountAmount(), 2, '', '');
 		} else {
 			$totals = $order->getTotals();
-			if(isset($totals['discount'])) {
-				$discount = (int)abs(number_format($totals['discount']->getValue(),2,'',''));
+			if (isset($totals['discount'])) {
+				$discount = (int)abs(number_format($totals['discount']->getValue(), 2, '', ''));
 			}
 		}
 
 		if ($discount) {
 			$paymentData['discount'] = array(
-					'type' 		=> 'currency',
-					'value'		=> $discount
+				'type' 		=> 'currency',
+				'value'		=> $discount
 			);
 		}
 
 		return $paymentData;
 	}
 
-	public function errorHelper($message, $code, $error) {
-		
+	public function errorHelper($message, $code, $error)
+	{
+
 		if (strpos($error, '/') !== false) {
-			$property = explode("/",$error);
+			$property = explode("/", $error);
 			$propertyName = end($property);
 		} else {
-			$propertyName="";
+			$propertyName = "";
 		}
 
-		if ($code!="") {
-			if ($message!="" && $propertyName=="") {
+		if ($code != "") {
+			if ($message != "" && $propertyName == "") {
 				$messageShow = $this->getErrorMessage(intval($code), $message, $message);
 			} else {
 				$messageShow = $this->getErrorMessage(intval($code), $propertyName, $message);
 			}
 		} else {
-			if ($message!="") {
+			if ($message != "") {
 				$messageShow = $message;
 			} else {
 				$messageShow = $this->getErrorMessage(1, $propertyName, $message);
@@ -535,9 +546,10 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	}
 
 
-	public function getErrorMessage($error_code, $property, $originalMessage) {
+	public function getErrorMessage($error_code, $property, $originalMessage)
+	{
 		$messageErrorDefault = 'Ocorreu um erro ao tentar realizar a sua requisição. Verifique os campos informados nos formulários e, se o erro persistir, entre contato com o proprietário da loja.';
-		switch($error_code) {
+		switch ($error_code) {
 			case 3500000:
 				$message = 'Erro interno do servidor.';
 				break;
@@ -563,11 +575,11 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				$message = 'Esta transação já possui uma forma de pagamento definida.';
 				break;
 			case 3500034:
-				if (trim($property)=="credit_card") {
+				if (trim($property) == "credit_card") {
 					$message = 'Os dados digitados do cartão são inválidos. Verifique as informações e tente novamente.';
-				} else if (trim($property)=="phone_number") {
+				} else if (trim($property) == "phone_number") {
 					$message = 'O telefone digitado não é válido. Por favor, verifique se o DDD informado é válido e se o número está no padrão (XX)XXXX-XXXX.';
-				}else {
+				} else {
 					$message = 'O campo ' . $this->getFieldName($property) . ' do endereço de pagamento não está preenchido corretamente.';
 				}
 				break;
@@ -649,10 +661,11 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		}
 		return $message;
 	}
-	
-	public function getFieldName($name) {
+
+	public function getFieldName($name)
+	{
 		$field = trim($name);
-		switch($field) {
+		switch ($field) {
 			case "neighborhood":
 				return 'Bairro';
 				break;
@@ -700,5 +713,4 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				break;
 		}
 	}
-
 }

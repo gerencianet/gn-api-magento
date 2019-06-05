@@ -18,30 +18,30 @@
 -->
 <config>
     <modules>
-       <Gerencianet_Transparent>
-          <version>0.4.1</version>
-       </Gerencianet_Transparent>
+        <Gerencianet_Transparent>
+            <version>0.4.2</version>
+        </Gerencianet_Transparent>
     </modules>
- 
+
     <global>
         <models>
-          <gerencianet_transparent>
-            <class>Gerencianet_Transparent_Model</class>
-       		<resourceModel>gerencianet_transparent_mysql4</resourceModel>
-          </gerencianet_transparent>
-          <gerencianet_transparent_mysql4>
-			<class>Gerencianet_Transparent_Model_Mysql4</class>
-			<entities>
-	  			<notifications>
-					<table>gerencianet_notifications</table>
-				</notifications>
-			</entities>
-      	  </gerencianet_transparent_mysql4>
+            <gerencianet_transparent>
+                <class>Gerencianet_Transparent_Model</class>
+                <resourceModel>gerencianet_transparent_mysql4</resourceModel>
+            </gerencianet_transparent>
+            <gerencianet_transparent_mysql4>
+                <class>Gerencianet_Transparent_Model_Mysql4</class>
+                <entities>
+                    <notifications>
+                        <table>gerencianet_notifications</table>
+                    </notifications>
+                </entities>
+            </gerencianet_transparent_mysql4>
         </models>
         <helpers>
-          <gerencianet_transparent>
-            <class>Gerencianet_Transparent_Helper</class>
-          </gerencianet_transparent>
+            <gerencianet_transparent>
+                <class>Gerencianet_Transparent_Helper</class>
+            </gerencianet_transparent>
         </helpers>
         <blocks>
             <gerencianet_transparent>
@@ -55,25 +55,25 @@
                     <class>Mage_Sales_Model_Mysql4_Setup</class>
                 </setup>
                 <connection>
-		        	<use>core_setup</use>
-		        </connection>
-	            <gerencianet_transparent_write>
-	                <connection>
-	                    <use>core_write</use>
-	                </connection>
-	            </gerencianet_transparent_write>
-	            <gerencianet_transparent_read>
-	                <connection>
-	                    <use>core_read</use>
-	                </connection>
-	            </gerencianet_transparent_read>
+                    <use>core_setup</use>
+                </connection>
+                <gerencianet_transparent_write>
+                    <connection>
+                        <use>core_write</use>
+                    </connection>
+                </gerencianet_transparent_write>
+                <gerencianet_transparent_read>
+                    <connection>
+                        <use>core_read</use>
+                    </connection>
+                </gerencianet_transparent_read>
             </gerencianet_transparent_setup>
         </resources>
     </global>
- 
+
     <default>
         <payment>
-        	<gerencianet_transparent>
+            <gerencianet_transparent>
                 <active>1</active>
                 <model>gerencianet_transparent/standard</model>
                 <title>Gerencianet</title>
@@ -97,7 +97,7 @@
                 <title>Boleto Bancário</title>
                 <payment_action>authorize</payment_action>
             </gerencianet_billet>
-         </payment>
+        </payment>
     </default>
 
     <frontend>
@@ -150,6 +150,15 @@
 
     <adminhtml>
         <events>
+            <admin_system_config_changed_section_payment>
+                <observers>
+                    <Gerencianet_Transparent_Model_Observer>
+                        <type>singleton</type>
+                        <class>gerencianet_transparent/observer</class>
+                        <method>checkTLS</method>
+                    </Gerencianet_Transparent_Model_Observer>
+                </observers>
+            </admin_system_config_changed_section_payment>
             <core_block_abstract_prepare_layout_before>
                 <observers>
                     <gerencianet_transparent_updatecharge>
@@ -203,18 +212,23 @@
                 </gerencianet_transparent>
             </updates>
         </layout>
+        <adminhtml_system_config_edit>
+            <reference name="content">
+                <block type="adminhtml/notification_curl" name="notification_curl" as="notification_curl" template="notification/tls.phtml"/>
+            </reference>
+        </adminhtml_system_config_edit>
     </adminhtml>
-    
+
     <crontab>
-    	<jobs>
-    		<gerencianet_transparent_updater>
-    			<schedule>
-    				<cron_expr>*/5 * * * *</cron_expr>
-    			</schedule>
-    			<run>
-    				<model>gerencianet_transparent/updater::updatecharge</model>
-    			</run>
-    		</gerencianet_transparent_updater>
-    	</jobs>
+        <jobs>
+            <gerencianet_transparent_updater>
+                <schedule>
+                    <cron_expr>*/5 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>gerencianet_transparent/updater::updatecharge</model>
+                </run>
+            </gerencianet_transparent_updater>
+        </jobs>
     </crontab>
 </config>
