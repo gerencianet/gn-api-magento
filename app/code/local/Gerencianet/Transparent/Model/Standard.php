@@ -411,54 +411,44 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		$currentCurrencyCode = Mage::app()->getStore()->getCurrentCurrencyCode();
 
 		foreach ($order->getAllItems() as $it) {
-			$item = $order->getItemById($it->getItemId());
+			// $item = $order->getItemById($it->getItemId());
+			$item = $it;
+			
 			if ($baseCurrencyCode === 'BRL')
-				$itemBasePrice = $item->getBasePrice();
+			$itemBasePrice = $item->getBasePrice();
 			else
-				$itemBasePrice = Mage::helper('directory')->currencyConvert($item->getBasePrice(), $baseCurrencyCode, $currentCurrencyCode);
-
+			$itemBasePrice = Mage::helper('directory')->currencyConvert($item->getBasePrice(), $baseCurrencyCode, $currentCurrencyCode);
+			
 			$orderTotal += $itemBasePrice;
-
 			//if a product has parents (simple product of configurable/bundled/grouped product) load his Parent product type
-			if ($it->getParentItemId()) {
-				$parentItem = $order->getItemById($it->getParentItemId());
-
-				if (($parentItem->getProductType() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE) && ($item->getProductType() == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE))
-					$return[] = array(
+			$return[] = array(
 						'name' => $item->getName(),
 						'value' => (int)number_format($itemBasePrice, 2, '', ''),
-						'amount' => $item->getQty() * $parentItem->getQty()
+						'amount' => $item['qty_ordered']
 					);
-			} else {
-				if ($item->getProductType() !== Mage_Catalog_Model_Product_Type::TYPE_BUNDLE)
-					$return[] = array(
-						'name' => $item->getName(),
-						'value' => (int)number_format($itemBasePrice, 2, '', ''),
-						'amount' => $item->getQty()
-					);
-			}
 		}
 
 		$returnData = array();
-		if (!$order->isVirtual()) { // CHECK ORDER IS NOT VIRTUAL
-			$title = $order->getShippingAddress()->getShippingDescription();
-			$price = $order->getShippingAddress()->getShippingAmount();
+
+		if (!$order['is_virtual']) { // CHECK ORDER IS NOT VIRTUAL
+			$title = $order['shipping_description'];
+			$price = $order['shipping_amount'];
 			$orderTotal += $price;
 			$returnData['shippings'] = array(array(
 				'name' => $title,
 				'value' => (int)number_format($price, 2, '', '')
 			));
 		}
-
+		// Mage::log($parentItem->getProductType()->debug(), null, 'system.log', true);
 		# Add taxes as a charge's item
-		if ($orderTotal < $order->getBaseTotal()) {
-			$taxValue = $order->getBaseTotal() - $orderTotal;
-			$return[] = array(
-				'name' => 'Taxa/Imposto',
-				'value' => (int)number_format($taxValue, 2, '', ''),
-				'amount' => 1
-			);
-		}
+		// if ($orderTotal < $order->getBaseTotal()) {
+		// 	$taxValue = $order->getBaseTotal() - $orderTotal;
+		// 	$return[] = array(
+		// 		'name' => 'Taxa/Imposto',
+		// 		'value' => (int)number_format($taxValue, 2, '', ''),
+		// 		'amount' => 1
+		// 	);
+		// }
 
 		$returnData['items'] = $return;
 
@@ -511,7 +501,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		if ($discount) {
 			$paymentData['discount'] = array(
 				'type' 		=> 'currency',
-				'value'		=> $discount
+				'value'		=> abs($discount)
 			);
 		}
 

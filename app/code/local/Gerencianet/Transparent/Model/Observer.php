@@ -90,7 +90,7 @@ class Gerencianet_Transparent_Model_Observer
             $block->addJs('gerencianet/jquery.noconflict.js');
         }
 
-        return this;
+        return $this;
     }
 
     public function checkTLS()
