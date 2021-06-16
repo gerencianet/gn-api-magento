@@ -29,7 +29,7 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 	}
 	
 	/**
-	 * Get singleton with paypal strandard order transaction information
+	 * Get singleton with  strandard order transaction information
 	 *
 	 * @return Gerencianet_Transparent_Model_Standard
 	 */
@@ -75,6 +75,25 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 	    }
 	}
 	
+	/**
+	 * Receives and process pix webhook
+	 */
+	public function pixWebhookAction(){
+		$request = $this->getRequest();
+		if ($request) {
+			$webhookData = array(
+                'endToEndId'          => $current['endToEndId'],
+			    'txid'         => $current['txid'],
+			    'chave'      => $current['chave'],
+			    'valor'      => $current['valor'],
+			    'horario'      => $current['horario'],
+			    'environment'    => Gerencianet_Transparent_Model_Standard::ENV_PRODUCTION
+			);
+			Mage::getResourceModel('gerencianet_transparent/webhook_pix')->insert($webhookData);
+		    Mage::getModel('gerencianet_transparent/updater')->updatecharge();
+		}
+	}
+
 	/**
 	 * Retrieve installments for current quote
 	 */
