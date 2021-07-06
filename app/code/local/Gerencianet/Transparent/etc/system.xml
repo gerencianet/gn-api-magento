@@ -21,7 +21,7 @@
     <payment>
       <groups>
         <gerencianet_transparent translate="label" module="gerencianet_transparent">
-          <label>Gerencianet Transparente - Configurações Gerais</label>
+          <label>Gerencianet Pagamentos - Configurações Gerais</label>
           <frontend_type>text</frontend_type>
           <sort_order>1200</sort_order>
           <show_in_default>1</show_in_default>
@@ -29,7 +29,7 @@
           <show_in_store>1</show_in_store>
           <fields>
             <title_page translate="label">
-              <label>Versão do Módulo: v0.4.2</label>
+              <label>Versão do Módulo: 1.0.0</label>
               <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
               <sort_order>1</sort_order>
               <show_in_default>1</show_in_default>
@@ -154,7 +154,7 @@
           </fields>
         </gerencianet_transparent>
         <gerencianet_billet translate="label" module="gerencianet_transparent">
-          <label>Gerencianet Transparente - Boleto</label>
+          <label>Gerencianet - Boleto</label>
           <frontend_type>text</frontend_type>
           <sort_order>1210</sort_order>
           <show_in_default>1</show_in_default>
@@ -267,7 +267,7 @@
           </fields>
         </gerencianet_billet>
         <gerencianet_card translate="label" module="gerencianet_transparent">
-          <label>Gerencianet Transparente - Cartão de Crédito</label>
+          <label>Gerencianet - Cartão de Crédito</label>
           <frontend_type>text</frontend_type>
           <sort_order>1220</sort_order>
           <show_in_default>1</show_in_default>
@@ -293,6 +293,91 @@
             </title>
           </fields>
         </gerencianet_card>
+        <gerencianet_pix translate="label" module="gerencianet_transparent">
+          <label>Gerencianet - Pix</label>
+          <frontend_type>text</frontend_type>
+          <sort_order>1230</sort_order>
+          <show_in_default>1</show_in_default>
+          <show_in_website>1</show_in_website>
+          <show_in_store>1</show_in_store>
+          <fields>
+            <active translate="label">
+              <label>Enabled</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>1</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </active>
+            <title translate="label">
+              <label>Título</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>2</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </title>
+            <pix_page translate="label">
+              <label>Configurações do Pix</label>
+              <frontend_model>adminhtml/system_config_form_field_heading</frontend_model>
+              <sort_order>3</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>1</show_in_store>
+            </pix_page>
+            <pix_key translate="label">
+              <label>Chave Pix</label>
+              <frontend_type>text</frontend_type>
+              <sort_order>4</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+              <comment>Informe sua chave Pix cadastrada na Gerencianet</comment>
+            </pix_key>
+            <upload_cert translate="label tooltip comment">
+              <label>Certificado Pix</label>
+              <comment>Deve ser realizado o upload do certificado em formato .pem ou .p12</comment>
+              <frontend_type>file</frontend_type>
+              <backend_model>adminhtml/system_config_backend_file</backend_model>
+              <upload_dir config="system/filesystem/media" scope_info="1">certs</upload_dir>
+              <base_url type="media" scope_info="1">certs</base_url>
+              <sort_order>5</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </upload_cert>
+            <discout_pix translate="label">
+              <label>Desconto do Pix</label>
+              <frontend_type>text</frontend_type>
+              <validate>validate-number</validate>
+              <sort_order>6</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+              <comment>Desconto dado ao cliente caso ele pague com o Pix.</comment>
+            </discout_pix>
+            <pix_time translate="label">
+              <label>Tempo de validade do Pix</label>
+              <frontend_type>text</frontend_type>
+              <validate>validate-length maximum-length-90 minimum-length-0</validate>
+              <sort_order>7</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+              <comment>Tempo da validade do Pix (em dias)</comment>
+            </pix_time>
+            <mtls translate="label">
+              <label>Validar mTLS?</label>
+              <frontend_type>select</frontend_type>
+              <source_model>adminhtml/system_config_source_yesno</source_model>
+              <sort_order>8</sort_order>
+              <show_in_default>1</show_in_default>
+              <show_in_website>1</show_in_website>
+              <show_in_store>0</show_in_store>
+            </mtls>
+          </fields>
+        </gerencianet_pix>
       </groups>
     </payment>
   </sections>
