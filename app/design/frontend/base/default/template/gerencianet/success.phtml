@@ -65,7 +65,20 @@
       	$addData = unserialize($order->getPayment()->getAdditionalData()); 
     ?>
       	<a title="Imprimir Boleto" href="<?php echo $addData['billet']['link']; ?>" target='_blank'><img class="btn-imprimir" src="<?php echo $this->getSkinUrl('images/gerencianet/botao-imprimir.png'); ?>" /></a>
+    <?php endif;
+
+    if (strpos($method, 'gerencianet_pix') !== false):
+      	$addData = unserialize($order->getPayment()->getAdditionalData()); 
+        Mage::log("addData",null,'gerencianet.log',true);
+		Mage::log($addData,null,'gerencianet.log',true);
+    ?>
+        <p>Escaneie o QrCode abaixo:</p>
+      	<img src="<?php echo $addData['pix']['imagemQrcode']; ?>"></img>
+        <p>Ou copie o código abaixo e insira no seu app de pagamentos!</p>
+        <textarea cols="30" rows="10"><?php echo $addData['pix']['qrcode']; ?></textarea>
+        <button>copiar!</button>
     <?php endif; ?>
+
     <br /><br />
 </center>
 <!-- Finish GERENCIANET_BILLET code -->

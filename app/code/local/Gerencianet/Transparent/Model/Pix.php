@@ -45,24 +45,14 @@ class Gerencianet_Transparent_Model_Pix extends Gerencianet_Transparent_Model_St
     $quote = Mage::getModel($sessionInstance)->getQuote();
     $order_total = $quote->getGrandTotal();
 
-    //calendario
-    $expires = Mage::getStoreConfig('payment/gerencianet_pix/pix_time');
-    $additionaldata['calendario']['expiracao'] = $expires*86400;
     //devedor
-    $additionaldata['devedor']['nome'] = $data->getDataNameCorporate();
-    if($data->getDataCpfCnpj() == 11){
-      $additionaldata['devedor']['cpf'] = $data->getDataCpfCnpj();
-    }else if($data->getDataCpfCnpj() == 14){
-      $additionaldata['devedor']['cnpj'] = $data->getDataCpfCnpj();
+    $additionaldata['devedor']['nome'] = $quote->getCustomer()->getName();
+    
+    if(strlen($quote->getCustomer()->getTaxvat()) == 11){
+      $additionaldata['devedor']['cpf'] = $quote->getCustomer()->getTaxvat();
+    }else if(strlen($quote->getCustomer()->getTaxvat()) == 14){
+      $additionaldata['devedor']['cnpj'] = $quote->getCustomer()->getTaxvat();
     }
-    // Valor
-    $additionaldata['valor']['original'] = $order_total;
-    //chave
-    $chave = Mage::getStoreConfig('payment/gerencianet_pix/pix_key');
-    $additionaldata['chave'] = $chave;
-    //infoAdicionais
-    $nomeLoja = Mage::app()->getStore()->getName();
-    $additionaldata['valor']['original'] = $order_total;
 
     $info->setAdditionalData(serialize($additionaldata));
 
@@ -79,77 +69,22 @@ class Gerencianet_Transparent_Model_Pix extends Gerencianet_Transparent_Model_St
   {
     $sessionInstance = Mage::getModel("core/session")->getSessionQuote();
     $quote = Mage::getModel($sessionInstance)->getQuote();
-    $order_total = $quote->getGrandTotal();
-    if ($order_total<5) {
-      Mage::throwException($this->_getHelper()->__("O valor mínimo para pagar com a Gerencianet é R$5,00."));
-    } else {
-      if ($this->validateData('billet')) {
-        $pay = $this->payCharge();
-        Mage::log('PAY CHARGE BILLET: ' . var_export($pay,true),0,'gerencianet.log');
 
-        if ($pay['code'] == 200) {
+    if ($this->validateData('pix')) {
+        $pay = $this->payPix();
+        Mage::log('PAY PIX: '.var_export($pay,true),0,'gerencianet.log');
+
+        if (isset($pay['imagemQrcode'])) {
           $add_data = unserialize($this->getOrder()->getPayment()->getAdditionalData());
-          $add_data['billet']['barcode'] = $pay['data']['barcode'];
-          $add_data['billet']['link'] = $pay['data']['pdf']['charge'];
-          $add_data['charge_id'] = $pay['data']['charge_id'];
+          $add_data['pix']['imagemQrcode'] = $pay['imagemQrcode'];
+          $add_data['pix']['copiaecola'] = $pay['qrcode'];
 
           $payment->setAdditionalData(serialize($add_data));
           $payment->save();
         } else {
-          Mage::throwException($this->_getHelper()->__("Erro na emissão do boleto!\nMotivo: " . $pay->error_description . ".\nPor favor tente novamente mais tarde!"));
+          Mage::throwException($this->_getHelper()->__("Erro na emissão do Pix!\nMotivo: " . $pay->error_description . ".\nPor favor tente novamente mais tarde!"));
         }
       }
-    }
-
     return $this;
-
   }
-
-  /**
-   * Returns payment data formatted to API
-   *
-   * @return array
-   */
-   protected function getPaymentData() {
-     $expires = Mage::getStoreConfig('payment/gerencianet_billet/duedate');
-     $add_data = unserialize($this->getOrder()->getPayment()->getAdditionalData());
-
-     $instructions = array();
-     for ($i=1;$i<=4;$i++) {
-       $inst = Mage::getStoreConfig('payment/gerencianet_billet/instruction'.$i);
-       if ($inst)
-         $instructions[] = Mage::getStoreConfig('payment/gerencianet_billet/instruction'.$i);
-     }
-
-     $return = array(
-       'banking_billet' => array(
-           'expire_at' => $add_data['billet']['expires'],
-           'customer' => $this->getCustomer('billet')
-         )
-     );
-
-     if(floatval($add_data['billet']['fine'])!=0 && floatval($add_data['billet']['interest']!=0)) {
-       $return['banking_billet']['configurations'] = array(
-          'fine' => intval(floatval($add_data['billet']['fine'])*100),
-          'interest' => intval(floatval($add_data['billet']['interest'])*1000)
-        );
-     } else if(floatval($add_data['billet']['fine'])!=0) {
-       $return['banking_billet']['configurations'] = array(
-          'fine' => intval(floatval($add_data['billet']['fine'])*100)
-        );
-     } else if(floatval($add_data['billet']['interest']!=0)) {
-       $return['banking_billet']['configurations'] = array(
-          'interest' => intval(floatval($add_data['billet']['interest'])*1000)
-        );
-     } else if(count($instructions) > 0) {
-       $return['banking_billet']['instructions'] = $instructions;
-     }
-
-     
-
-     $return['banking_billet'] = $this->checkDiscount($return['banking_billet']);
-
-     Mage::log("BANKING BILLET BODY: " . var_export($return,true),0,'gerencianet.log');
-     return $return;
-   }
 }
