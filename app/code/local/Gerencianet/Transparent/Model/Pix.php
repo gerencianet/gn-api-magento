@@ -47,11 +47,11 @@ class Gerencianet_Transparent_Model_Pix extends Gerencianet_Transparent_Model_St
 
     //devedor
     $additionaldata['devedor']['nome'] = $quote->getCustomer()->getName();
-    
-    if(strlen($quote->getCustomer()->getTaxvat()) == 11){
-      $additionaldata['devedor']['cpf'] = $quote->getCustomer()->getTaxvat();
-    }else if(strlen($quote->getCustomer()->getTaxvat()) == 14){
-      $additionaldata['devedor']['cnpj'] = $quote->getCustomer()->getTaxvat();
+
+    if(strlen($data->getDataCpfCnpj()) == 11){
+      $additionaldata['devedor']['cpf'] = $data->getDataCpfCnpj();
+    }else if(strlen($data->getDataCpfCnpj()) == 14){
+      $additionaldata['devedor']['cnpj'] = $data->getDataCpfCnpj();
     }
 
     $info->setAdditionalData(serialize($additionaldata));
