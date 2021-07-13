@@ -1,0 +1,407 @@
+<?php
+/**
+ * Gerencianet
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL).
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Payment
+ * @package    Gerencianet_Transparent
+ * @copyright  Copyright (c) 2016 Gerencianet (http://www.gerencianet.com.br)
+ * @author     Gerencianet
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+$_code = $this->getMethodCode();
+$isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
+?>
+
+<div class="gn-osc-billet-payment-box">
+	<ul class="form-list billet-payment" id="payment_form_<?php echo $_code ?>" style="display:none;">
+		<div class="gn-osc-billet-info">
+			<?php if ($isSandbox):	?>
+			<div class="alert-development">
+				<strong>ATENÇÃO!</strong>
+				<p>Essa loja está em Modo de Desenvolvimento. Um QrCode de teste (NÃO PAGÁVEL) será gerado no ambiente de Sandbox da Gerencianet.</p>
+			</div>
+			<?php endif; ?>
+			<div class="gn-osc-clear gn-billet-info-row">
+				<div class=""><img style="height: 40px; float: left; margin-right: 10px;" src="<?php echo $this->getSkinUrl('images/gerencianet/icon-pix.png') ?>" /></div>
+				<div class="gn-billet-info" style="padding-top: 10px;">O QrCode será gerado assim que a compra for finalizada.</div>
+			</div>
+		
+			<div id="gn-payment-data-content-billet">
+
+				<li id="gerencianet_billet_cpf_phone_row">
+					<div class="gn-osc-field-row">
+						<div class="gn-osc-clear">
+							<div style="float: left; width: 48%;">
+								<div>
+									<label for="<?php echo $_code ?>_data_cpf_cnpj" class="required"><?php echo $this->__('CPF/CNPJ') ?></label>
+									<div class="input-box">
+										<input type="text" id="<?php echo $_code ?>_data_cpf_cnpj" name="payment[data_cpf_cnpj]" title="<?php echo $this->__('CPF/CNPJ') ?>" class="input-text validate-length" value="<?php echo $this->customer_data_document; ?>" />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</li>
+			</div>
+		</div>
+	</ul>
+</div>
+<style type="text/css">
+.gn-osc-billet-payment-box {
+	margin: 3px;
+	width: 100%;
+	display: table;
+}
+.gn-osc-billet-payment-box input[type=text], .gn-osc-billet-payment-box select {
+	width: 100%;
+}
+.gn-billet-info-row {
+	margin-bottom: 10px;
+}
+.gn-osc-billet-info {
+	background-color: #FFF; 
+	padding: 5px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+}
+.gn-billet-image {float:left; width: 65px; height: 35px;}
+.gn-billet-image img {padding: 5px; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; position: relative; background-color: #EDEDED;}
+.gn-billet-info {overflow:hidden; height: 35px; width: auto;}
+.gn-hide { display: none; }
+.alert-development { color: #8a6d3b; background-color: #fcf8e3; border: 1px solid #faebcc; margin-top: 10px; margin-bottom: 20px; padding: 10px; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; font-size: 12px; }
+.alert-development p { color: #8a6d3b; margin: 0; padding: 0; font-size: 11px; }
+.alert-development strong { color: #c90000; }
+</style>
+
+<script type="text/javascript"> 
+
+if (jQuery!=undefined) 
+
+    jQuery(document).ready(function(e){  
+
+    	if (jQuery("[name='billing[taxvat]']").val()!="") {
+			if (jQuery("#gerencianet_billet_data_cpf_cnpj").val()=="") {
+				jQuery("#gerencianet_billet_data_cpf_cnpj").val(jQuery("[name='billing[taxvat]']").val());
+				if (verifyCPF(jQuery("[name='billing[taxvat]']").val()) && jQuery("#gerencianet_billet_data_name_corporate").val()=="") {
+	    			jQuery("#gerencianet_billet_data_name_corporate").val(jQuery("[name='billing[firstname]']").val() + " " + jQuery("[name='billing[lastname]']").val());
+				} else if (verifyCNPJ(jQuery("[name='billing[taxvat]']").val()) && jQuery("#gerencianet_billet_data_name_corporate").val()=="") {
+	    			if (jQuery("#gerencianet_billet_data_name_corporate").val()=="" && typeof jQuery("[name='billing[razao_social]']").val() != "undefined") {
+			    		jQuery("#gerencianet_billet_data_name_corporate").val(jQuery("[name='billing[razao_social]']").val());
+			    	} else if (jQuery("#gerencianet_billet_data_name_corporate").val()=="") {
+			    		jQuery("#gerencianet_billet_data_name_corporate").val(jQuery("[name='billing[firstname]']").val());
+			    	}
+				}
+	    	}
+    	}
+
+    	if (jQuery.mask) {
+    		jQuery("#gerencianet_billet_data_cpf_cnpj").keyup(function(e){
+	            var tamanho = jQuery("#gerencianet_billet_data_cpf_cnpj").val().replace(/[^\d]+/g,'').length;	            
+	            jQuery("#gerencianet_billet_data_cpf_cnpj").unmask();
+	 
+	            if(e.keyCode == 8)
+	            {
+	                if(tamanho == 11){
+	                    jQuery("#gerencianet_billet_data_cpf_cnpj").mask("999.999.999-99?9",{autoclear:false, placeholder:""});
+	                    jQuery("#gerencianet_billet_data_cpf_cnpj").unmask();
+	                } else if(tamanho == 12){
+	                    jQuery("#gerencianet_billet_data_cpf_cnpj").mask("99.999.999/9999-99",{autoclear:false, placeholder:""});
+	                    jQuery("#gerencianet_billet_data_cpf_cnpj").unmask();
+	                }
+	                else 
+	                {
+	                    jQuery("#gerencianet_billet_data_cpf_cnpj").unmask();
+	                    return;
+	                }
+	            }
+	            if(tamanho <= 11){
+	                jQuery("#gerencianet_billet_data_cpf_cnpj").mask("999.999.999-99?9",{autoclear:false, placeholder:""});
+	            } else if(tamanho > 11){
+	                jQuery("#gerencianet_billet_data_cpf_cnpj").mask("99.999.999/9999-99",{autoclear:false, placeholder:""});
+	            }      
+	        });
+	    	
+			jQuery("#gerencianet_billet_data_phone_number").focusout(function(){
+			jQuery("#gerencianet_billet_data_phone_number").unmask();
+				var phone = jQuery("#gerencianet_billet_data_phone_number").val().replace(/[^\d]+/g,'');
+				if(phone.length > 10) {
+					jQuery("#gerencianet_billet_data_phone_number").mask("(99) 99999-999?9");
+				} else {
+					jQuery("#gerencianet_billet_data_phone_number").mask("(99) 9999-9999?9");
+				}
+			}).trigger("focusout");
+		}
+
+		if (validateEmail(jQuery("#gerencianet_billet_data_email").val())) {
+			jQuery('#gerencianet_billet_email_row').addClass("gn-hide");
+		} else {
+			jQuery('#gerencianet_billet_email_row').removeClass("gn-hide");
+		}
+
+		if ((verifyCPF(jQuery("#gerencianet_billet_data_cpf_cnpj").val()) || verifyCNPJ(jQuery("#gerencianet_billet_data_cpf_cnpj").val())) && validatePhone(jQuery('#gerencianet_billet_data_phone_number').val())) {
+			jQuery('#gerencianet_billet_cpf_phone_row').addClass("gn-hide");
+		} else {
+			jQuery('#gerencianet_billet_cpf_phone_row').removeClass("gn-hide");
+		}
+
+		if (validateNameBillet(jQuery('#gerencianet_billet_data_name_corporate').val())) {
+			jQuery('#gerencianet_billet_name_row').addClass("gn-hide");
+		} else {
+			jQuery('#gerencianet_billet_name_row').removeClass("gn-hide");
+		}    
+    });
+
+	function validateNameBillet(data) {
+        if (data) {
+            if (data.length > 7) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    function validateEmail(email) {
+        if (email) {
+            var pattern = new RegExp(/^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/);
+            return pattern.test(email);
+        } else {
+            return false;
+        }
+    }
+
+    function validatePhone(phone_number) {
+        if (phone_number) {
+            if (phone_number.replace(/[^\d]+/g,'').length < 10) {
+                return false; 
+            } else {
+                var pattern = new RegExp(/^[1-9]{2}9?[0-9]{8}$/);
+                if (pattern.test(phone_number.replace(/[^\d]+/g,''))) {
+                    return true; 
+                } else {
+                    return false; 
+                }
+            }
+        }
+    }
+	
+	function verifyCPF(cpf) {
+		if (cpf!=undefined) {
+	        cpf = cpf.replace(/[^\d]+/g,'');
+	        
+	        if(cpf == '' || cpf.length != 11) return false;
+	        
+	        var resto;
+	        var soma = 0;
+	        
+	        if (cpf == "00000000000" || cpf == "11111111111" || cpf == "22222222222" || cpf == "33333333333" || cpf == "44444444444" || cpf == "55555555555" || cpf == "66666666666" || cpf == "77777777777" || cpf == "88888888888" || cpf == "99999999999" || cpf == "12345678909") return false;
+	        
+	        for (i=1; i<=9; i++) soma = soma + parseInt(cpf.substring(i-1, i)) * (11 - i);
+	        resto = (soma * 10) % 11;
+	        
+	        if ((resto == 10) || (resto == 11))  resto = 0;
+	        if (resto != parseInt(cpf.substring(9, 10)) ) return false;
+	        
+	        soma = 0;
+	        for (i = 1; i <= 10; i++) soma = soma + parseInt(cpf.substring(i-1, i)) * (12 - i);
+	        resto = (soma * 10) % 11;
+	        
+	        if ((resto == 10) || (resto == 11))  resto = 0;
+	        if (resto != parseInt(cpf.substring(10, 11) ) ) return false;
+	        return true;
+	    } else {
+	    	return false;
+	    }
+    }
+	
+
+    function verifyCNPJ(cnpj) {
+    	if (cnpj!=undefined) {
+	        cnpj = cnpj.replace(/[^\d]+/g,'');
+	        if(cnpj == '' || cnpj.length != 14)	return false;
+
+	        if (cnpj == "00000000000000" || cnpj == "11111111111111" || cnpj == "22222222222222" || cnpj == "33333333333333" || cnpj == "44444444444444" || cnpj == "55555555555555" || cnpj == "66666666666666" || cnpj == "77777777777777" || cnpj == "88888888888888" || cnpj == "99999999999999") return false;
+
+	        var tamanho = cnpj.length - 2
+	        var numeros = cnpj.substring(0,tamanho);
+	        var digitos = cnpj.substring(tamanho);
+	        var soma = 0;
+	        var pos = tamanho - 7;
+	        
+	        for (i = tamanho; i >= 1; i--) {
+	          soma += numeros.charAt(tamanho - i) * pos--;
+	          if (pos < 2)
+	                pos = 9;
+	        }
+	        
+	        var resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+	        
+	        if (resultado != digitos.charAt(0)) return false;
+
+	        tamanho = tamanho + 1;
+	        numeros = cnpj.substring(0,tamanho);
+	        soma = 0;
+	        pos = tamanho - 7;
+	        
+	        for (i = tamanho; i >= 1; i--) {
+	          soma += numeros.charAt(tamanho - i) * pos--;
+	          if (pos < 2) pos = 9;
+	        }
+	        
+	        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+	        
+	        if (resultado != digitos.charAt(1)) return false;
+	        return true; 
+        } else {
+	    	return false;
+	    }
+    }
+
+    var customer_data_juridical = "<?php echo $this->customer_data_juridical; ?>";
+    var customer_data_name = "<?php echo $this->customer_data_name; ?>";
+    var customer_data_document = "<?php echo $this->customer_data_document; ?>";
+    var customer_data_email = "<?php echo $this->customer_data_email; ?>";
+    var customer_data_phone_number = "<?php echo $this->customer_data_phone_number; ?>";
+
+    if (customer_data_email=="") {
+    	if (document.getElementById('billing:email')) {
+    		customer_data_email = document.getElementById('billing:email').value;
+    	}
+    }
+
+    if (customer_data_phone_number=="") {
+    	if (document.getElementById('billing:telephone')) {
+    		customer_data_phone_number = document.getElementById('billing:telephone').value;
+    	} else if (document.getElementById('billing_telephone')) {
+    		customer_data_phone_number = document.getElementById('billing_telephone').value;
+    	}
+    }
+
+    if (document.getElementById('gerencianet_billet_data_name_corporate')) {
+		if (customer_data_name!="") {
+			document.getElementById('gerencianet_billet_data_name_corporate').value = customer_data_name;
+		}
+	}
+
+	if (document.getElementById('gerencianet_billet_data_cpf_cnpj')) {
+		if (customer_data_document!="") {
+			document.getElementById('gerencianet_billet_data_cpf_cnpj').value = customer_data_document;
+		} else if (document.getElementsByName('billing[taxvat]')) {
+			if (verifyCPF(document.getElementsByName('billing[taxvat]').value) || verifyCNPJ(document.getElementsByName('billing[taxvat]').value)) {
+				document.getElementById('gerencianet_billet_data_cpf_cnpj').value = document.getElementsByName('billing[taxvat]').value;
+			}
+		}
+	}
+
+	if (document.getElementById('gerencianet_billet_data_email')) {
+		if (customer_data_email!="") {
+			document.getElementById('gerencianet_billet_data_email').value = customer_data_email;
+		}
+	}
+	if (document.getElementById('gerencianet_billet_data_phone_number')) {
+		if (customer_data_phone_number!="") {
+			document.getElementById('gerencianet_billet_data_phone_number').value = customer_data_phone_number;
+		}
+	}
+
+    if (document.getElementById('billing:firstname')) {
+		jQuery("[name='billing[firstname]']").change(function() {
+			if (document.getElementById('billing:lastname')) {
+				var full_name = this.value + " " + document.getElementById('billing:lastname').value;
+			} else {
+				var full_name = this.value;
+			}
+			if ((document.getElementById('billing:taxvat') && verifyCNPJ(document.getElementById('billing:taxvat').value)) || (document.getElementById('gerencianet_billet_data_cpf_cnpj') && verifyCNPJ(document.getElementById('gerencianet_billet_data_cpf_cnpj').value)) ) {
+				jQuery('#gerencianet_billet_data_name_corporate').val(this.value);
+			} else {
+				jQuery('#gerencianet_billet_data_name_corporate').val(full_name);
+			}
+			
+			if (validateNameBillet(full_name)) {
+				jQuery('#gerencianet_billet_data_name_corporate').removeClass("gn-inputs-error required-entry");
+				jQuery('#gerencianet_billet_name_row').hide();
+	        } else {
+	            jQuery('#gerencianet_billet_data_name_corporate').addClass("gn-inputs-error required-entry");
+	            jQuery('#gerencianet_billet_name_row').show();
+			}
+		});
+	} else {
+		jQuery('#gerencianet_billet_data_name_corporate').addClass("required-entry");
+	}
+
+	if (document.getElementById('billing:lastname')) {
+		jQuery("[name='billing[lastname]']").change(function() {
+			if (document.getElementById('billing:firstname')) {
+				var full_name = document.getElementById('billing:firstname').value + " " + this.value;
+			} else {
+				var full_name = this.value;
+			}
+			if ((document.getElementById('billing:taxvat') && verifyCNPJ(document.getElementById('billing:taxvat').value)) || (document.getElementById('gerencianet_billet_data_cpf_cnpj') && verifyCNPJ(document.getElementById('gerencianet_billet_data_cpf_cnpj').value))) {
+				//
+			} else {
+				jQuery('#gerencianet_billet_data_name_corporate').val(full_name);
+			}
+
+			if (validateNameBillet(full_name)) {
+				jQuery('#gerencianet_billet_data_name_corporate').removeClass("gn-inputs-error required-entry");
+				jQuery('#gerencianet_billet_name_row').hide();
+	        } else {
+	            jQuery('#gerencianet_billet_data_name_corporate').addClass("gn-inputs-error required-entry");
+	            jQuery('#gerencianet_billet_name_row').show();
+			}
+		});
+	} else {
+		jQuery('#gerencianet_billet_data_name_corporate').addClass("required-entry");
+	}
+
+	if (document.getElementById('billing:email')) {
+		jQuery("[name='billing[email]']").change(function() {
+			jQuery('#gerencianet_billet_data_email').val(this.value);
+			if (validateEmail(this.value)) {
+				jQuery('#gerencianet_billet_data_email').removeClass("gn-inputs-error required-entry");
+	            jQuery('#gerencianet_billet_email_row').hide();
+	        } else {
+	            jQuery('#gerencianet_billet_data_email').addClass("gn-inputs-error required-entry");
+	            jQuery('#gerencianet_billet_email_row').show();
+			}
+		});
+	} else {
+		jQuery('#gerencianet_billet_data_email').addClass("required-entry");
+	}
+
+	if (document.getElementsByName('billing[telephone]')) {
+		jQuery("[name='billing[telephone]']").change(function() {
+			jQuery('#gerencianet_billet_data_phone_number').val(this.value);
+			if (validatePhone(this.value)) {
+				jQuery('#gerencianet_billet_data_phone_number').removeClass("gn-inputs-error required-entry");
+				if (verifyCPF(jQuery('#gerencianet_billet_data_cpf').val())) {
+					jQuery('#gerencianet_billet_cpf_phone_row').hide();
+				}
+	        } else {
+	            jQuery('#gerencianet_billet_data_phone_number').addClass("gn-inputs-error required-entry");
+	            jQuery('#gerencianet_billet_cpf_phone_row').show();
+			}
+		});
+	} else {
+		jQuery('#gerencianet_billet_data_phone_number').addClass("required-entry");
+	}
+
+	if (document.getElementById('billing:taxvat')) {
+		jQuery("[name='billing[taxvat]']").change(function() {
+			if (verifyCPF(this.value) || verifyCNPJ(this.value)) {
+				jQuery('#gerencianet_billet_data_cpf_cnpj').val(this.value);
+			}
+		});
+	} else {
+		//jQuery('#gerencianet_billet_data_cpf').addClass("required-entry");
+	}
+	
+</script>
