@@ -42,6 +42,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	protected $_options;
 	protected $_expiration;
 	protected $_pixKey;
+	protected $_pixEnable;
 
 	/**
 	 * Define Gerencianet environment
@@ -63,6 +64,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		$this->_certificate = Mage::getStoreConfig('payment/gerencianet_pix/upload_cert');
 		$this->_expiration = Mage::getStoreConfig('payment/gerencianet_pix/pix_time');
 		$this->_pixKey = Mage::getStoreConfig('payment/gerencianet_pix/pix_key');
+
 	}
 
 	/**
@@ -137,6 +139,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				'debug' => false,
 			);
 
+			unset($this->_options['pix_cert']);
 			$this->_api = new Gerencianet\Gerencianet($this->_options);
 		}
 
@@ -220,7 +223,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	{
 		$body = $this->getChargeBody();
 		try {
-			$charge = $this->getApi()->createCharge(array(), $body);
+			$charge = $this->getApi()->createCharge([],$body);
 			Mage::log('CHARGE: ' . var_export($charge, true), 0, 'gerencianet.log');
 			return $charge['data']['charge_id'];
 		} catch (Exception $e) {
@@ -350,7 +353,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			}
 		}
 
-		if (isset($formData['devedor']['cpf']) || isset($formData['devedor']['cnpj'])) {
+		if (isset($formData['devedor']['cnpj'])) {
 			$payPixAsJuridical = Mage::getModel('gerencianet_transparent/validator')->validateJuridicalPerson($formData['devedor']['nome'], $formData['devedor']['cnpj'], $paymentType, false);
 		}
 
@@ -543,8 +546,8 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			]
 		];
 
-		// Mage::log("Body",null,'gerencianet.log',true);
-		// Mage::log($body,null,'gerencianet.log',true);
+		Mage::log("Body",null,'gerencianet.log',true);
+		Mage::log($body,null,'gerencianet.log',true);
 
 		return $body;
 	}
