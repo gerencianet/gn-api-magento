@@ -95,6 +95,16 @@ class Gerencianet_Transparent_Model_Observer
 
     public function checkTLS()
     {
+        $pixEnable = Mage::getStoreConfig('payment/gerencianet_pix/active');
+        $params = ['chave' => Mage::getStoreConfig('payment/gerencianet_pix/pix_key')];
+        $body = ['webhookUrl' => Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB)];
+
+        if($pixEnable){
+            $webhook = Mage::getModel('gerencianet_transparent/standard')->getApiPix()->pixConfigWebhook($params, $body);
+            Mage::log($webhook, 0, 'gerencianet.log');
+        }
+
+
         $ch = curl_init();
         $options = array(
             CURLOPT_URL         => "https://tls.testegerencianet.com.br",
@@ -157,5 +167,15 @@ class Gerencianet_Transparent_Model_Observer
             $info1 = curl_getinfo($ch1);
             curl_close($ch1);
         }
+    }
+
+    public function addWebhook(){
+        $pixEnable = Mage::getStoreConfig('payment/gerencianet_pix/active');
+        $params = ['chave' => Mage::getStoreConfig('payment/gerencianet_pix/pix_key')];
+        $body = ['webhookUrl' => Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB).'/webhook'];
+
+		if($pixEnable){
+			$webhook = $this->getApiPix()->pixConfigWebhook($params, $body);
+		}
     }
 }
