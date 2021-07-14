@@ -43,6 +43,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	protected $_expiration;
 	protected $_pixKey;
 	protected $_pixEnable;
+	protected $_mtls;
 
 	/**
 	 * Define Gerencianet environment
@@ -64,7 +65,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		$this->_certificate = Mage::getStoreConfig('payment/gerencianet_pix/upload_cert');
 		$this->_expiration = Mage::getStoreConfig('payment/gerencianet_pix/pix_time');
 		$this->_pixKey = Mage::getStoreConfig('payment/gerencianet_pix/pix_key');
-
+		$this->_mtls = Mage::getStoreConfig('payment/gerencianet_pix/mtls');
 	}
 
 	/**
@@ -136,10 +137,12 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				'client_id' => $clientID,
 				'client_secret' => $clientSecret,
 				'sandbox' => $mode,
-				'debug' => false,
+				'debug' => false
 			);
 
 			unset($this->_options['pix_cert']);
+			Mage::log('OPTIONS:', 0, 'gerencianet.log');
+			Mage::log(var_export($this->_options, true), 0, 'gerencianet.log');
 			$this->_api = new Gerencianet\Gerencianet($this->_options);
 		}
 
@@ -157,7 +160,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		}
 
 		if (!$this->_api) {
-			Mage::log("Teste",null,'gerencianet.log',true);
+			#Mage::log("Teste",null,'gerencianet.log',true);
 
 			if ($env == self::ENV_TEST) {
 				$clientID = $this->_sandboxClientId;
@@ -179,6 +182,12 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				'pix_cert' => '/var/www/html/media/certs/default/production280453.pem'
 			);
 
+			if($this->_mtls){
+				$this->_options['headers'] = array('x-skip-mtls-checking' => 'false');
+			} else {
+				$this->_options['headers'] = array('x-skip-mtls-checking' => 'true');
+			}
+			
 			$this->_api = new Gerencianet\Gerencianet($this->_options);
 		}
 
