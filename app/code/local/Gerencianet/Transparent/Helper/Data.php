@@ -21,21 +21,16 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 	 * @param array $notification
 	 */
 	public function updateOrderStatus($notification){
-		Mage::log('Notification');
-		Mage::log($notification);
-
 		$order = Mage::getModel('sales/order')->loadByIncrementId($notification['order']);
-		Mage::log('order');
-		Mage::log($order);
-		updateFromNotification($order);
-		
+		$this->updateFromNotification($order, $notification);
 	}
 
 	private function updateFromWebhook($order){
 
 	}
 
-	private function updateFromNotification($order){
+	private function updateFromNotification($order, $notification){
+
 		if ($order) {
 				switch($notification['status']) {
 					case 'new':
@@ -140,7 +135,28 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 							$order->addStatusHistoryComment($comment, 'canceled');
 						}
 						break;
-			
+					case 'settled':
+						if($order->canUnhold()) {
+							$order->unhold();
+						}
+						if ($order->canInvoice()) {
+							$changeTo = Mage_Sales_Model_Order::STATE_PROCESSING;
+						
+							$invoice = $order->prepareInvoice();
+							$invoice->register()->pay();
+							$invoice_msg = utf8_encode(sprintf('Pagamento confirmado. Transa&ccedil;&atilde;o Gerencianet: %s', $notification['identifiers']['charge_id']));
+							$invoice->addComment($invoice_msg, true);
+							$invoice->sendEmail(true, $invoice_msg);
+							$invoice->setEmailSent(true);
+						
+							Mage::getModel('core/resource_transaction')
+								->addObject($invoice)
+								->addObject($invoice->getOrder())
+								->save();
+							$comment = utf8_encode(sprintf('Fatura #%s criada.', $invoice->getIncrementId()));
+							$order->setState($changeTo, 'gerencianet_paid', $comment, $notified = true);
+						}
+						break;
 				}
 				$order->save();
 			}
