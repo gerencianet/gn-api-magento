@@ -163,13 +163,8 @@ class Gerencianet_Transparent_Model_Observer
         $pixEnable = Mage::getStoreConfig('payment/gerencianet_pix/active');
         $params = ['chave' => Mage::getStoreConfig('payment/gerencianet_pix/pix_key')];
         $body = ['webhookUrl' => Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB)];
-
-        Mage::log("Teste 1", 0, 'gerencianet.log');
-
         if($pixEnable){
-            Mage::log("Teste 2", 0, 'gerencianet.log');
             $webhook = Mage::getModel('gerencianet_transparent/standard')->getApiPix()->pixConfigWebhook($params, $body);
-            Mage::log($webhook, 0, 'gerencianet.log');
         }
     }
 }
