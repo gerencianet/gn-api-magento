@@ -182,7 +182,18 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
             </div>
 
 			<script>
+
 				const source = document.getElementById('gerencianet_card_cc_number');
+                const focusoutHandler = function() {
+			        jQuery("#gerencianet_card_cc_number").mask("9999 9999 9999 9999");
+                }
+				source.addEventListener('focusout', focusoutHandler);
+                
+                const focusinHandler = function() {
+			        jQuery("#gerencianet_card_cc_number").unmask();
+                }
+				source.addEventListener('focusin', focusinHandler);
+
 				const inputHandler = function() {
 					getCardBrand(document.getElementById('gerencianet_card_cc_number').value);
 				}
@@ -734,7 +745,6 @@ if (jQuery != undefined)
                 placeholder: "__/__/____"
             });
 			
-			jQuery("#gerencianet_card_cc_number").mask("9999 9999 9999 9999");
 
             jQuery("#gerencianet_card_cc_data_phone_number").focusout(function() {
                 jQuery("#gerencianet_card_cc_data_phone_number").unmask();
