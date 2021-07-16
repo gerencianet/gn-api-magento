@@ -141,8 +141,6 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			);
 
 			unset($this->_options['pix_cert']);
-			Mage::log('OPTIONS:', 0, 'gerencianet.log');
-			Mage::log(var_export($this->_options, true), 0, 'gerencianet.log');
 			$this->_api = new Gerencianet\Gerencianet($this->_options);
 		}
 
@@ -179,7 +177,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				'client_secret' => $clientSecret,
 				'sandbox' => $mode,
 				'debug' => false,
-				'pix_cert' => '/var/www/html/media/certs/default/production280453.pem'
+				'pix_cert' => '/var/www/html/media/certs/'.$this->_certificate
 			);
 
 			if($this->_mtls){
@@ -269,7 +267,6 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	{
 		try {
 			$notification = $this->getApi(self::ENV_PRODUCTION)->getNotification(array('token' => $token), array());
-			Mage::log('NOTIFICATION: ' . var_export($notification, true), 0, 'gerencianet.log');
 			return $notification['data'];
 		} catch (Exception $e) {
 			Mage::log('GET NOTIFICATION ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
