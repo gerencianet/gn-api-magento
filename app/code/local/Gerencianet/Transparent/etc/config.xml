@@ -19,7 +19,7 @@
 <config>
     <modules>
         <Gerencianet_Transparent>
-            <version>1.0.0</version>
+            <version>2.0.0</version>
         </Gerencianet_Transparent>
     </modules>
 
@@ -35,6 +35,9 @@
                     <notifications>
                         <table>gerencianet_notifications</table>
                     </notifications>
+                    <webhook>
+                        <table>gerencianet_webhook</table>
+                    </webhook>
                 </entities>
             </gerencianet_transparent_mysql4>
         </models>
@@ -165,7 +168,7 @@
                     <Gerencianet_Transparent_Model_Observer>
                         <type>singleton</type>
                         <class>gerencianet_transparent/observer</class>
-                        <method>checkTLS</method>
+                        <method>checkConfigurations</method>
                     </Gerencianet_Transparent_Model_Observer>
                 </observers>
             </admin_system_config_changed_section_payment>
