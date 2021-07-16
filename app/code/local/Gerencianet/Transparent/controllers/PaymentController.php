@@ -42,6 +42,7 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 	 */
 	public function notificationAction(){
 		$token = $this->getRequest()->getParam('notification');
+
 		if ($token) {
 			$notifications = $this->getStandard()->getNotification($token);
 			$current = $notifications[count($notifications)-1];
@@ -79,19 +80,22 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 	 * Receives and process pix webhook
 	 */
 	public function pixWebhookAction(){
-		$request = $this->getRequest();
-		if ($request) {
+
+		$infoBody = json_decode($this->getRequest()->getRawBody());
+		if ($infoBody) {
+
 			$webhookData = array(
-                'endToEndId'          => $current['endToEndId'],
-			    'txid'         => $current['txid'],
-			    'chave'      => $current['chave'],
-			    'valor'      => $current['valor'],
-			    'horario'      => $current['horario'],
-			    'environment'    => Gerencianet_Transparent_Model_Standard::ENV_PRODUCTION
+                'endToEndId'          => $infoBody->pix[0]->endToEndId,
+			    'txid'         => $infoBody->pix[0]->txid,
+			    'chave'      => $infoBody->pix[0]->chave,
+			    'valor'      => $infoBody->pix[0]->valor,
+			    'horario'      => $infoBody->pix[0]->horario
 			);
-			Mage::getResourceModel('gerencianet_transparent/webhook_pix')->insert($webhookData);
-		    Mage::getModel('gerencianet_transparent/updater')->updatecharge();
+			
+			Mage::getResourceModel('gerencianet_transparent/webhook')->insert($webhookData);
+			Mage::getModel('gerencianet_transparent/updater')->updatecharge();
 		}
+		
 	}
 
 	/**
