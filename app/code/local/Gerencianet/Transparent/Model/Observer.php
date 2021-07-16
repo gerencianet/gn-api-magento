@@ -93,6 +93,15 @@ class Gerencianet_Transparent_Model_Observer
         return $this;
     }
 
+    public function checkConfigurations(){
+        $this->checkTLS();
+        
+        $pixEnable = Mage::getStoreConfig('payment/gerencianet_pix/active');
+        if($pixEnable) {
+            $this->addWebhook();
+        }
+    }
+
     public function checkTLS()
     {
         $ch = curl_init();
@@ -160,11 +169,22 @@ class Gerencianet_Transparent_Model_Observer
     }
 
     public function addWebhook(){
-        $pixEnable = Mage::getStoreConfig('payment/gerencianet_pix/active');
+
+        $notification_url = 'gerencianet/payment/pixWebhook';
+		if (Mage::helper('gerencianet_transparent')->isSandbox()) {
+			$notification_url .= 'sb';
+		}
+
         $params = ['chave' => Mage::getStoreConfig('payment/gerencianet_pix/pix_key')];
-        $body = ['webhookUrl' => Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB)];
-        if($pixEnable){
-            $webhook = Mage::getModel('gerencianet_transparent/standard')->getApiPix()->pixConfigWebhook($params, $body);
-        }
+        $body = ['webhookUrl' => Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB).$notification_url."/?ignorar="];
+
+        $webhook = Mage::getModel('gerencianet_transparent/standard')->getApiPix()->pixConfigWebhook($params, $body);
+        Mage::log($webhook, 0, "gerencianet.log");
+    }
+
+    public function  convertCertificate(){
+        $certificate = Mage::getStoreConfig('payment/gerencianet_pix/upload_cert');
+        Mage::log("", 0, "gerencianet.log");
+
     }
 }
