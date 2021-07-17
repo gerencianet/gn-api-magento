@@ -30,6 +30,7 @@ $installer->run(
     `chave` VARCHAR(40),
     `valor` FLOAT,
     `horario` VARCHAR(40),
+    `order` VARCHAR(20),
     PRIMARY KEY (`id`) ) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 );
 
