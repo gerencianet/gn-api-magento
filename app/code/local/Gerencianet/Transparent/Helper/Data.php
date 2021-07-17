@@ -24,9 +24,30 @@ class Gerencianet_Transparent_Helper_Data extends Mage_Core_Helper_Data
 		$order = Mage::getModel('sales/order')->loadByIncrementId($notification['order']);
 		$this->updateFromNotification($order, $notification);
 	}
-
-	private function updateFromWebhook($order){
-
+	
+	public function updateFromWebhook($orderID, $e2eid){
+		$order = Mage::getModel('sales/order')->loadByIncrementId($orderID);
+        if($order->canUnhold()) {
+            $order->unhold();
+        }
+        if ($order->canInvoice()) {
+            $changeTo = Mage_Sales_Model_Order::STATE_PROCESSING;
+        
+            $invoice = $order->prepareInvoice();
+            $invoice->register()->pay();
+            $invoice_msg = utf8_encode(sprintf('Pagamento confirmado. EndToEndId Gerencianet: %s', $e2eid));
+            $invoice->addComment($invoice_msg, true);
+            $invoice->sendEmail(true, $invoice_msg);
+            $invoice->setEmailSent(true);
+        
+            Mage::getModel('core/resource_transaction')
+                ->addObject($invoice)
+                ->addObject($invoice->getOrder())
+                ->save();
+            $comment = utf8_encode(sprintf('Fatura #%s criada.', $invoice->getIncrementId()));
+            $order->setState($changeTo, 'gerencianet_paid', $comment, $notified = true);
+            $order->save();
+        }
 	}
 
 	private function updateFromNotification($order, $notification){
