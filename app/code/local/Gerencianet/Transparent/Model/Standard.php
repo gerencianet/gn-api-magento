@@ -506,9 +506,14 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
    public function createImmediateCharge()
    {
 	   $body = $this->getPixBody();
+	   $order = $this->getOrder();
+	   $idPedido = $order->getIncrementId();
+
 	   try {
 		   $pix = $this->getApiPix()->pixCreateImmediateCharge([], $body);
-		   Mage::log('PIX: ' . var_export($pix, true), 0, 'gerencianet.log');
+		   $callback['txid'] = $pix['txid'];
+		   $callback['order'] = $idPedido;
+			Mage::getResourceModel('gerencianet_transparent/webhook')->preInsert($callback);
 		   return $pix['loc']['id'];
 	   } catch (Exception $e) {
 		   Mage::log('PIX CREATE IMMEDIATE CHARGE ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
