@@ -41,34 +41,37 @@ class Gerencianet_Transparent_Model_Mysql4_Webhook extends Mage_Core_Model_Mysql
     	$write->delete($table, "txid = " . $txid);
     }
     
-    public function insert($data) {
+    public function update($data) {
     	$write = $this->_getWriteAdapter();
     	$table = Mage::getSingleton('core/resource')->getTableName('gerencianet_transparent/webhook');
-    	
-		$write->insert($table, array(
+    	$where = $write->quoteInto('txid = ?', $data['txid']);
+
+		$write->update($table, array(
 			'endToEndId' 			=> $data['endToEndId'],
 			'txid'			=> $data['txid'],
 			'chave'			=> $data['chave'],
 			'valor'			=> $data['valor'],
 			'horario'			=> $data['horario']
+		), );
+    }
+
+    public function preInsert($data) {
+    	$write = $this->_getWriteAdapter();
+    	$table = Mage::getSingleton('core/resource')->getTableName('gerencianet_transparent/webhook');
+    	
+		$write->insert($table, array(
+			'txid'			=> $data['txid'],
+			'order'			=> $data['order'],
 		));
     }
     
-    public function findOrderByCharge($txid, $environment) {
+    public function findOrderByTxid($txid) {
         $read = $this->_getReadAdapter();
-        
-        $table = Mage::getSingleton('core/resource')->getTableName('sales/order_payment');
-        $select = $read->select()->from($table)->where('gerencianet_txid = ' . $txid);
-
+        $table = Mage::getSingleton('core/resource')->getTableName('gerencianet_transparent/webhook');   
+	$select = $read->select()->from($table)->where("txid =  '". $txid."'");
         $row = $read->fetchRow($select);
-
-        if (!$row) {
-            return false;
-        }
         
-        $order = Mage::getModel('sales/order')->load($row['parent_id']);
-        
-        return $order->getIncrementId();
+	return $row['order'];
     }
     
 }
