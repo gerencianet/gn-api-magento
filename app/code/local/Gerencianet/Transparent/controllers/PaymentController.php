@@ -82,7 +82,7 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 	public function pixWebhookAction(){
 
 		$infoBody = json_decode($this->getRequest()->getRawBody());
-		if ($infoBody) {
+		if ($infoBody->pix[0]->endToEndId) {
 
 			$webhookData = array(
                 'endToEndId'          => $infoBody->pix[0]->endToEndId,
@@ -91,9 +91,9 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 			    'valor'      => $infoBody->pix[0]->valor,
 			    'horario'      => $infoBody->pix[0]->horario
 			);
-			
-			Mage::getResourceModel('gerencianet_transparent/webhook')->insert($webhookData);
-			Mage::getModel('gerencianet_transparent/updater')->updatecharge();
+			Mage::getResourceModel('gerencianet_transparent/webhook')->update($webhookData);
+			$orderID = Mage::getResourceModel('gerencianet_transparent/webhook')->findOrderByTxid($infoBody->pix[0]->txid);
+		    Mage::getModel('gerencianet_transparent/updater')->updatePixcharge($orderID, $infoBody->pix[0]->endToEndId);
 		}
 		
 	}
