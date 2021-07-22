@@ -35,16 +35,18 @@ class Gerencianet_Transparent_Model_Mysql4_Webhook extends Mage_Core_Model_Mysql
 		return $rows;
     }
     
-    public function deleteById($txid) {
+    public function deleteByE2eid($e2eid) {
     	$write = $this->_getWriteAdapter();
     	$table = Mage::getSingleton('core/resource')->getTableName('gerencianet_transparent/webhook');
-    	$write->delete($table, "txid = " . $txid);
+		$endtoend = "endToEndId = \"" . $e2eid;
+		$write->delete($table, $endtoend."\"");
     }
     
     public function update($data) {
     	$write = $this->_getWriteAdapter();
     	$table = Mage::getSingleton('core/resource')->getTableName('gerencianet_transparent/webhook');
-    	$where = $write->quoteInto('txid = ?', $data['txid']);
+    	$where = [];
+		$where[] = $write->quoteInto('txid = ?', $data['txid']);
 
 		$write->update($table, array(
 			'endToEndId' 			=> $data['endToEndId'],
@@ -52,8 +54,8 @@ class Gerencianet_Transparent_Model_Mysql4_Webhook extends Mage_Core_Model_Mysql
 			'chave'			=> $data['chave'],
 			'valor'			=> $data['valor'],
 			'horario'			=> $data['horario']
-		), );
-    }
+		), $where);
+	}
 
     public function preInsert($data) {
     	$write = $this->_getWriteAdapter();
@@ -67,11 +69,10 @@ class Gerencianet_Transparent_Model_Mysql4_Webhook extends Mage_Core_Model_Mysql
     
     public function findOrderByTxid($txid) {
         $read = $this->_getReadAdapter();
-        $table = Mage::getSingleton('core/resource')->getTableName('gerencianet_transparent/webhook');   
-	$select = $read->select()->from($table)->where("txid =  '". $txid."'");
-        $row = $read->fetchRow($select);
-        
-	return $row['order'];
+        $table = Mage::getSingleton('core/resource')->getTableName('gerencianet_transparent/webhook');
+		$select = $read->select()->from($table)->where("txid =  '". $txid."'");
+		$row = $read->fetchRow($select);
+		return $row['order'];
     }
     
 }
