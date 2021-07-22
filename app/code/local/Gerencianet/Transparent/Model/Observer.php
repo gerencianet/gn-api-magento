@@ -99,6 +99,7 @@ class Gerencianet_Transparent_Model_Observer
         $pixEnable = Mage::getStoreConfig('payment/gerencianet_pix/active');
         if($pixEnable) {
             $this->addWebhook();
+            $this->convertCertificate();
         }
     }
 
@@ -183,8 +184,37 @@ class Gerencianet_Transparent_Model_Observer
     }
 
     public function  convertCertificate(){
-        $certificate = Mage::getStoreConfig('payment/gerencianet_pix/upload_cert');
-        Mage::log("", 0, "gerencianet.log");
+        $file = Mage::getStoreConfig('payment/gerencianet_pix/upload_cert');
+        $file_name = Mage::getBaseDir("media").'//certs/'.$file;
+
+        if ($file_name) {
+            //get the file extension
+            $fileExt = explode('.', $file_name);
+            $fileActualExt = strtolower(end($fileExt));
+            if ($fileActualExt != 'pem' && $fileActualExt != 'p12') {
+                Mage::throwException("Tipo de arquivo inválido!");
+                return;
+            }
+            if ($fileActualExt == 'p12') {
+                if (!$cert_file_p12 = file_get_contents($file_name)) { // Pega o conteúdo do arquivo .p12
+                    Mage::throwException("Falha ao ler arquivo o .p12!");
+                    return;
+                }
+                if (!openssl_pkcs12_read($cert_file_p12, $cert_info_pem, "")) { // Converte o conteúdo para .pem
+                    Mage::throwException("Falha ao converter o arquivo .p12!");
+                    return;
+                }
+                $file_read = "subject=/CN=271207/C=BR\n";
+                $file_read .= "issuer=/C=BR/ST=Minas Gerais/O=Gerencianet Pagamentos do Brasil Ltda/OU=Infraestrutura/CN=api-pix.gerencianet.com.br/emailAddress=infra@gerencianet.com.br\n";
+                $file_read .= $cert_info_pem['cert'];
+                $file_read .= "Key Attributes: <No Attributes>\n";
+                $file_read .= $cert_info_pem['pkey'];
+
+                $newCertificate = fopen(str_replace("p12", "pem", $file_name), "w");
+                fwrite($newCertificate, $file_read);
+                fclose($newCertificate);
+            }
+        }
 
     }
 }
