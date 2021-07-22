@@ -24,7 +24,6 @@ class Gerencianet_Transparent_Model_Source_Cards extends Mage_Payment_Model_Sour
 			'mastercard' 	=> 'Mastercard',
 			'amex' 			=> 'American Express',
 			'elo'			=> 'Elo',
-			'diners'		=> 'Diners',
 			'hipercard' => 'Hipercard'
 		);
 
