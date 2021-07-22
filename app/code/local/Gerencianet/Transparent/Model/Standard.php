@@ -177,7 +177,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				'client_secret' => $clientSecret,
 				'sandbox' => $mode,
 				'debug' => false,
-				'pix_cert' => '/var/www/html/media/certs/'.$this->_certificate
+				'pix_cert' => Mage::getBaseDir("media").'//certs/'.str_replace("p12", "pem", $this->_certificate)
 			);
 
 			if($this->_mtls){
