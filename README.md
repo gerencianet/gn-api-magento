@@ -1,4 +1,4 @@
-# Módulo Oficial da Gerencianet para o Magento - Versão 0.4.2
+# Módulo Oficial da Gerencianet para o Magento 1.9 / OpenMage
 
 **Em caso de dúvidas, você pode verificar a [Documentação](https://docs.gerencianet.com.br) da API na Gerencianet e, necessitando de mais detalhes ou informações, entre em contato com nossa consultoria técnica, via nossos [Canais de Comunicação](https://gerencianet.com.br/central-de-ajuda).**
 
@@ -34,8 +34,8 @@ isso seria equivalente a executar os comandos:
 
 ## Requisitos
 
- - PHP >= 5.4.0
- - Magento 1.7.x, 1.8.x ou 1.9.x
+ - PHP >= 7.0.0
+ - Magento 1.9.x  OU  OpenMage LTS 19.4.x
 
 ## Configuração
 
