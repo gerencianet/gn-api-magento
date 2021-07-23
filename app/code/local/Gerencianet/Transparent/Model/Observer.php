@@ -98,8 +98,8 @@ class Gerencianet_Transparent_Model_Observer
         
         $pixEnable = Mage::getStoreConfig('payment/gerencianet_pix/active');
         if($pixEnable) {
-            $this->addWebhook();
             $this->convertCertificate();
+            $this->addWebhook();
         }
     }
 
@@ -180,29 +180,40 @@ class Gerencianet_Transparent_Model_Observer
         $body = ['webhookUrl' => Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB).$notification_url."/?ignorar="];
 
         $webhook = Mage::getModel('gerencianet_transparent/standard')->getApiPix()->pixConfigWebhook($params, $body);
-        Mage::log($webhook, 0, "gerencianet.log");
+        if(isset($webhook['webhookUrl'])){
+            Mage::log($webhook, 0, "gerencianet.log");
+        } else {
+            Mage::throwException("Gerencianet Error: Não foi possível registrar o webhook.");
+        }
+        
     }
 
-    public function  convertCertificate(){
+    public function convertCertificate(){
+
         $file = Mage::getStoreConfig('payment/gerencianet_pix/upload_cert');
         $file_name = Mage::getBaseDir("media").'//certs/'.$file;
+
+        Mage::log($file_name, 0, "gerencianet.log");
 
         if ($file_name) {
             //get the file extension
             $fileExt = explode('.', $file_name);
             $fileActualExt = strtolower(end($fileExt));
             if ($fileActualExt != 'pem' && $fileActualExt != 'p12') {
-                Mage::throwException("Tipo de arquivo inválido!");
-                return;
+                unlink($file_name);
+                Mage::throwException("Gerencianet Error: O certificado inserido em \"Gerencianet-Pix\" deve estar em formato .pem ou .p12.");
+                return false;
             }
             if ($fileActualExt == 'p12') {
                 if (!$cert_file_p12 = file_get_contents($file_name)) { // Pega o conteúdo do arquivo .p12
-                    Mage::throwException("Falha ao ler arquivo o .p12!");
-                    return;
+                    unlink($file_name);
+                    Mage::throwException("Gerencianet Error: Falha ao ler o arquivo .p12!");
+                    return false;
                 }
                 if (!openssl_pkcs12_read($cert_file_p12, $cert_info_pem, "")) { // Converte o conteúdo para .pem
-                    Mage::throwException("Falha ao converter o arquivo .p12!");
-                    return;
+                    unlink($file_name);
+                    Mage::throwException("Gerencianet Error: Falha ao converter o arquivo .p12!");
+                    return false;
                 }
                 $file_read = "subject=/CN=271207/C=BR\n";
                 $file_read .= "issuer=/C=BR/ST=Minas Gerais/O=Gerencianet Pagamentos do Brasil Ltda/OU=Infraestrutura/CN=api-pix.gerencianet.com.br/emailAddress=infra@gerencianet.com.br\n";
@@ -213,6 +224,15 @@ class Gerencianet_Transparent_Model_Observer
                 $newCertificate = fopen(str_replace("p12", "pem", $file_name), "w");
                 fwrite($newCertificate, $file_read);
                 fclose($newCertificate);
+
+                return true;
+            } else {
+                //read the contents of the file
+                if (!$file_read = file_get_contents($file_name)) { // Pega o conteúdo do arquivo .pem
+					unlink($file_name);
+                    Mage::throwException("Gerencianet Error: Falha ao ler arquivo .pem!");
+                    return false;
+                }
             }
         }
 
