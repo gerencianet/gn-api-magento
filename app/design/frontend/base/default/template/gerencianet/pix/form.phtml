@@ -405,3 +405,10 @@ if (jQuery!=undefined)
 	}
 	
 </script>
+
+<?php if ($this->order_total<5):	?>
+	<script>
+		$("dt_method_gerencianet_card").hide();
+		$("dt_method_gerencianet_billet").hide();
+	</script>
+<?php endif; ?>
