@@ -347,16 +347,6 @@
               <show_in_website>1</show_in_website>
               <show_in_store>0</show_in_store>
             </upload_cert>
-            <discout_pix translate="label">
-              <label>Desconto do Pix</label>
-              <frontend_type>text</frontend_type>
-              <validate>validate-number</validate>
-              <sort_order>6</sort_order>
-              <show_in_default>1</show_in_default>
-              <show_in_website>1</show_in_website>
-              <show_in_store>0</show_in_store>
-              <comment>Desconto dado ao cliente caso ele pague com o Pix.</comment>
-            </discout_pix>
             <pix_time translate="label">
               <label>Tempo de validade do Pix</label>
               <frontend_type>text</frontend_type>
