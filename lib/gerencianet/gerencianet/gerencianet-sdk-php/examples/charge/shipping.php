@@ -1,12 +1,13 @@
 <?php
 
-require __DIR__.'/../../vendor/autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 
 use Gerencianet\Exception\GerencianetException;
 use Gerencianet\Gerencianet;
 
-$file = file_get_contents(__DIR__.'/../config.json');
+$file = file_get_contents(__DIR__ . '/../config.json');
 $options = json_decode($file, true);
+unset($options['pix_cert']);
 
 $items = [
 	[
@@ -14,13 +15,13 @@ $items = [
 		'amount' => 1,
 		'value' => 1000
 	],
-  [
-  	'name' => 'Item 2',
-  	'amount' => 2,
-  	'value' => 2000
-  ]
+	[
+		'name' => 'Item 2',
+		'amount' => 2,
+		'value' => 2000
+	]
 ];
-          
+
 $shippings = [
 	[
 		'name' => 'My Shipping',
@@ -34,14 +35,14 @@ $body = [
 ];
 
 try {
-    $api = new Gerencianet($options);
-    $charge = $api->createCharge([], $body);
+	$api = new Gerencianet($options);
+	$response = $api->createCharge([], $body);
 
-    print_r($charge);
+	echo '<pre>' . json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</pre>';
 } catch (GerencianetException $e) {
-    print_r($e->code);
-    print_r($e->error);
-    print_r($e->errorDescription);
+	print_r($e->code);
+	print_r($e->error);
+	print_r($e->errorDescription);
 } catch (Exception $e) {
-    print_r($e->getMessage());
+	print_r($e->getMessage());
 }

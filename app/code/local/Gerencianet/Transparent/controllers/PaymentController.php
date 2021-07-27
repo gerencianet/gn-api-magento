@@ -29,7 +29,7 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 	}
 	
 	/**
-	 * Get singleton with paypal strandard order transaction information
+	 * Get singleton with  strandard order transaction information
 	 *
 	 * @return Gerencianet_Transparent_Model_Standard
 	 */
@@ -42,6 +42,7 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 	 */
 	public function notificationAction(){
 		$token = $this->getRequest()->getParam('notification');
+
 		if ($token) {
 			$notifications = $this->getStandard()->getNotification($token);
 			$current = $notifications[count($notifications)-1];
@@ -75,6 +76,28 @@ class Gerencianet_Transparent_PaymentController extends Mage_Core_Controller_Fro
 	    }
 	}
 	
+	/**
+	 * Receives and process pix webhook
+	 */
+	public function pixWebhookAction(){
+
+		$infoBody = json_decode($this->getRequest()->getRawBody());
+		if ($infoBody->pix[0]->endToEndId) {
+
+			$webhookData = array(
+                'endToEndId'          => $infoBody->pix[0]->endToEndId,
+			    'txid'         => $infoBody->pix[0]->txid,
+			    'chave'      => $infoBody->pix[0]->chave,
+			    'valor'      => $infoBody->pix[0]->valor,
+			    'horario'      => $infoBody->pix[0]->horario
+			);
+			Mage::getResourceModel('gerencianet_transparent/webhook')->update($webhookData);
+			$orderID = Mage::getResourceModel('gerencianet_transparent/webhook')->findOrderByTxid($infoBody->pix[0]->txid);
+		    Mage::getModel('gerencianet_transparent/updater')->updatePixcharge($orderID, $infoBody->pix[0]->endToEndId);
+		}
+		
+	}
+
 	/**
 	 * Retrieve installments for current quote
 	 */

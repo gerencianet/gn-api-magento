@@ -1,3 +1,8 @@
+# v1.0.0
+* Fix: Dependências atualizadas
+* Add: Pix adicionado
+* Fix: Compatibilidade com o openMage
+
 # v0.4.2
 * Fix: Realiza verificação da versão do TLS do servidor.
 

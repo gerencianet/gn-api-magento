@@ -15,6 +15,7 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 ?>
+
 <div class="page-title">
     <h1><?php echo $this->__('Your order has been received') ?></h1>
 </div>
@@ -65,7 +66,28 @@
       	$addData = unserialize($order->getPayment()->getAdditionalData()); 
     ?>
       	<a title="Imprimir Boleto" href="<?php echo $addData['billet']['link']; ?>" target='_blank'><img class="btn-imprimir" src="<?php echo $this->getSkinUrl('images/gerencianet/botao-imprimir.png'); ?>" /></a>
+    <?php endif;
+
+    if (strpos($method, 'gerencianet_pix') !== false):
+      	$addData = unserialize($order->getPayment()->getAdditionalData()); 
+    ?>
+        <div style="border: 1px solid #CCCCCC;margin: 10px;width: fit-content;padding: 20px;">
+            <!-- Header -->
+            <div style="display: grid; margin-bottom: 10px;">
+                <img src="<?php echo $this->getSkinUrl('images/gerencianet/logo-gn.svg') ?>" style="height: 25px;">
+                <p style="float:left; font-size: 18px;color: #000;">Pagamento via PIX</p>
+            </div>
+            <div>
+                <p>Escaneie o código abaixo e realize o pagamento através do Pix!</p>
+                <img src="<?php echo $addData['pix']['imagemQrcode']; ?>"></img>
+                <p style="font-weight:bold; margin-bottom: 15px;">Ou copie o código abaixo e insira no seu app de pagamentos!</p>
+                <textarea name="pixCopiaCola" style="display: block; text-align: center; height: 120px; margin-bottom: 15px;" id="pixCopiaCola" cols="80" rows="10" readonly><?php echo $addData['pix']['copiaecola']; ?></textarea>
+                <button id="btnCopiar" class="btnCopiar" data-clipboard-target="#pixCopiaCola">Copiar Código Pix!</button>
+            </div>
+        </div>
+
     <?php endif; ?>
+
     <br /><br />
 </center>
 <!-- Finish GERENCIANET_BILLET code -->
@@ -81,4 +103,25 @@
   height: 51px;
   outline: none;
 }
+
+.btnCopiar{
+    padding: 10px;
+    background: transparent;
+    border: solid 2px #000;
+    border-radius: 4px;
+    color: #000;
+}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+            var clipboard = new ClipboardJS('#btnCopiar');
+            clipboard.on('success', function(e) {
+                Swal.fire(
+                    'Código Pix copiado com sucesso!',
+                    '',
+                    'success'
+                );
+                e.clearSelection();
+            });
+</script>

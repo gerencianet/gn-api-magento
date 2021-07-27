@@ -1,6 +1,11 @@
-# Módulo Oficial da Gerencianet para o Magento - Versão 0.4.2
+# Módulo Oficial da Gerencianet para o Magento 1.9 / OpenMage
 
 **Em caso de dúvidas, você pode verificar a [Documentação](https://docs.gerencianet.com.br) da API na Gerencianet e, necessitando de mais detalhes ou informações, entre em contato com nossa consultoria técnica, via nossos [Canais de Comunicação](https://gerencianet.com.br/central-de-ajuda).**
+
+## Requisitos
+
+ - PHP >= 7.0.0
+ - Magento 1.9.x  OU  OpenMage LTS 19.4.x
 
 ## Instalação
 
@@ -10,19 +15,15 @@
     $ modgit init
     $ modgit add gerencianet https://github.com/gerencianet/gn-api-magento.git
 
+- Atualize o cache da sua loja acessando `Sistema > Gerenciador de Cache > Atualizar Cache`.
+
 ### Instalar manualmente:
 
 - Baixe a [última versão](https://github.com/gerencianet/gn-api-magento/archive/master.zip) do módulo.
 - Descompacte o arquivo baixado e copie as pastas app, lib e skin para dentro do diretório principal do Magento*.
-- Defina as seguintes permissões:
- 
-    775 para todos os diretórios;
-    644 para todos os arquivos; 
-    777 para app/etc/, var/ e media/
+- Execute os comandos:
 
-isso seria equivalente a executar os comandos:
-
-    sudo find . -type d -exec chmod 755 {} \;
+    ```sudo find . -type d -exec chmod 755 {} \;
     sudo find . -type f -exec chmod 644 {} \;
     sudo chmod 777 -R app/etc/;
     sudo chmod 777 -R var/;
@@ -32,28 +33,50 @@ isso seria equivalente a executar os comandos:
 
 *Ao substituir as pastas no seu projeto, o sistema pode informar que alguns arquivos serão sobrescritos. Não se preocupe, pode confirmar o procedimento pois a instalação não afeterá nenhum arquivo já existente em seu projeto.
 
-## Requisitos
-
- - PHP >= 5.4.0
- - Magento 1.7.x, 1.8.x ou 1.9.x
-
 ## Configuração
 
-Acessando `Sistema > Configuração > Formas de Pagamento`, 3 novos menus serão mostrados:
+Acessando `Sistema > Configuração > Formas de Pagamento`, 4 novos menus serão mostrados:
 
-- Checkout Transparente Gerencianet
-- Boleto Bancário - Gerencianet
-- Cartão de Cŕedito - Gerencianet
+- Gerencianet Pagamentos - Configurações Gerais
+- Gerencianet - Boleto
+- Gerencianet - Cartão de Cŕedito
+- Gerencianet - Pix
 
-No **Checkout Transparente Gerencianet**, informe as credenciais da sua aplicação e o identificador da conta, obtidos a partir da sua conta Gerencianet.
+## **Gerencianet Pagamentos - Configurações Gerais**
+![Config](https://i.imgur.com/iVxDlsd.png)
 
-Para habilitar e configurar informações do boleto, como as linhas de instrução e a quantidade de dias para vencimento, veja **Boleto Bancário - Gerencianet**.
+- **Habilitado:** Serve para habilitar ou desabilitar o módulo.
+- **Ambiente:** Serve para descrever se as transações acontecerão em ambiente de Produção ou Desenvolvimento.
+- **Modo debug:** Habilita o modo debug do módulo.
+- **Identificador da conta:** Identificador de Conta da Gerencianet.
+- **Credenciais de Desenvolvimento ou Produção:** Aqui você informa as suas credenciais, Client Id e Client Secret do ambiente selecionado.
 
-Para habilitar a opção de cartão de crédito, veja **Cartão de Crédito - Gerencianet**.
+### **Gerencianet - Boleto**
+![Boleto](https://i.imgur.com/NkbkCoE.png)
 
-Por padrão, o modulo utiliza sempre 4 linhas de endereço (Acesse `Sistema > Configuração > Configuração do cliente > Opções de Nome e Endereço`. Marque 4 no campo Número de linhas), respectivamente **street**, **number**, **complement** e **neighborhood**.
+- **Habilitado:** Serve para habilitar ou desabilitar a funcionalidade de Boletos.
+- **Título:** Altera o nome do método de pagamento no checkout.
+- **Dias para vencimento:** Validade do Boleto.
+- **Multa após vencimento:** Valor da multa a ser cobrada após o vencimento.
+- **Juros após vencimento:** Valor de juros a ser cobrado.
+- **Instruções no boleto:** Aqui você tem quatro campos que podem ser preenchido com mensagens no boleto, desde que as opções de juros e multa estejam zeradas.
 
-Além disso, a **data de nascimento** é obrigatória para cobranças via cartão e o **cpf** é obrigatório para qualquer tipo de pagamento. Acesse `Sistema > Configuração > Configuração do cliente > Opções de Nome e Endereço`. Marque "obrigatório" para "Exibir Data de Nascimento" e "Exibir CPF/CNPJ".
+### **Gerencianet - Cartão de Crédito**
+![Cartao](https://i.imgur.com/nGfS06C.png)
+- **Habilitado:** Serve para habilitar ou desabilitar a funcionalidade de cartão de crédito.
+- **Título:** Altera o nome do método de pagamento no checkout.
+
+Observação: A **data de nascimento** é obrigatória para cobranças via cartão e o **cpf** é obrigatório para qualquer tipo de pagamento. Acesse `Sistema > Configuração > Configuração do cliente > Opções de Nome e Endereço`. Marque "obrigatório" para "Exibir Data de Nascimento" e "Exibir CPF/CNPJ".
+
+### **Gerencianet - Pix**
+![Pix](https://i.imgur.com/6j2IvPP.png)
+
+- **Habilitado:** Serve para habilitar ou desabilitar a funcionalidade de Pix.
+- **Título:** Altera o nome do método de pagamento no checkout.
+- **Chave Pix:** Sua chave Pix cadastrada no aplicativo da Gerencianet.
+- **Certificado Pix:** Certificado gerado no painel da Gerencianet.
+- **Tempo de validade do Pix:** Validade do Pix.
+- **Validar mTLS:** Habilita o mTLS.
 
 
 

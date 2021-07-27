@@ -18,137 +18,197 @@
 $_code = $this->getMethodCode();
 $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 ?>
-
+<style>
+#icon-div svg{
+    width: 40px;
+	height: 30px
+}
+</style>
 <div class="gn-osc-card-payment-box">
-	<ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none;">
-		<?php if ($this->order_total<5):	?>
-		<div class="alert-development">
-			<strong>ATENÇÃO!</strong>
-			<p>O valor mínimo para pagar com a Gerencianet é R$5,00.</p>
-		</div>
-		<div style="display: none;">
-		<?php endif; ?>
-		<div class="gn-osc-card-info">
-		<?php if ($isSandbox):	?>
-		<div class="alert-development">
-			<strong>ATENÇÃO!</strong>
-			<p>Essa loja está em Modo Desenvolvimento. O pagamento não será efetivado.</p>
-		</div>
-		<?php endif; ?>
-			<li class="first">
-				<div class="gn-osc-clear">
-					<div class="gn-osc-field-row gn-card-brand-selector">
-						<?php $_ccType = $this->getInfoData('cc_type') ?>
-						<ul class="card-logo">
-						<?php foreach ($this->getCcAvailableTypes() as $_typeCode => $_typeName): ?>
-							<li>
-								<label class="brand-label" title="<?php echo $_typeName ?>">
-									<input name="payment[cc_type]" type="radio" value="<?php echo $_typeCode ?>" id="<?php echo $_code ?>_cc_type"  onclick="javascript: GerencianetTransparent.calculateInstallments(); GerencianetTransparent.cardPaymentValidate(); saveBrandInFE('<?php echo $_typeCode ?>');" />
-									<img src="<?php echo $this->getSkinUrl('images/gerencianet/'.$_typeCode.'.png') ?>" class="gn-card-brand" id="brand_<?php echo $_typeCode ?>" />
-								</label>
-							</li>
-						<?php endforeach ?>
-						</ul>
-						<input type="hidden" id="brandSave" name="brandSave" value="" />
-					</div>
-				</div>
-			</li>
-			<li>
-				<div class="gn-osc-field-row">
-					<label for="<?php echo  $_code ?>_cc_data_name_card" class="required"><?php echo $this->__('NOME NO CARTÃO') ?></label>
-					<div class="input-box">
-						<input type="text" id="<?php echo $_code ?>_cc_data_name_card" name="payment[cc_data_name_card]" title="<?php echo $this->__('Name') ?>" class="input-text required-entry" value="" maxlength="255" onchange="javascript: GerencianetTransparent.cardPaymentValidate();" />
-					</div>
-				</div>
-			</li>
-			<li>
-				<div class="gn-osc-field-row">
-					<label for="<?php echo $_code ?>_cc_number" class="required"><?php echo $this->__('NÚMERO DO CARTÃO') ?></label>
-					<div class="input-box">
-						<input type="text" id="<?php echo $_code ?>_cc_number" name="payment[cc_number]" title="<?php echo $this->__('Credit Card Number') ?>" class="input-text required-entry" value="" maxlength="16" onchange="javascript: GerencianetTransparent.cardPaymentValidate();" />
-					</div>
-				</div>
-			</li>
-			<li>
-				<div class="gn-osc-field-row">
-					<div class="gn-osc-clear">
-						<div style="float: left; width: 54%;">
-							<label for="<?php echo $_code ?>_cc_expiration" class="required"><?php echo $this->__('VENCIMENTO') ?></label>
-							<div class="gn-osc-clear">
-								<div style="float: left; width: 40%;">
-									<div class="input-box">
-										<select id="<?php echo $_code ?>_cc_expiration" name="payment[cc_exp_month]" class="month validate-select" onchange="javascript: GerencianetTransparent.cardPaymentValidate();">
-											<option value=""> Mês </option>
-                                            <option value="01"> 01 </option>
-                                            <option value="02"> 02 </option>
-                                            <option value="03"> 03 </option>
-                                            <option value="04"> 04 </option>
-                                            <option value="05"> 05 </option>
-                                            <option value="06"> 06 </option>
-                                            <option value="07"> 07 </option>
-                                            <option value="08"> 08 </option>
-                                            <option value="09"> 09 </option>
-                                            <option value="10"> 10 </option>
-                                            <option value="11"> 11 </option>
-                                            <option value="12"> 12 </option>
-										</select>
-									</div>
-								</div>
-								<div style="float: right; width: 54%;">
-									<div class="input-box">
-										<select id="<?php echo $_code ?>_cc_expiration_yr" name="payment[cc_exp_year]" class="year validate-select" onchange="javascript: GerencianetTransparent.cardPaymentValidate();">
-											<option value=""> Ano </option>
-                                            <?php 
+    <ul class="form-list" id="payment_form_<?php echo $_code ?>" style="display:none;">
+        <?php if ($this->order_total<5):	?>
+        <div class="alert-development">
+            <strong>ATENÇÃO!</strong>
+            <p>O valor mínimo para pagar com a Gerencianet é R$5,00.</p>
+        </div>
+        <div style="display: none;">
+            <?php endif; ?>
+            <div class="gn-osc-card-info">
+                <?php if ($isSandbox):	?>
+                <div class="alert-development">
+                    <strong>ATENÇÃO!</strong>
+                    <p>Essa loja está em Modo Desenvolvimento. O pagamento não será efetivado.</p>
+                </div>
+                <?php endif; ?>
+                <li>
+                    <div class="gn-osc-field-row">
+                        <label for="<?php echo  $_code ?>_cc_data_name_card" class="required"><?php echo $this->__('NOME NO CARTÃO') ?></label>
+                        <div style="width: 92% !important;">
+                            <input type="text" id="<?php echo $_code ?>_cc_data_name_card"
+                                name="payment[cc_data_name_card]" title="<?php echo $this->__('Name') ?>"
+                                class="input-text required-entry" value="" maxlength="255"
+                                 />
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="gn-osc-field-row" style="height: 51px;">
+                        <label for="<?php echo $_code ?>_cc_number" class="required"><?php echo $this->__('NÚMERO DO CARTÃO') ?></label>
+                        <div>
+                            <div id="icon-div" style="float:left; width:10%; min-width: 50px;">
+                                <svg id="ccicon" class="ccicon" viewBox="0 60 500 400" version="1.1"
+                                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                    style="width: 40px;">
+                                    <g>
+                                        <path style="fill:#6ABDA0;"
+                                            d="M476.69,441.379H35.31c-19.5,0-35.31-15.81-35.31-35.31V105.931c0-19.5,15.81-35.31,35.31-35.31   H476.69c19.5,0,35.31,15.81,35.31,35.31v300.138C512,425.569,496.19,441.379,476.69,441.379">
+                                        </path>
+                                        <polygon style="fill:#488578;"
+                                            points="0,194.207 512,194.207 512,123.586 0,123.586  "></polygon>
+                                        <polygon style="fill:#F0C419;"
+                                            points="300.138,388.414 459.034,388.414 459.034,300.138 300.138,300.138  ">
+                                        </polygon>
+                                        <g>
+                                            <path style="fill:#488578;"
+                                                d="M123.483,264.828H44.141c-4.882,0-8.828-3.946-8.828-8.828s3.946-8.828,8.828-8.828h79.342    c4.882,0,8.828,3.946,8.828,8.828S128.365,264.828,123.483,264.828">
+                                            </path>
+                                            <path style="fill:#488578;"
+                                                d="M238.345,264.828h-79.342c-4.882,0-8.828-3.946-8.828-8.828s3.946-8.828,8.828-8.828h79.342    c4.882,0,8.828,3.946,8.828,8.828S243.226,264.828,238.345,264.828">
+                                            </path>
+                                            <path style="fill:#488578;"
+                                                d="M176.552,300.138H44.138c-4.882,0-8.828-3.946-8.828-8.828s3.946-8.828,8.828-8.828h132.414    c4.882,0,8.828,3.946,8.828,8.828S181.433,300.138,176.552,300.138">
+                                            </path>
+                                            <path style="fill:#488578;"
+                                                d="M238.345,300.138h-26.483c-4.882,0-8.828-3.946-8.828-8.828s3.946-8.828,8.828-8.828h26.483    c4.882,0,8.828,3.946,8.828,8.828S243.226,300.138,238.345,300.138">
+                                            </path>
+                                        </g>
+                                    </g>
+                                    
+                                </svg>
+                            </div>
+                            <div style="float:left; width:82%;">
+                                <input type="text" id="<?php echo $_code ?>_cc_number" name="payment[cc_number]" title="<?php echo $this->__('Credit Card Number') ?>"
+                                    class="input-text required-entry" value="" maxlength="16"   />
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="gn-osc-field-row" style="height: 51px;">
+                        <div class="gn-osc-clear">
+                            <div style="float: left; width: 54%;">
+                                <label for="<?php echo $_code ?>_cc_expiration"
+                                    class="required"><?php echo $this->__('VENCIMENTO') ?></label>
+                                <div class="gn-osc-clear">
+                                    <div style="float: left; width: 40%;">
+                                        <div class="input-box">
+                                            <select id="<?php echo $_code ?>_cc_expiration" name="payment[cc_exp_month]"
+                                                class="defaultStyle month validate-select"
+                                                >
+                                                <option value=""> Mês </option>
+                                                <option value="01"> 01 </option>
+                                                <option value="02"> 02 </option>
+                                                <option value="03"> 03 </option>
+                                                <option value="04"> 04 </option>
+                                                <option value="05"> 05 </option>
+                                                <option value="06"> 06 </option>
+                                                <option value="07"> 07 </option>
+                                                <option value="08"> 08 </option>
+                                                <option value="09"> 09 </option>
+                                                <option value="10"> 10 </option>
+                                                <option value="11"> 11 </option>
+                                                <option value="12"> 12 </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div style="float: right; width: 54%;">
+                                        <div class="input-box">
+                                            <select id="<?php echo $_code ?>_cc_expiration_yr"
+                                                name="payment[cc_exp_year]" class="defaultStyle year validate-select"
+                                                >
+                                                <option value=""> Ano </option>
+                                                <?php 
                                             $actual_year = intval(date("Y")); 
                                             $last_year = $actual_year + 15;
                                             for ($i = $actual_year; $i <= $last_year; $i++) {
                                                 echo '<option value="'.$i.'"> '.$i.' </option>';
                                             }
                                             ?>
-										</select>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div style="float: right; width: 42%;">
-							<label for="<?php echo $_code ?>_cc_cid" class="required"><?php echo $this->__('CVV') ?></label>
-							<div class="gn-osc-clear">
-								<div style="float: left;">
-									<div class="input-box">
-										<input type="text" title="<?php echo $this->__('Card Verification Number') ?>" class="input-text gn-osc-cvv cvv required-entry" id="<?php echo $_code ?>_cc_cid" name="payment[cc_cid]" value="" maxlength="4" onchange="javascript: GerencianetTransparent.cardPaymentValidate();" />
-									</div>
-								</div>
-								<div style="float: left;">
-									<div class="input-box" style="float: left; margin-left: 5px;">
-										<img src="<?php echo $this->getSkinUrl('images/gerencianet/cvv.png') ?>" />
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</li>
-			<li>
-				<div class="gn-osc-field-row">
-					<label for="<?php echo $_code ?>_installments"><?php echo $this->__('OPÇÕES DE PARCELAMENTO') ?> </label>
-					<div class="input-box" id="installments">
-						<select id="<?php echo $_code ?>_cc_installments" class="required-entry" name="payment[cc_installments]" onchange="javascript: GerencianetTransparent.cardPaymentValidate();">
-							<option value="">Selecione a bandeira do cartão</option>
-						</select>
-					</div>
-				</div>
-				<input type="hidden" id="installmentSave" name="installmentSave" value="" />
-				<input type="hidden" id="<?php echo $_code; ?>_token" name="payment[cc_token]" value="" class="validate-payment-token" />
-			</li>
-		</div>
-		<div id="gn-payment-data-content-card" class="gn-osc-card-info gn-hide" style="margin-top: 15px;">
-			<div id="gn-card-payment-data-title">
-				<label><?php echo $this->__('DADOS DE PAGAMENTO') ?></label>
-			</div>
-			<li id="gerencianet_cc_name_row">
-				<div class="gn-osc-field-row">
-					<div class="gn-osc-clear">
-						<!--<div class="gn_individual_person">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="float: right; width: 42%;">
+                                <label for="<?php echo $_code ?>_cc_cid"
+                                    class="required"><?php echo $this->__('CVV') ?></label>
+                                <div class="gn-osc-clear">
+                                    <div style="float: left;">
+                                        <div class="input-box">
+                                            <input type="text"
+                                                title="<?php echo $this->__('Card Verification Number') ?>"
+                                                class="input-text gn-osc-cvv cvv required-entry"
+                                                style="height:30px!important;" id="<?php echo $_code ?>_cc_cid"
+                                                name="payment[cc_cid]" value="" maxlength="4"
+                                                 />
+                                        </div>
+                                    </div>
+                                    <div style="float: left;">
+                                        <div class="input-box" style="float: left; margin-left: 5px;">
+                                            <img src="<?php echo $this->getSkinUrl('images/gerencianet/cvv.png') ?>" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li>
+                    <div class="gn-osc-field-row">
+                        <label for="<?php echo $_code ?>_installments"><?php echo $this->__('OPÇÕES DE PARCELAMENTO') ?>
+                        </label>
+                        <div class="input-box" id="installments">
+                            <select id="<?php echo $_code ?>_cc_installments" class="defaultStyle required-entry"
+                                name="payment[cc_installments]"
+                                >
+                                <option value="">Selecione a bandeira do cartão</option>
+                            </select>
+                        </div>
+                    </div>
+                    <input type="hidden" id="installmentSave" name="installmentSave" value="" />
+                    <input type="hidden" id="<?php echo $_code; ?>_token" name="payment[cc_token]" value=""
+                        class="validate-payment-token" />
+                </li>
+            </div>
+
+			<script>
+
+				const source = document.getElementById('gerencianet_card_cc_number');
+                const focusoutHandler = function() {
+			        jQuery("#gerencianet_card_cc_number").mask("9999 9999 9999 9999");
+                }
+				source.addEventListener('focusout', focusoutHandler);
+                
+                const focusinHandler = function() {
+			        jQuery("#gerencianet_card_cc_number").unmask();
+                }
+				source.addEventListener('focusin', focusinHandler);
+
+				const inputHandler = function() {
+					getCardBrand(document.getElementById('gerencianet_card_cc_number').value);
+				}
+				source.addEventListener('input', inputHandler);
+				source.addEventListener('paste', inputHandler);
+			</script>
+
+            <div id="gn-payment-data-content-card" class="gn-osc-card-info gn-hide" style="margin-top: 15px;">
+                <div id="gn-card-payment-data-title">
+                    <label><?php echo $this->__('DADOS DE PAGAMENTO') ?></label>
+                </div>
+                <li id="gerencianet_cc_name_row">
+                    <div class="gn-osc-field-row">
+                        <div class="gn-osc-clear">
+                            <!--<div class="gn_individual_person">
 							<label for="<?php echo $_code ?>_cc_data_name" class="required"><?php echo $this->__('NOME') ?></label>
 							<div class="input-box">
 								<input type="text" id="<?php echo $_code ?>_cc_data_name" name="payment[cc_data_name]" class="input-text required-entry" title="<?php echo $this->__('NOME') ?>" value="<?php if (!$this->customer_cc_data_juridical) { echo $this->customer_cc_data_name; } ?>" maxlength="255" />
@@ -160,20 +220,24 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 								<input type="text" id="<?php echo $_code ?>_cc_data_corporate_name" name="payment[cc_data_corporate_name]" title="<?php echo $this->__('Razão Social') ?>" class="input-text" value="<?php if ($this->customer_cc_data_juridical) { if ($this->customer_cc_data_razao_social) { echo $this->customer_cc_data_razao_social; } else {echo $this->customer_cc_data_name; } } ?>" maxlength="255" />
 							</div>
 						</div>-->
-						<div>
-							<label for="<?php echo $_code ?>_cc_data_name_corporate" class="required"><?php echo $this->__('NOME/RAZÃO SOCIAL') ?></label>
-							<div class="input-box">
-								<input type="text" id="<?php echo $_code ?>_cc_data_name_corporate" name="payment[cc_data_name_corporate]" class="input-text required-entry" title="<?php echo $this->__('NOME/RAZÃO SOCIAL') ?>" value="<?php echo $this->customer_cc_data_name; ?>" maxlength="255" />
-							</div>
-						</div>
-					</div>
-				</div>
-			</li>
-			<li id="gerencianet_cc_cpf_birth_row">
-				<div class="gn-osc-field-row">
-					<div class="gn-osc-clear">
-						<div style="float: left; width: 48%;">
-							<!--<div class="gn_individual_person">
+                            <div>
+                                <label for="<?php echo $_code ?>_cc_data_name_corporate"
+                                    class="required"><?php echo $this->__('NOME/RAZÃO SOCIAL') ?></label>
+                                <div class="input-box">
+                                    <input type="text" id="<?php echo $_code ?>_cc_data_name_corporate"
+                                        name="payment[cc_data_name_corporate]" class="input-text required-entry"
+                                        title="<?php echo $this->__('NOME/RAZÃO SOCIAL') ?>"
+                                        value="<?php echo $this->customer_cc_data_name; ?>" maxlength="255" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li id="gerencianet_cc_cpf_birth_row">
+                    <div class="gn-osc-field-row">
+                        <div class="gn-osc-clear">
+                            <div style="float: left; width: 48%;">
+                                <!--<div class="gn_individual_person">
 								<label for="<?php echo $_code ?>_cc_data_cpf" class="required"><?php echo $this->__('CPF') ?></label>
 								<div class="input-box">
 									<input type="text" id="<?php echo $_code ?>_cc_data_cpf" name="payment[cc_data_cpf]" class="input-text required-entry" title="<?php echo $this->__('CPF') ?>" value="<?php if (!$this->customer_cc_data_juridical) { echo $this->customer_cc_data_document; } ?>" />
@@ -185,132 +249,228 @@ $isSandbox = Mage::helper('gerencianet_transparent')->isSandbox();
 									<input type="text" id="<?php echo $_code ?>_cc_data_cnpj" name="payment[cc_data_cnpj]" title="<?php echo $this->__('CNPJ') ?>" class="input-text validate-length" value="<?php if ($this->customer_cc_data_juridical) { echo $this->customer_cc_data_document; } ?>" />
 								</div>
 							</div>-->
-							<div>
-								<label for="<?php echo $_code ?>_cc_data_cpf_cnpj" class="required"><?php echo $this->__('CPF/CNPJ') ?></label>
-								<div class="input-box">
-									<input type="text" id="<?php echo $_code ?>_cc_data_cpf_cnpj" name="payment[cc_data_cpf_cnpj]" title="<?php echo $this->__('CPF/CNPJ') ?>" class="input-text validate-length" value="<?php echo $this->customer_cc_data_document; ?>" />
-								</div>
-							</div>
-						</div>
-						<div style="float: right; width: 48%;">
-							<label for="<?php echo $_code ?>_cc_data_birth" class="required"><?php echo $this->__('Data Nascimento') ?></label>
-							<div class="input-box">
-								<input type="text" id="<?php echo $_code ?>_cc_data_birth" name="payment[cc_data_birth]" class="input-text validate-date-au " title="<?php echo $this->__('Data de Nascimento') ?>" value="<?php echo $this->customer_cc_data_birth; ?>" />
-							</div>
-						</div>
-					</div>
-				</div>
-			</li>
-			<li id="gerencianet_cc_email_row">
-				<div class="gn-osc-field-row">
-					<label for="<?php echo $_code ?>_cc_data_email" class="required"><?php echo $this->__('EMAIL') ?></label>
-					<div class="input-box">
-						<input type="text" id="<?php echo $_code ?>_cc_data_email" name="payment[cc_data_email]" class="input-text required-entry" title="<?php echo $this->__('E-mail') ?>" value="<?php echo $this->customer_cc_data_email; ?>" maxlength="255" />
-					</div>
-				</div>
-			</li>
-			<li id="gerencianet_cc_phone_row">
-				<div class="gn-osc-field-row">
-					<label for="<?php echo $_code ?>_cc_data_phone_number" class="required"><?php echo $this->__('TELEFONE') ?></label>
-					<div class="input-box">
-						<input type="text" id="<?php echo $_code ?>_cc_data_phone_number" name="payment[cc_data_phone_number]" class="input-text required-entry" title="<?php echo $this->__('Phone Number') ?>" value="<?php echo $this->customer_cc_data_phone_number; ?>" />
-					</div>
-				</div>
-			</li>
-			<li id="gerencianet_cc_street_and_number_row">
-				<div class="gn-osc-field-row">
-					<div class="gn-osc-clear">
-						<div style="float: left; width: 73%;">
-							<label for="<?php echo  $_code ?>_cc_data_street" class="required"><?php echo $this->__('ENDEREÇO') ?></label>
-							<div class="input-box">
-								<input type="text" id="<?php echo $_code ?>_cc_data_street" name="payment[cc_data_street]" title="<?php echo $this->__('Endereço') ?>" class="input-text required-entry" value="<?php echo $this->billing_cc_data_street; ?>" maxlength="255" />
-							</div>
-						</div>
-						<div style="float: right; width: 23%;">
-							<label for="<?php echo $_code ?>_cc_data_number" class="required"><?php echo $this->__('NÚMERO') ?></label>
-							<div class="input-box">
-								<input type="text" id="<?php echo $_code ?>_cc_data_number" name="payment[cc_data_number]" class="input-text required-entry" title="<?php echo $this->__('Número') ?>" value="<?php echo $this->billing_cc_data_number; ?>" maxlength="11" />
-							</div>
-						</div>
-					</div>
-				</div>
-			</li>
-			<li id="gerencianet_cc_neighborhood_row">
-				<div class="gn-osc-field-row">
-					<div class="gn-osc-clear">
-						<div style="float: left; width: 48%;">
-							<label for="<?php echo $_code ?>_cc_data_neighborhood" class="required"><?php echo $this->__('BAIRRO') ?></label>
-							<div class="input-box">
-								<input type="text" id="<?php echo $_code ?>_cc_data_neighborhood" name="payment[cc_data_neighborhood]" class="input-text required-entry" title="<?php echo $this->__('Bairro') ?>" value="<?php echo $this->billing_cc_data_neighborhood; ?>" maxlength="255" />
-							</div>
-						</div>
-						<div style="float: right; width: 48%;">
-							<label for="<?php echo $_code ?>_cc_data_complement" class="required"><?php echo $this->__('COMPLEMENTO') ?></label>
-							<div class="input-box">
-								<input type="text" id="<?php echo $_code ?>_cc_data_complement" name="payment[cc_data_complement]" class="input-text" title="<?php echo $this->__('Complemento') ?>" value="<?php echo $this->billing_cc_data_complement; ?>" maxlength="55" />
-							</div>
-						</div>
-					</div>
-				</div>
-			</li>
-			<li id="gerencianet_cc_city_and_zipcode_row">
-				<div class="gn-osc-field-row">
-					<div class="gn-osc-clear">
-						<div style="float: left; width: 48%;">
-							<label for="<?php echo $_code ?>_cc_data_city" class="required"><?php echo $this->__('CIDADE') ?></label>
-							<div class="input-box">
-								<input type="text" id="<?php echo $_code ?>_cc_data_city" name="payment[cc_data_city]" class="input-text required-entry" title="<?php echo $this->__('Cidade') ?>" value="<?php echo $this->billing_cc_data_city; ?>" maxlength="255" />
-							</div>
-						</div>
-						<div style="float: right; width: 48%;">
-							<label for="<?php echo $_code ?>_cc_data_zipcode" class="required"><?php echo $this->__('CEP') ?></label>
-							<div class="input-box">
-								<input type="text" id="<?php echo $_code ?>_cc_data_zipcode" name="payment[cc_data_zipcode]" class="input-text required-entry" title="<?php echo $this->__('CEP') ?>" value="<?php echo $this->billing_cc_data_zipcode; ?>" maxlength="255" />
-							</div>
-						</div>
-					</div>
-				</div>
-			</li>
-			<li id="gerencianet_cc_state_row">
-				<div class="gn-osc-field-row">
-					<label for="<?php echo $_code ?>_cc_data_state" class="required"><?php echo $this->__('ESTADO') ?></label>
-					<div class="input-box">
-						<select id="<?php echo $_code ?>_cc_data_state" name="payment[cc_data_state]" class="input-select validate-select" >
-			                <option value="">Selecione o Estado</option> 
-			                <option value="AC" <?php if ($billing_cc_data_state=="AC" || $billing_cc_data_state=="Acre") { ?> selected <?php } ?>>Acre</option> 
-			                  <option value="AL" <?php if ($billing_cc_data_state=="AL" || $billing_cc_data_state=="Alagoas") { ?> selected <?php } ?>>Alagoas</option> 
-			                  <option value="AP" <?php if ($billing_cc_data_state=="AP" || $billing_cc_data_state=="Amapá") { ?> selected <?php } ?>>Amapá</option> 
-			                  <option value="AM" <?php if ($billing_cc_data_state=="AM" || $billing_cc_data_state=="Amazonas") { ?> selected <?php } ?>>Amazonas</option> 
-			                  <option value="BA" <?php if ($billing_cc_data_state=="BA" || $billing_cc_data_state=="Bahia") { ?> selected <?php } ?>>Bahia</option> 
-			                  <option value="CE" <?php if ($billing_cc_data_state=="CE" || $billing_cc_data_state=="Ceará") { ?> selected <?php } ?>>Ceará</option> 
-			                  <option value="DF" <?php if ($billing_cc_data_state=="DF" || $billing_cc_data_state=="Distrito Federal") { ?> selected <?php } ?>>Distrito Federal</option> 
-			                  <option value="ES" <?php if ($billing_cc_data_state=="ES" || $billing_cc_data_state=="Espírito Santo") { ?> selected <?php } ?>>Espírito Santo</option> 
-			                  <option value="GO" <?php if ($billing_cc_data_state=="GO" || $billing_cc_data_state=="Goiás") { ?> selected <?php } ?>>Goiás</option> 
-			                  <option value="MA" <?php if ($billing_cc_data_state=="MA" || $billing_cc_data_state=="Maranhão") { ?> selected <?php } ?>>Maranhão</option> 
-			                  <option value="MT" <?php if ($billing_cc_data_state=="MT" || $billing_cc_data_state=="Mato Grosso") { ?> selected <?php } ?>>Mato Grosso</option> 
-			                  <option value="MS" <?php if ($billing_cc_data_state=="MS" || $billing_cc_data_state=="Mato Grosso do Sul") { ?> selected <?php } ?>>Mato Grosso do Sul</option> 
-			                  <option value="MG" <?php if ($billing_cc_data_state=="MG" || $billing_cc_data_state=="Minas Gerais") { ?> selected <?php } ?>>Minas Gerais</option> 
-			                  <option value="PA" <?php if ($billing_cc_data_state=="PA" || $billing_cc_data_state=="Pará") { ?> selected <?php } ?>>Pará</option> 
-			                  <option value="PB" <?php if ($billing_cc_data_state=="PB" || $billing_cc_data_state=="Paraíba") { ?> selected <?php } ?>>Paraíba</option> 
-			                  <option value="PR" <?php if ($billing_cc_data_state=="PR" || $billing_cc_data_state=="Paraná") { ?> selected <?php } ?>>Paraná</option> 
-			                  <option value="PE" <?php if ($billing_cc_data_state=="PE" || $billing_cc_data_state=="Pernambuco") { ?> selected <?php } ?>>Pernambuco</option> 
-			                  <option value="PI" <?php if ($billing_cc_data_state=="PI" || $billing_cc_data_state=="Piauí") { ?> selected <?php } ?>>Piauí</option> 
-			                  <option value="RJ" <?php if ($billing_cc_data_state=="RJ" || $billing_cc_data_state=="Rio de Janeiro") { ?> selected <?php } ?>>Rio de Janeiro</option> 
-			                  <option value="RN" <?php if ($billing_cc_data_state=="RN" || $billing_cc_data_state=="Rio Grande do Norte") { ?> selected <?php } ?>>Rio Grande do Norte</option> 
-			                  <option value="RS" <?php if ($billing_cc_data_state=="RS" || $billing_cc_data_state=="Rio Grande do Sul") { ?> selected <?php } ?>>Rio Grande do Sul</option> 
-			                  <option value="RO" <?php if ($billing_cc_data_state=="RO" || $billing_cc_data_state=="Rondônia") { ?> selected <?php } ?>>Rondônia</option> 
-			                  <option value="RR" <?php if ($billing_cc_data_state=="RR" || $billing_cc_data_state=="Roraima") { ?> selected <?php } ?>>Roraima</option> 
-			                  <option value="SC" <?php if ($billing_cc_data_state=="SC" || $billing_cc_data_state=="Santa Catarina") { ?> selected <?php } ?>>Santa Catarina</option> 
-			                  <option value="SP" <?php if ($billing_cc_data_state=="SP" || $billing_cc_data_state=="São Paulo") { ?> selected <?php } ?>>São Paulo</option> 
-			                  <option value="SE" <?php if ($billing_cc_data_state=="SE" || $billing_cc_data_state=="Sergipe") { ?> selected <?php } ?>>Sergipe</option> 
-			                  <option value="TO" <?php if ($billing_cc_data_state=="TO" || $billing_cc_data_state=="Tocantins") { ?> selected <?php } ?>>Tocantins</option>
-			            </select>
-					</div>
-				</div>
-			</li>
-		</div>
-		<?php if ($this->order_total<5):	?> </div><?php endif; ?>
-	</ul>
+                                <div>
+                                    <label for="<?php echo $_code ?>_cc_data_cpf_cnpj"
+                                        class="required"><?php echo $this->__('CPF/CNPJ') ?></label>
+                                    <div class="input-box">
+                                        <input type="text" id="<?php echo $_code ?>_cc_data_cpf_cnpj"
+                                            name="payment[cc_data_cpf_cnpj]" title="<?php echo $this->__('CPF/CNPJ') ?>"
+                                            class="input-text validate-length"
+                                            value="<?php echo $this->customer_cc_data_document; ?>" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="float: right; width: 48%;">
+                                <label for="<?php echo $_code ?>_cc_data_birth"
+                                    class="required"><?php echo $this->__('Data Nascimento') ?></label>
+                                <div class="input-box">
+                                    <input type="text" id="<?php echo $_code ?>_cc_data_birth"
+                                        name="payment[cc_data_birth]" class="input-text validate-date-au "
+                                        title="<?php echo $this->__('Data de Nascimento') ?>"
+                                        value="<?php echo $this->customer_cc_data_birth; ?>" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li id="gerencianet_cc_email_row">
+                    <div class="gn-osc-field-row">
+                        <label for="<?php echo $_code ?>_cc_data_email"
+                            class="required"><?php echo $this->__('EMAIL') ?></label>
+                        <div class="input-box">
+                            <input type="text" id="<?php echo $_code ?>_cc_data_email" name="payment[cc_data_email]"
+                                class="input-text required-entry" title="<?php echo $this->__('E-mail') ?>"
+                                value="<?php echo $this->customer_cc_data_email; ?>" maxlength="255" />
+                        </div>
+                    </div>
+                </li>
+                <li id="gerencianet_cc_phone_row">
+                    <div class="gn-osc-field-row">
+                        <label for="<?php echo $_code ?>_cc_data_phone_number"
+                            class="required"><?php echo $this->__('TELEFONE') ?></label>
+                        <div class="input-box">
+                            <input type="text" id="<?php echo $_code ?>_cc_data_phone_number"
+                                name="payment[cc_data_phone_number]" class="input-text required-entry"
+                                title="<?php echo $this->__('Phone Number') ?>"
+                                value="<?php echo $this->customer_cc_data_phone_number; ?>" />
+                        </div>
+                    </div>
+                </li>
+                <li id="gerencianet_cc_street_and_number_row">
+                    <div class="gn-osc-field-row">
+                        <div class="gn-osc-clear">
+                            <div style="float: left; width: 73%;">
+                                <label for="<?php echo  $_code ?>_cc_data_street"
+                                    class="required"><?php echo $this->__('ENDEREÇO') ?></label>
+                                <div class="input-box">
+                                    <input type="text" id="<?php echo $_code ?>_cc_data_street"
+                                        name="payment[cc_data_street]" title="<?php echo $this->__('Endereço') ?>"
+                                        class="input-text required-entry"
+                                        value="<?php echo $this->billing_cc_data_street; ?>" maxlength="255" />
+                                </div>
+                            </div>
+                            <div style="float: right; width: 23%;">
+                                <label for="<?php echo $_code ?>_cc_data_number"
+                                    class="required"><?php echo $this->__('NÚMERO') ?></label>
+                                <div class="input-box">
+                                    <input type="text" id="<?php echo $_code ?>_cc_data_number"
+                                        name="payment[cc_data_number]" class="input-text required-entry"
+                                        title="<?php echo $this->__('Número') ?>"
+                                        value="<?php echo $this->billing_cc_data_number; ?>" maxlength="11" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li id="gerencianet_cc_neighborhood_row">
+                    <div class="gn-osc-field-row">
+                        <div class="gn-osc-clear">
+                            <div style="float: left; width: 48%;">
+                                <label for="<?php echo $_code ?>_cc_data_neighborhood"
+                                    class="required"><?php echo $this->__('BAIRRO') ?></label>
+                                <div class="input-box">
+                                    <input type="text" id="<?php echo $_code ?>_cc_data_neighborhood"
+                                        name="payment[cc_data_neighborhood]" class="input-text required-entry"
+                                        title="<?php echo $this->__('Bairro') ?>"
+                                        value="<?php echo $this->billing_cc_data_neighborhood; ?>" maxlength="255" />
+                                </div>
+                            </div>
+                            <div style="float: right; width: 48%;">
+                                <label for="<?php echo $_code ?>_cc_data_complement"
+                                    class="required"><?php echo $this->__('COMPLEMENTO') ?></label>
+                                <div class="input-box">
+                                    <input type="text" id="<?php echo $_code ?>_cc_data_complement"
+                                        name="payment[cc_data_complement]" class="input-text"
+                                        title="<?php echo $this->__('Complemento') ?>"
+                                        value="<?php echo $this->billing_cc_data_complement; ?>" maxlength="55" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li id="gerencianet_cc_city_and_zipcode_row">
+                    <div class="gn-osc-field-row">
+                        <div class="gn-osc-clear">
+                            <div style="float: left; width: 48%;">
+                                <label for="<?php echo $_code ?>_cc_data_city"
+                                    class="required"><?php echo $this->__('CIDADE') ?></label>
+                                <div class="input-box">
+                                    <input type="text" id="<?php echo $_code ?>_cc_data_city"
+                                        name="payment[cc_data_city]" class="input-text required-entry"
+                                        title="<?php echo $this->__('Cidade') ?>"
+                                        value="<?php echo $this->billing_cc_data_city; ?>" maxlength="255" />
+                                </div>
+                            </div>
+                            <div style="float: right; width: 48%;">
+                                <label for="<?php echo $_code ?>_cc_data_zipcode"
+                                    class="required"><?php echo $this->__('CEP') ?></label>
+                                <div class="input-box">
+                                    <input type="text" id="<?php echo $_code ?>_cc_data_zipcode"
+                                        name="payment[cc_data_zipcode]" class="input-text required-entry"
+                                        title="<?php echo $this->__('CEP') ?>"
+                                        value="<?php echo $this->billing_cc_data_zipcode; ?>" maxlength="255" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li id="gerencianet_cc_state_row">
+                    <div class="gn-osc-field-row">
+                        <label for="<?php echo $_code ?>_cc_data_state"
+                            class="required"><?php echo $this->__('ESTADO') ?></label>
+                        <div class="input-box">
+                            <select id="<?php echo $_code ?>_cc_data_state" name="payment[cc_data_state]"
+                                class="input-select validate-select">
+                                <option value="">Selecione o Estado</option>
+                                <option value="AC"
+                                    <?php if ($this->billing_cc_data_state=="AC" || $this->billing_cc_data_state=="Acre") { ?>
+                                    selected <?php } ?>>Acre</option>
+                                <option value="AL"
+                                    <?php if ($this->billing_cc_data_state=="AL" || $this->billing_cc_data_state=="Alagoas") { ?>
+                                    selected <?php } ?>>Alagoas</option>
+                                <option value="AP"
+                                    <?php if ($this->billing_cc_data_state=="AP" || $this->billing_cc_data_state=="Amapá") { ?>
+                                    selected <?php } ?>>Amapá</option>
+                                <option value="AM"
+                                    <?php if ($this->billing_cc_data_state=="AM" || $this->billing_cc_data_state=="Amazonas") { ?>
+                                    selected <?php } ?>>Amazonas</option>
+                                <option value="BA"
+                                    <?php if ($this->billing_cc_data_state=="BA" || $this->billing_cc_data_state=="Bahia") { ?>
+                                    selected <?php } ?>>Bahia</option>
+                                <option value="CE"
+                                    <?php if ($this->billing_cc_data_state=="CE" || $this->billing_cc_data_state=="Ceará") { ?>
+                                    selected <?php } ?>>Ceará</option>
+                                <option value="DF"
+                                    <?php if ($this->billing_cc_data_state=="DF" || $this->billing_cc_data_state=="Distrito Federal") { ?>
+                                    selected <?php } ?>>Distrito Federal</option>
+                                <option value="ES"
+                                    <?php if ($this->billing_cc_data_state=="ES" || $this->billing_cc_data_state=="Espírito Santo") { ?>
+                                    selected <?php } ?>>Espírito Santo</option>
+                                <option value="GO"
+                                    <?php if ($this->billing_cc_data_state=="GO" || $this->billing_cc_data_state=="Goiás") { ?>
+                                    selected <?php } ?>>Goiás</option>
+                                <option value="MA"
+                                    <?php if ($this->billing_cc_data_state=="MA" || $this->billing_cc_data_state=="Maranhão") { ?>
+                                    selected <?php } ?>>Maranhão</option>
+                                <option value="MT"
+                                    <?php if ($this->billing_cc_data_state=="MT" || $this->billing_cc_data_state=="Mato Grosso") { ?>
+                                    selected <?php } ?>>Mato Grosso</option>
+                                <option value="MS"
+                                    <?php if ($this->billing_cc_data_state=="MS" || $this->billing_cc_data_state=="Mato Grosso do Sul") { ?>
+                                    selected <?php } ?>>Mato Grosso do Sul</option>
+                                <option value="MG"
+                                    <?php if ($this->billing_cc_data_state=="MG" || $this->billing_cc_data_state=="Minas Gerais") { ?>
+                                    selected <?php } ?>>Minas Gerais</option>
+                                <option value="PA"
+                                    <?php if ($this->billing_cc_data_state=="PA" || $this->billing_cc_data_state=="Pará") { ?>
+                                    selected <?php } ?>>Pará</option>
+                                <option value="PB"
+                                    <?php if ($this->billing_cc_data_state=="PB" || $this->billing_cc_data_state=="Paraíba") { ?>
+                                    selected <?php } ?>>Paraíba</option>
+                                <option value="PR"
+                                    <?php if ($this->billing_cc_data_state=="PR" || $this->billing_cc_data_state=="Paraná") { ?>
+                                    selected <?php } ?>>Paraná</option>
+                                <option value="PE"
+                                    <?php if ($this->billing_cc_data_state=="PE" || $this->billing_cc_data_state=="Pernambuco") { ?>
+                                    selected <?php } ?>>Pernambuco</option>
+                                <option value="PI"
+                                    <?php if ($this->billing_cc_data_state=="PI" || $this->billing_cc_data_state=="Piauí") { ?>
+                                    selected <?php } ?>>Piauí</option>
+                                <option value="RJ"
+                                    <?php if ($this->billing_cc_data_state=="RJ" || $this->billing_cc_data_state=="Rio de Janeiro") { ?>
+                                    selected <?php } ?>>Rio de Janeiro</option>
+                                <option value="RN"
+                                    <?php if ($this->billing_cc_data_state=="RN" || $this->billing_cc_data_state=="Rio Grande do Norte") { ?>
+                                    selected <?php } ?>>Rio Grande do Norte</option>
+                                <option value="RS"
+                                    <?php if ($this->billing_cc_data_state=="RS" || $this->billing_cc_data_state=="Rio Grande do Sul") { ?>
+                                    selected <?php } ?>>Rio Grande do Sul</option>
+                                <option value="RO"
+                                    <?php if ($this->billing_cc_data_state=="RO" || $this->billing_cc_data_state=="Rondônia") { ?>
+                                    selected <?php } ?>>Rondônia</option>
+                                <option value="RR"
+                                    <?php if ($this->billing_cc_data_state=="RR" || $this->billing_cc_data_state=="Roraima") { ?>
+                                    selected <?php } ?>>Roraima</option>
+                                <option value="SC"
+                                    <?php if ($this->billing_cc_data_state=="SC" || $this->billing_cc_data_state=="Santa Catarina") { ?>
+                                    selected <?php } ?>>Santa Catarina</option>
+                                <option value="SP"
+                                    <?php if ($this->billing_cc_data_state=="SP" || $this->billing_cc_data_state=="São Paulo") { ?>
+                                    selected <?php } ?>>São Paulo</option>
+                                <option value="SE"
+                                    <?php if ($this->billing_cc_data_state=="SE" || $this->billing_cc_data_state=="Sergipe") { ?>
+                                    selected <?php } ?>>Sergipe</option>
+                                <option value="TO"
+                                    <?php if ($this->billing_cc_data_state=="TO" || $this->billing_cc_data_state=="Tocantins") { ?>
+                                    selected <?php } ?>>Tocantins</option>
+                            </select>
+                        </div>
+                    </div>
+                </li>
+            </div>
+            <?php if ($this->order_total<5):	?>
+        </div><?php endif; ?>
+    </ul>
 </div>
 
 
@@ -322,33 +482,52 @@ Validation.defaultOptions.immediate = true;
 </script>
 
 <style type="text/css">
-.gn-osc-card-payment-box {
-	margin: 3px;
-	width: 100%;
-	display: table;
+.defaultStyle {
+    height: 30px;
+    padding: 0 8px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -ms-border-radius: 2px;
+    -o-border-radius: 2px;
+    border-radius: 2px;
+    border: 1px solid silver;
+    background: #FFFFFF;
+    font-size: 15px;
 }
-.gn-osc-card-payment-box input[type=text], .gn-osc-card-payment-box select {
-	width: 100%;
+
+.gn-osc-card-payment-box {
+    margin: 3px;
+    width: 100%;
+    display: table;
+}
+
+.gn-osc-card-payment-box input[type=text],
+.gn-osc-card-payment-box select {
+    width: 100%;
 }
 
 .gn-osc-card-info {
-	background-color: #FFF; 
-	padding: 5px;
+    background-color: #FFF;
+    padding: 5px;
     border-radius: 4px;
     -webkit-border-radius: 4px;
     border-radius: 4px;
 }
 
 
-.gn-card-brand-selector input{
-    margin:0;padding:0;
-    -webkit-appearance:none;
-       -moz-appearance:none;
-            appearance:none;
+.gn-card-brand-selector input {
+    margin: 0;
+    padding: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
 
-.gn-card-brand-selector input:active +.gn-card-brand{opacity: .9;}
-.gn-card-brand-selector input:checked +.gn-card-brand{
+.gn-card-brand-selector input:active+.gn-card-brand {
+    opacity: .9;
+}
+
+.gn-card-brand-selector input:checked+.gn-card-brand {
     -webkit-filter: none;
     -moz-filter: none;
     filter: none;
@@ -356,14 +535,21 @@ Validation.defaultOptions.immediate = true;
 }
 
 .gn-osc-field-row {
-	width: 95%;
+    width: 95%;
 }
+
 .gn-osc-clear {
-	clear: both;
+    clear: both;
 }
 
 .gn-card-brand {
-	padding: 5px; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; cursor: pointer; position: relative; background-color: #EDEDED;
+    padding: 5px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    background-color: #EDEDED;
     -webkit-transition: all 200ms ease-in;
     -moz-transition: all 200ms ease-in;
     transition: all 200ms ease-in;
@@ -372,7 +558,7 @@ Validation.defaultOptions.immediate = true;
     filter: brightness(1) grayscale(.5) opacity(1);
 }
 
-.gn-card-brand:hover{
+.gn-card-brand:hover {
     -webkit-filter: brightness(1) grayscale(0) opacity(1);
     -moz-filter: brightness(1) grayscale(0) opacity(1);
     filter: brightness(1) grayscale(0) opacity(1);
@@ -387,907 +573,960 @@ Validation.defaultOptions.immediate = true;
 }
 
 .gn-osc-cvv {
-	width: 50px !important;
+    width: 50px !important;
 }
 
-.gn-hide { display: none; }
-.alert-development { color: #8a6d3b; background-color: #fcf8e3; border: 1px solid #faebcc; margin-top: 10px; margin-bottom: 20px; padding: 10px; -webkit-border-radius: 3px; -moz-border-radius: 3px; border-radius: 3px; font-size: 12px; }
-.alert-development p { color: #8a6d3b; margin: 0; padding: 0; font-size: 11px; }
-.alert-development strong { color: #c90000; }
-.card-logo input { position: absolute; top: 15px; left: 4px; }
-.brand-label {  }
+.gn-hide {
+    display: none;
+}
 
-.card-logo { display: inline-block; }
-.card-logo li { float: left; text-align: center; margin-top: 5px; margin-bottom: 5px; margin-right: 5px !important;height:auto;vertical-align:bottom;display:block; position:relative; }
-.card-logo li .validation-advice {position:absolute;top:55px;width:150px; }
-.card-logo li label img { display: block; }
+.alert-development {
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border: 1px solid #faebcc;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    padding: 10px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    font-size: 12px;
+}
 
-.sp-methods .form-list li .input-box .input-text.cvv { width:40px; margin-right:0px; }
-.form-list li.first { text-align: center; }
+.alert-development p {
+    color: #8a6d3b;
+    margin: 0;
+    padding: 0;
+    font-size: 11px;
+}
+
+.alert-development strong {
+    color: #c90000;
+}
+
+.card-logo input {
+    position: absolute;
+    top: 15px;
+    left: 4px;
+}
+
+.brand-label {}
+
+.card-logo {
+    display: inline-block;
+}
+
+.card-logo li {
+    float: left;
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-right: 5px !important;
+    height: auto;
+    vertical-align: bottom;
+    display: block;
+    position: relative;
+}
+
+.card-logo li .validation-advice {
+    position: absolute;
+    top: 55px;
+    width: 150px;
+}
+
+.card-logo li label img {
+    display: block;
+}
+
+.sp-methods .form-list li .input-box .input-text.cvv {
+    width: 40px;
+    margin-right: 0px;
+}
+
+.form-list li.first {
+    text-align: center;
+}
+
 .sp-methods .form-list li label,
-.sp-methods .form-list li .input-box { width:auto; margin-right: 0px;}
+.sp-methods .form-list li .input-box {
+    width: auto;
+    margin-right: 0px;
+}
+
 .form-list .card-logo li label,
-.sp-methods .form-list li .input-box select { width:100% !important;margin-right:0px; text-align: center;}
+.sp-methods .form-list li .input-box select {
+    width: 100% !important;
+    margin-right: 0px;
+    text-align: center;
+}
 </style>
 
 
-<script type="text/javascript"> 
-
+<script type="text/javascript">
 //<![CDATA[
-if (jQuery!=undefined) 
-    jQuery(document).ready(function(e){  
+if (jQuery != undefined)
+    jQuery(document).ready(function(e) {
 
-    	if (jQuery("#gerencianet_card_cc_data_email").val()=="") {
-    		if (jQuery("[name='billing[email]']")) {
-	    		jQuery("#gerencianet_card_cc_data_email").val(jQuery("[name='billing[email]']").val());
-	    	}
-    	}
+        if (jQuery("#gerencianet_card_cc_data_email").val() == "") {
+            if (jQuery("[name='billing[email]']")) {
+                jQuery("#gerencianet_card_cc_data_email").val(jQuery("[name='billing[email]']").val());
+            }
+        }
 
-		if (jQuery("[name='billing[taxvat]']").val()!="") {
-			if (jQuery("#gerencianet_card_cc_data_cpf_cnpj").val()=="") {
-				jQuery("#gerencianet_card_cc_data_cpf_cnpj").val(jQuery("[name='billing[taxvat]']").val());
-				if (verifyCPF(jQuery("[name='billing[taxvat]']").val()) && jQuery("#gerencianet_card_cc_data_name_corporate").val()=="") {
-	    			jQuery("#gerencianet_card_cc_data_name_corporate").val(jQuery("[name='billing[firstname]']").val() + " " + jQuery("[name='billing[lastname]']").val());
-				} else if (verifyCNPJ(jQuery("[name='billing[taxvat]']").val()) && jQuery("#gerencianet_card_cc_data_name_corporate").val()=="") {
-	    			if (jQuery("#gerencianet_card_cc_data_name_corporate").val()=="" && typeof jQuery("[name='billing[razao_social]']").val() != "undefined") {
-			    		jQuery("#gerencianet_card_cc_data_name_corporate").val(jQuery("[name='billing[razao_social]']").val());
-			    	} else if (jQuery("#gerencianet_card_cc_data_name_corporate").val()=="") {
-			    		jQuery("#gerencianet_card_cc_data_name_corporate").val(jQuery("[name='billing[firstname]']").val());
-			    	}
-				}
-	
-	    	}
-    	}
-    	
-    	if (jQuery.mask) {
+        if (jQuery("[name='billing[taxvat]']").val() != "") {
+            if (jQuery("#gerencianet_card_cc_data_cpf_cnpj").val() == "") {
+                jQuery("#gerencianet_card_cc_data_cpf_cnpj").val(jQuery("[name='billing[taxvat]']").val());
+                if (verifyCPF(jQuery("[name='billing[taxvat]']").val()) && jQuery(
+                        "#gerencianet_card_cc_data_name_corporate").val() == "") {
+                    jQuery("#gerencianet_card_cc_data_name_corporate").val(jQuery("[name='billing[firstname]']")
+                        .val() + " " + jQuery("[name='billing[lastname]']").val());
+                } else if (verifyCNPJ(jQuery("[name='billing[taxvat]']").val()) && jQuery(
+                        "#gerencianet_card_cc_data_name_corporate").val() == "") {
+                    if (jQuery("#gerencianet_card_cc_data_name_corporate").val() == "" && typeof jQuery(
+                            "[name='billing[razao_social]']").val() != "undefined") {
+                        jQuery("#gerencianet_card_cc_data_name_corporate").val(jQuery(
+                            "[name='billing[razao_social]']").val());
+                    } else if (jQuery("#gerencianet_card_cc_data_name_corporate").val() == "") {
+                        jQuery("#gerencianet_card_cc_data_name_corporate").val(jQuery("[name='billing[firstname]']")
+                            .val());
+                    }
+                }
 
-	    	jQuery("#gerencianet_card_cc_data_cpf_cnpj").keyup(function(e){
-	            var tamanho = jQuery("#gerencianet_card_cc_data_cpf_cnpj").val().replace(/[^\d]+/g,'').length;	            
-	            jQuery("#gerencianet_card_cc_data_cpf_cnpj").unmask();
-	 
-	            if(e.keyCode == 8)
-	            {
-	                if(tamanho == 11){
-	                    jQuery("#gerencianet_card_cc_data_cpf_cnpj").mask("999.999.999-99?9",{autoclear:false, placeholder:""});
-	                    jQuery("#gerencianet_card_cc_data_cpf_cnpj").unmask();
-	                } else if(tamanho == 12){
-	                    jQuery("#gerencianet_card_cc_data_cpf_cnpj").mask("99.999.999/9999-99",{autoclear:false, placeholder:""});
-	                    jQuery("#gerencianet_card_cc_data_cpf_cnpj").unmask();
-	                }
-	                else 
-	                {
-	                    jQuery("#gerencianet_card_cc_data_cpf_cnpj").unmask();
-	                    return;
-	                }
-	            }
-	            if(tamanho <= 11){
-	                jQuery("#gerencianet_card_cc_data_cpf_cnpj").mask("999.999.999-99?9",{autoclear:false, placeholder:""});
-	            } else if(tamanho > 11){
-	                jQuery("#gerencianet_card_cc_data_cpf_cnpj").mask("99.999.999/9999-99",{autoclear:false, placeholder:""});
-	            }      
-	        });
+            }
+        }
 
-	    	jQuery("#gerencianet_card_cc_data_birth").mask("99/99/9999",{
-	    		completed:function(){ 
-	    			if (!verifyBirthdate(this.val())) {
-	    				this.addClass( "validation-failed" );
-	    				alert("Data de nascimento inválida.");
-	    			} else {
-	    				this.removeClass( "validation-failed" );
-	    			}
-	    		},placeholder:"__/__/____"});
+        if (jQuery.mask) {
 
-			jQuery("#gerencianet_card_cc_data_phone_number").focusout(function(){
-			jQuery("#gerencianet_card_cc_data_phone_number").unmask();
-				var phone = jQuery("#gerencianet_card_cc_data_phone_number").val().replace(/[^\d]+/g,'');
-				if(phone.length > 10) {
-					jQuery("#gerencianet_card_cc_data_phone_number").mask("(99) 99999-999?9");
-				} else {
-					jQuery("#gerencianet_card_cc_data_phone_number").mask("(99) 9999-9999?9");
-				}
-			}).trigger("focusout");
-		}
+            jQuery("#gerencianet_card_cc_data_cpf_cnpj").keyup(function(e) {
+                var tamanho = jQuery("#gerencianet_card_cc_data_cpf_cnpj").val().replace(/[^\d]+/g, '')
+                    .length;
+                jQuery("#gerencianet_card_cc_data_cpf_cnpj").unmask();
 
-		jQuery( "#brand_visa" ).click(function() {
-		  	jQuery('input[name="payment[cc_type]"][value="visa"]').prop("checked", true);
-			saveBrandInFE('visa');
-			GerencianetTransparent.calculateInstallments();
-			GerencianetTransparent.cardPaymentValidate();
-		});
+                if (e.keyCode == 8) {
+                    if (tamanho == 11) {
+                        jQuery("#gerencianet_card_cc_data_cpf_cnpj").mask("999.999.999-99?9", {
+                            autoclear: false,
+                            placeholder: ""
+                        });
+                        jQuery("#gerencianet_card_cc_data_cpf_cnpj").unmask();
+                    } else if (tamanho == 12) {
+                        jQuery("#gerencianet_card_cc_data_cpf_cnpj").mask("99.999.999/9999-99", {
+                            autoclear: false,
+                            placeholder: ""
+                        });
+                        jQuery("#gerencianet_card_cc_data_cpf_cnpj").unmask();
+                    } else {
+                        jQuery("#gerencianet_card_cc_data_cpf_cnpj").unmask();
+                        return;
+                    }
+                }
+                if (tamanho <= 11) {
+                    jQuery("#gerencianet_card_cc_data_cpf_cnpj").mask("999.999.999-99?9", {
+                        autoclear: false,
+                        placeholder: ""
+                    });
+                } else if (tamanho > 11) {
+                    jQuery("#gerencianet_card_cc_data_cpf_cnpj").mask("99.999.999/9999-99", {
+                        autoclear: false,
+                        placeholder: ""
+                    });
+                }
+            });
 
-		jQuery( "#brand_mastercard" ).click(function() {
-		  	jQuery('input[name="payment[cc_type]"][value="mastercard"]').prop("checked", true);
-			saveBrandInFE('mastercard');
-			GerencianetTransparent.calculateInstallments();
-			GerencianetTransparent.cardPaymentValidate();
-		});
+            jQuery("#gerencianet_card_cc_data_birth").mask("99/99/9999", {
+                completed: function() {
+                    if (!verifyBirthdate(this.val())) {
+                        this.addClass("validation-failed");
+                        alert("Data de nascimento inválida.");
+                    } else {
+                        this.removeClass("validation-failed");
+                    }
+                },
+                placeholder: "__/__/____"
+            });
+			
 
-		jQuery( "#brand_amex" ).click(function() {
-		  	jQuery('input[name="payment[cc_type]"][value="amex"]').prop("checked", true);
-			saveBrandInFE('amex');
-			GerencianetTransparent.calculateInstallments();
-			GerencianetTransparent.cardPaymentValidate();
-		});
+            jQuery("#gerencianet_card_cc_data_phone_number").focusout(function() {
+                jQuery("#gerencianet_card_cc_data_phone_number").unmask();
+                var phone = jQuery("#gerencianet_card_cc_data_phone_number").val().replace(/[^\d]+/g, '');
+                if (phone.length > 10) {
+                    jQuery("#gerencianet_card_cc_data_phone_number").mask("(99) 99999-999?9");
+                } else {
+                    jQuery("#gerencianet_card_cc_data_phone_number").mask("(99) 9999-9999?9");
+                }
+            }).trigger("focusout");
+        }
 
-		jQuery( "#brand_elo" ).click(function() {
-		  	jQuery('input[name="payment[cc_type]"][value="elo"]').prop("checked", true);
-			saveBrandInFE('elo');
-			GerencianetTransparent.calculateInstallments();
-			GerencianetTransparent.cardPaymentValidate();
-		});
-
-		jQuery( "#brand_diners" ).click(function() {
-		  	jQuery('input[name="payment[cc_type]"][value="diners"]').prop("checked", true);
-			saveBrandInFE('diners');
-			GerencianetTransparent.calculateInstallments();
-			GerencianetTransparent.cardPaymentValidate();
-		});
-
-		jQuery( "#brand_hipercard" ).click(function() {
-		  	jQuery('input[name="payment[cc_type]"][value="hipercard"]').prop("checked", true);
-			saveBrandInFE('hipercard');
-			GerencianetTransparent.calculateInstallments();
-			GerencianetTransparent.cardPaymentValidate();
-		});
-
-		if (verifyEmail(jQuery("#gerencianet_card_cc_data_email").val())) {
-			jQuery('#gerencianet_cc_email_row').addClass("gn-hide");
-		} else {
-			jQuery('#gerencianet_cc_email_row').removeClass("gn-hide");
-		}
-
-		if (brand=="visa" ||
-			brand=="mastercard" ||
-			brand=="amex" ||
-			brand=="elo" ||
-			brand=="diners" ||
-			brand=="hipercard") {
-			brand = null;
-			var $radios = jQuery("input:radio[name='payment[cc_type]']");
-		    if($radios.is(':checked') === false && jQuery("#brandSave").val()!="") {
-		        $radios.filter('[value=' + jQuery("#brandSave").val() + ']').prop('checked', true);
-		    }
-			GerencianetTransparent.calculateInstallments();
-		}
+        if (verifyEmail(jQuery("#gerencianet_card_cc_data_email").val())) {
+            jQuery('#gerencianet_cc_email_row').addClass("gn-hide");
+        } else {
+            jQuery('#gerencianet_cc_email_row').removeClass("gn-hide");
+        }
     });
 
-	GerencianetTransparent.cardPaymentValidate();
+function verifyEmail(email) {
+    var pattern =
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return pattern.test(email);
+}
 
-	function saveBrandInFE(brand) {
-		jQuery("#brandSave").val(brand);
-	}
+function verifyCPF(cpf) {
+    if (cpf != undefined) {
+        cpf = cpf.replace(/[^\d]+/g, '');
 
-	function verifyEmail(email) {
-    	var pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return pattern.test(email);
+        if (cpf == '' || cpf.length != 11) return false;
+
+        var resto;
+        var soma = 0;
+
+        if (cpf == "00000000000" || cpf == "11111111111" || cpf == "22222222222" || cpf == "33333333333" || cpf ==
+            "44444444444" || cpf == "55555555555" || cpf == "66666666666" || cpf == "77777777777" || cpf ==
+            "88888888888" || cpf == "99999999999" || cpf == "12345678909") return false;
+
+        for (i = 1; i <= 9; i++) soma = soma + parseInt(cpf.substring(i - 1, i)) * (11 - i);
+        resto = (soma * 10) % 11;
+
+        if ((resto == 10) || (resto == 11)) resto = 0;
+        if (resto != parseInt(cpf.substring(9, 10))) return false;
+
+        soma = 0;
+        for (i = 1; i <= 10; i++) soma = soma + parseInt(cpf.substring(i - 1, i)) * (12 - i);
+        resto = (soma * 10) % 11;
+
+        if ((resto == 10) || (resto == 11)) resto = 0;
+        if (resto != parseInt(cpf.substring(10, 11))) return false;
+        return true;
+    } else {
+        return false;
     }
-	
-	function verifyCPF(cpf) {
-		if (cpf!=undefined) {
-	        cpf = cpf.replace(/[^\d]+/g,'');
-			
-	        if(cpf == '' || cpf.length != 11) return false;
-	        
-	        var resto;
-	        var soma = 0;
-	        
-	        if (cpf == "00000000000" || cpf == "11111111111" || cpf == "22222222222" || cpf == "33333333333" || cpf == "44444444444" || cpf == "55555555555" || cpf == "66666666666" || cpf == "77777777777" || cpf == "88888888888" || cpf == "99999999999" || cpf == "12345678909") return false;
-	        
-	        for (i=1; i<=9; i++) soma = soma + parseInt(cpf.substring(i-1, i)) * (11 - i);
-	        resto = (soma * 10) % 11;
-	        
-	        if ((resto == 10) || (resto == 11))  resto = 0;
-	        if (resto != parseInt(cpf.substring(9, 10)) ) return false;
-	        
-	        soma = 0;
-	        for (i = 1; i <= 10; i++) soma = soma + parseInt(cpf.substring(i-1, i)) * (12 - i);
-	        resto = (soma * 10) % 11;
-	        
-	        if ((resto == 10) || (resto == 11))  resto = 0;
-	        if (resto != parseInt(cpf.substring(10, 11) ) ) return false;
-	        return true;
-	    } else {
-	    	return false;
-	    }
+}
+
+function verifyCNPJ(cnpj) {
+    if (cnpj != undefined) {
+        cnpj = cnpj.replace(/[^\d]+/g, '');
+
+        if (cnpj == '' || cnpj.length != 14) return false;
+
+        if (cnpj == "00000000000000" || cnpj == "11111111111111" || cnpj == "22222222222222" || cnpj ==
+            "33333333333333" || cnpj == "44444444444444" || cnpj == "55555555555555" || cnpj == "66666666666666" ||
+            cnpj == "77777777777777" || cnpj == "88888888888888" || cnpj == "99999999999999") return false;
+
+        var tamanho = cnpj.length - 2
+        var numeros = cnpj.substring(0, tamanho);
+        var digitos = cnpj.substring(tamanho);
+        var soma = 0;
+        var pos = tamanho - 7;
+
+        for (i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2)
+                pos = 9;
+        }
+
+        var resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+
+        if (resultado != digitos.charAt(0)) return false;
+
+        tamanho = tamanho + 1;
+        numeros = cnpj.substring(0, tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+
+        for (i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2) pos = 9;
+        }
+
+        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+
+        if (resultado != digitos.charAt(1)) return false;
+
+        return true;
+    } else {
+        return false;
     }
+}
 
-    function verifyCNPJ(cnpj) {
-    	if (cnpj!=undefined) {
-	        cnpj = cnpj.replace(/[^\d]+/g,'');
-
-	        if(cnpj == '' || cnpj.length != 14) return false;
-
-	        if (cnpj == "00000000000000" || cnpj == "11111111111111" || cnpj == "22222222222222" || cnpj == "33333333333333" || cnpj == "44444444444444" || cnpj == "55555555555555" || cnpj == "66666666666666" || cnpj == "77777777777777" || cnpj == "88888888888888" || cnpj == "99999999999999") return false;
-
-	        var tamanho = cnpj.length - 2
-	        var numeros = cnpj.substring(0,tamanho);
-	        var digitos = cnpj.substring(tamanho);
-	        var soma = 0;
-	        var pos = tamanho - 7;
-	        
-	        for (i = tamanho; i >= 1; i--) {
-	          soma += numeros.charAt(tamanho - i) * pos--;
-	          if (pos < 2)
-	                pos = 9;
-	        }
-	        
-	        var resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-	        
-	        if (resultado != digitos.charAt(0)) return false;
-
-	        tamanho = tamanho + 1;
-	        numeros = cnpj.substring(0,tamanho);
-	        soma = 0;
-	        pos = tamanho - 7;
-	        
-	        for (i = tamanho; i >= 1; i--) {
-	          soma += numeros.charAt(tamanho - i) * pos--;
-	          if (pos < 2) pos = 9;
-	        }
-	        
-	        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-	        
-	        if (resultado != digitos.charAt(1)) return false;
-
-	        return true; 
-        } else {
-	    	return false;
-	    }
-    }
-
-    function verifyBirthdate(birth) {
-        var pattern = new RegExp(/^[12][0-9]{3}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])$/);
-        var date = birth.split("/");
-        return pattern.test(date[2] + "-" + date[1] + "-" + date[0]);
-    }
+function verifyBirthdate(birth) {
+    var pattern = new RegExp(/^[12][0-9]{3}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])$/);
+    var date = birth.split("/");
+    return pattern.test(date[2] + "-" + date[1] + "-" + date[0]);
+}
 
 //]]>
-
 </script>
 
 <script>
-    var customer_cc_data_juridical = "<?php echo $this->customer_cc_data_juridical; ?>";
-    var customer_cc_data_name = "<?php echo $this->customer_cc_data_name; ?>";
-    var customer_cc_data_document = "<?php echo $this->customer_cc_data_document; ?>";
-    var customer_cc_data_email = "<?php echo $this->customer_cc_data_email; ?>";
-    var customer_cc_data_birth = "<?php echo $this->customer_cc_data_birth; ?>";
-    var customer_cc_data_phone_number = "<?php echo $this->customer_cc_data_phone_number; ?>";
-    var billing_cc_data_street = "<?php echo $this->billing_cc_data_street; ?>";
-    var billing_cc_data_number = "<?php echo $this->billing_cc_data_number; ?>";
-    var billing_cc_data_zipcode = "<?php echo $this->billing_cc_data_zipcode; ?>";
-    var billing_cc_data_neighborhood = "<?php echo $this->billing_cc_data_neighborhood; ?>";
-    var billing_cc_data_state = "<?php echo $this->billing_cc_data_state; ?>";
-    var billing_cc_data_city = "<?php echo $this->billing_cc_data_city; ?>";
-    var billing_cc_data_complement = "<?php echo $this->billing_cc_data_complement; ?>";
+var customer_cc_data_juridical = "<?php echo $this->customer_cc_data_juridical; ?>";
+var customer_cc_data_name = "<?php echo $this->customer_cc_data_name; ?>";
+var customer_cc_data_document = "<?php echo $this->customer_cc_data_document; ?>";
+var customer_cc_data_email = "<?php echo $this->customer_cc_data_email; ?>";
+var customer_cc_data_birth = "<?php echo $this->customer_cc_data_birth; ?>";
+var customer_cc_data_phone_number = "<?php echo $this->customer_cc_data_phone_number; ?>";
+var billing_cc_data_street = "<?php echo $this->billing_cc_data_street; ?>";
+var billing_cc_data_number = "<?php echo $this->billing_cc_data_number; ?>";
+var billing_cc_data_zipcode = "<?php echo $this->billing_cc_data_zipcode; ?>";
+var billing_cc_data_neighborhood = "<?php echo $this->billing_cc_data_neighborhood; ?>";
+var billing_cc_data_state = "<?php echo $this->billing_cc_data_state; ?>";
+var billing_cc_data_city = "<?php echo $this->billing_cc_data_city; ?>";
+var billing_cc_data_complement = "<?php echo $this->billing_cc_data_complement; ?>";
 
-    if (customer_cc_data_email=="") {
-    	if (document.getElementById('billing:email')) {
-    		customer_cc_data_email = document.getElementById('billing:email').value;
-    	}
+if (customer_cc_data_email == "") {
+    if (document.getElementById('billing:email')) {
+        customer_cc_data_email = document.getElementById('billing:email').value;
     }
+}
 
-    if (customer_cc_data_phone_number=="") {
-    	if (document.getElementById('billing:telephone')) {
-    		customer_cc_data_phone_number = document.getElementById('billing:telephone').value;
-    	} else if (document.getElementById('billing_telephone')) {
-    		customer_cc_data_phone_number = document.getElementById('billing_telephone').value;
-    	}
+if (customer_cc_data_phone_number == "") {
+    if (document.getElementById('billing:telephone')) {
+        customer_cc_data_phone_number = document.getElementById('billing:telephone').value;
+    } else if (document.getElementById('billing_telephone')) {
+        customer_cc_data_phone_number = document.getElementById('billing_telephone').value;
     }
+}
 
-    if (billing_cc_data_street=="") {
-    	if (document.getElementById('billing:street1')) {
-    		billing_cc_data_street = document.getElementById('billing:street1').value;
-    	}
+if (billing_cc_data_street == "") {
+    if (document.getElementById('billing:street1')) {
+        billing_cc_data_street = document.getElementById('billing:street1').value;
     }
+}
 
-    if (billing_cc_data_number=="") {
-    	if (document.getElementById('billing:street2')) {
-    		billing_cc_data_number = document.getElementById('billing:street2').value;
-    	}
+if (billing_cc_data_number == "") {
+    if (document.getElementById('billing:street2')) {
+        billing_cc_data_number = document.getElementById('billing:street2').value;
     }
+}
 
-    if (billing_cc_data_complement=="") {
-    	if (document.getElementById('billing:street3')) {
-    		billing_cc_data_complement = document.getElementById('billing:street3').value;
-    	}
+if (billing_cc_data_complement == "") {
+    if (document.getElementById('billing:street3')) {
+        billing_cc_data_complement = document.getElementById('billing:street3').value;
     }
+}
 
-    if (billing_cc_data_neighborhood=="") {
-    	if (document.getElementById('billing:street4')) {
-    		billing_cc_data_neighborhood = document.getElementById('billing:street4').value;
-    	}
+if (billing_cc_data_neighborhood == "") {
+    if (document.getElementById('billing:street4')) {
+        billing_cc_data_neighborhood = document.getElementById('billing:street4').value;
     }
+}
 
-    if (billing_cc_data_city=="") {
-    	if (document.getElementById('billing:city')) {
-    		billing_cc_data_city = document.getElementById('billing:city').value;
-    	}
+if (billing_cc_data_city == "") {
+    if (document.getElementById('billing:city')) {
+        billing_cc_data_city = document.getElementById('billing:city').value;
     }
+}
 
-    if (billing_cc_data_zipcode=="") {
-    	if (document.getElementById('billing:postcode')) {
-    		billing_cc_data_zipcode = document.getElementById('billing:postcode').value;
-    	}
+if (billing_cc_data_zipcode == "") {
+    if (document.getElementById('billing:postcode')) {
+        billing_cc_data_zipcode = document.getElementById('billing:postcode').value;
     }
+}
 
-	if (document.getElementById('gerencianet_card_cc_data_name_corporate')) {
-		if (customer_cc_data_name!="") {
-			document.getElementById('gerencianet_card_cc_data_name_corporate').value = customer_cc_data_name;
-		}
-	}
+if (document.getElementById('gerencianet_card_cc_data_name_corporate')) {
+    if (customer_cc_data_name != "") {
+        document.getElementById('gerencianet_card_cc_data_name_corporate').value = customer_cc_data_name;
+    }
+}
 
-	if (document.getElementById('gerencianet_card_cc_data_cpf_cnpj')) {
-		if (customer_cc_data_document!="") {
-			document.getElementById('gerencianet_card_cc_data_cpf_cnpj').value = customer_cc_data_document;
-		} else if (document.getElementsByName('billing[taxvat]')) {
-			if (verifyCPF(document.getElementsByName('billing[taxvat]').value) || verifyCNPJ(document.getElementsByName('billing[taxvat]').value)) {
-				document.getElementById('gerencianet_card_cc_data_cpf_cnpj').value = document.getElementsByName('billing[taxvat]').value;
-			}
-		}
-	}
-	if (document.getElementById('gerencianet_card_cc_data_email')) {
-		if (customer_cc_data_email!="") {
-			document.getElementById('gerencianet_card_cc_data_email').value = customer_cc_data_email;
-		}
-	}
-	if (document.getElementById('gerencianet_card_cc_data_birth')) {
-		if (customer_cc_data_birth!="") {
-			document.getElementById('gerencianet_card_cc_data_birth').value = customer_cc_data_birth;
-		} else if (document.getElementById('billing:day') && document.getElementById('billing:month') && document.getElementById('billing:year')) {
-			jQuery('#gerencianet_card_cc_data_birth').val(document.getElementById('billing:day').value+"/"+document.getElementById('billing:month').value+"/"+document.getElementById('billing:year').value);
-		}
-	}
-	if (document.getElementById('gerencianet_card_cc_data_phone_number')) {
-		if (customer_cc_data_phone_number!="") {
-			document.getElementById('gerencianet_card_cc_data_phone_number').value = customer_cc_data_phone_number;
-		} else if (document.getElementsByName('billing[telephone]')) {
-			document.getElementById('gerencianet_card_cc_data_phone_number').value = jQuery("[name='billing[telephone]']").val();
-		}
-	}
-	if (document.getElementById('gerencianet_card_cc_data_street')) {
-		if (billing_cc_data_street!="") {
-			document.getElementById('gerencianet_card_cc_data_street').value = billing_cc_data_street;
-		}
-	}
-	if (document.getElementById('gerencianet_card_cc_data_number')) {
-		if (billing_cc_data_number!="") {
-			document.getElementById('gerencianet_card_cc_data_number').value = billing_cc_data_number;
-		}
-	}
-	if (document.getElementById('gerencianet_card_cc_data_zipcode')) {
-		if (billing_cc_data_zipcode!="") {
-			document.getElementById('gerencianet_card_cc_data_zipcode').value = billing_cc_data_zipcode;
-		}
-	}
-	if (document.getElementById('gerencianet_card_cc_data_neighborhood')) {
-		if (billing_cc_data_neighborhood!="") {
-			document.getElementById('gerencianet_card_cc_data_neighborhood').value = billing_cc_data_neighborhood;
-		}
-	}
-	if (document.getElementById('gerencianet_card_cc_data_state')) {
-		if (
-		    	billing_cc_data_state == "AC" ||
-		    	billing_cc_data_state == "AL" ||
-		    	billing_cc_data_state == "AP" ||
-		    	billing_cc_data_state == "AM" ||
-		    	billing_cc_data_state == "BA" ||
-		    	billing_cc_data_state == "CE" ||
-		    	billing_cc_data_state == "DF" ||
-		    	billing_cc_data_state == "ES" ||
-		    	billing_cc_data_state == "GO" ||
-		    	billing_cc_data_state == "MA" ||
-		    	billing_cc_data_state == "MT" ||
-		    	billing_cc_data_state == "MS" ||
-		    	billing_cc_data_state == "MG" ||
-		    	billing_cc_data_state == "PA" ||
-		    	billing_cc_data_state == "PB" ||
-		    	billing_cc_data_state == "PR" ||
-		    	billing_cc_data_state == "PE" ||
-		    	billing_cc_data_state == "PI" ||
-		    	billing_cc_data_state == "RJ" ||
-		    	billing_cc_data_state == "RN" ||
-		    	billing_cc_data_state == "RS" ||
-		    	billing_cc_data_state == "RO" ||
-		    	billing_cc_data_state == "RR" ||
-		    	billing_cc_data_state == "SC" ||
-		    	billing_cc_data_state == "SP" ||
-		    	billing_cc_data_state == "SE" ||
-		    	billing_cc_data_state == "TO") {
-			jQuery("#gerencianet_card_cc_data_state").val(billing_cc_data_state);
-			jQuery("#gerencianet_cc_state_row").hide();
-		}
-	}
-	if (document.getElementById('gerencianet_card_cc_data_city')) {
-		if (billing_cc_data_city!="") {
-			document.getElementById('gerencianet_card_cc_data_city').value = billing_cc_data_city;
-		} else if (document.getElementsByName('billing[city]')) {
-			document.getElementById('gerencianet_card_cc_data_city').value = jQuery("[name='billing[city]']").val();
-		}
-	}
-	if (document.getElementById('gerencianet_card_cc_data_complement')) {
-		if (billing_cc_data_complement!="") {
-			document.getElementById('gerencianet_card_cc_data_complement').value = billing_cc_data_complement;
-		}
-	}
+if (document.getElementById('gerencianet_card_cc_data_cpf_cnpj')) {
+    if (customer_cc_data_document != "") {
+        document.getElementById('gerencianet_card_cc_data_cpf_cnpj').value = customer_cc_data_document;
+    } else if (document.getElementsByName('billing[taxvat]')) {
+        if (verifyCPF(document.getElementsByName('billing[taxvat]').value) || verifyCNPJ(document.getElementsByName(
+                'billing[taxvat]').value)) {
+            document.getElementById('gerencianet_card_cc_data_cpf_cnpj').value = document.getElementsByName(
+                'billing[taxvat]').value;
+        }
+    }
+}
+if (document.getElementById('gerencianet_card_cc_data_email')) {
+    if (customer_cc_data_email != "") {
+        document.getElementById('gerencianet_card_cc_data_email').value = customer_cc_data_email;
+    }
+}
+if (document.getElementById('gerencianet_card_cc_data_birth')) {
+    if (customer_cc_data_birth != "") {
+        document.getElementById('gerencianet_card_cc_data_birth').value = customer_cc_data_birth;
+    } else if (document.getElementById('billing:day') && document.getElementById('billing:month') && document
+        .getElementById('billing:year')) {
+        jQuery('#gerencianet_card_cc_data_birth').val(document.getElementById('billing:day').value + "/" + document
+            .getElementById('billing:month').value + "/" + document.getElementById('billing:year').value);
+    }
+}
+if (document.getElementById('gerencianet_card_cc_data_phone_number')) {
+    if (customer_cc_data_phone_number != "") {
+        document.getElementById('gerencianet_card_cc_data_phone_number').value = customer_cc_data_phone_number;
+    } else if (document.getElementsByName('billing[telephone]')) {
+        document.getElementById('gerencianet_card_cc_data_phone_number').value = jQuery("[name='billing[telephone]']")
+            .val();
+    }
+}
+if (document.getElementById('gerencianet_card_cc_data_street')) {
+    if (billing_cc_data_street != "") {
+        document.getElementById('gerencianet_card_cc_data_street').value = billing_cc_data_street;
+    }
+}
+if (document.getElementById('gerencianet_card_cc_data_number')) {
+    if (billing_cc_data_number != "") {
+        document.getElementById('gerencianet_card_cc_data_number').value = billing_cc_data_number;
+    }
+}
+if (document.getElementById('gerencianet_card_cc_data_zipcode')) {
+    if (billing_cc_data_zipcode != "") {
+        document.getElementById('gerencianet_card_cc_data_zipcode').value = billing_cc_data_zipcode;
+    }
+}
+if (document.getElementById('gerencianet_card_cc_data_neighborhood')) {
+    if (billing_cc_data_neighborhood != "") {
+        document.getElementById('gerencianet_card_cc_data_neighborhood').value = billing_cc_data_neighborhood;
+    }
+}
+if (document.getElementById('gerencianet_card_cc_data_state')) {
+    if (
+        billing_cc_data_state == "AC" ||
+        billing_cc_data_state == "AL" ||
+        billing_cc_data_state == "AP" ||
+        billing_cc_data_state == "AM" ||
+        billing_cc_data_state == "BA" ||
+        billing_cc_data_state == "CE" ||
+        billing_cc_data_state == "DF" ||
+        billing_cc_data_state == "ES" ||
+        billing_cc_data_state == "GO" ||
+        billing_cc_data_state == "MA" ||
+        billing_cc_data_state == "MT" ||
+        billing_cc_data_state == "MS" ||
+        billing_cc_data_state == "MG" ||
+        billing_cc_data_state == "PA" ||
+        billing_cc_data_state == "PB" ||
+        billing_cc_data_state == "PR" ||
+        billing_cc_data_state == "PE" ||
+        billing_cc_data_state == "PI" ||
+        billing_cc_data_state == "RJ" ||
+        billing_cc_data_state == "RN" ||
+        billing_cc_data_state == "RS" ||
+        billing_cc_data_state == "RO" ||
+        billing_cc_data_state == "RR" ||
+        billing_cc_data_state == "SC" ||
+        billing_cc_data_state == "SP" ||
+        billing_cc_data_state == "SE" ||
+        billing_cc_data_state == "TO") {
+        jQuery("#gerencianet_card_cc_data_state").val(billing_cc_data_state);
+        jQuery("#gerencianet_cc_state_row").hide();
+    }
+}
+if (document.getElementById('gerencianet_card_cc_data_city')) {
+    if (billing_cc_data_city != "") {
+        document.getElementById('gerencianet_card_cc_data_city').value = billing_cc_data_city;
+    } else if (document.getElementsByName('billing[city]')) {
+        document.getElementById('gerencianet_card_cc_data_city').value = jQuery("[name='billing[city]']").val();
+    }
+}
+if (document.getElementById('gerencianet_card_cc_data_complement')) {
+    if (billing_cc_data_complement != "") {
+        document.getElementById('gerencianet_card_cc_data_complement').value = billing_cc_data_complement;
+    }
+}
 
-	if (validateName(document.getElementById('gerencianet_card_cc_data_name_corporate').value)) {
-		jQuery('#gerencianet_cc_name_row').hide();
-	}
-	if (validateEmail(document.getElementById('gerencianet_card_cc_data_email').value)) {
-		jQuery('#gerencianet_cc_email_row').hide();
-	}
-	if ((verifyCPF(document.getElementById('gerencianet_card_cc_data_cpf_cnpj').value) || verifyCNPJ(jQuery("#gerencianet_card_cc_data_cpf_cnpj").val())) && validateBirth(document.getElementById('gerencianet_card_cc_data_birth').value)) {
-		jQuery('#gerencianet_cc_cpf_birth_row').hide();
-	}
-	if (validatePhone(document.getElementById('gerencianet_card_cc_data_phone_number').value)) {
-		jQuery('#gerencianet_cc_phone_row').hide();
-	}
-	if (validateStreet(document.getElementById('gerencianet_card_cc_data_street').value) && validateStreetNumber(document.getElementById('gerencianet_card_cc_data_number').value)) {
-		jQuery('#gerencianet_cc_street_and_number_row').hide();
-	}
-	if (validateCity(document.getElementById('gerencianet_card_cc_data_city').value) && validateZipcode(document.getElementById('gerencianet_card_cc_data_zipcode').value)) {
-		jQuery('#gerencianet_cc_city_and_zipcode_row').hide();
-	}
-	if (validateNeighborhood(document.getElementById('gerencianet_card_cc_data_neighborhood').value) && validateComplement(document.getElementById('gerencianet_card_cc_data_complement').value)) {
-		jQuery('#gerencianet_cc_neighborhood_row').hide();
-	}
+if (validateName(document.getElementById('gerencianet_card_cc_data_name_corporate').value)) {
+    jQuery('#gerencianet_cc_name_row').hide();
+}
+if (validateEmail(document.getElementById('gerencianet_card_cc_data_email').value)) {
+    jQuery('#gerencianet_cc_email_row').hide();
+}
+if ((verifyCPF(document.getElementById('gerencianet_card_cc_data_cpf_cnpj').value) || verifyCNPJ(jQuery(
+        "#gerencianet_card_cc_data_cpf_cnpj").val())) && validateBirth(document.getElementById(
+        'gerencianet_card_cc_data_birth').value)) {
+    jQuery('#gerencianet_cc_cpf_birth_row').hide();
+}
+if (validatePhone(document.getElementById('gerencianet_card_cc_data_phone_number').value)) {
+    jQuery('#gerencianet_cc_phone_row').hide();
+}
+if (validateStreet(document.getElementById('gerencianet_card_cc_data_street').value) && validateStreetNumber(document
+        .getElementById('gerencianet_card_cc_data_number').value)) {
+    jQuery('#gerencianet_cc_street_and_number_row').hide();
+}
+if (validateCity(document.getElementById('gerencianet_card_cc_data_city').value) && validateZipcode(document
+        .getElementById('gerencianet_card_cc_data_zipcode').value)) {
+    jQuery('#gerencianet_cc_city_and_zipcode_row').hide();
+}
+if (validateNeighborhood(document.getElementById('gerencianet_card_cc_data_neighborhood').value) && validateComplement(
+        document.getElementById('gerencianet_card_cc_data_complement').value)) {
+    jQuery('#gerencianet_cc_neighborhood_row').hide();
+}
 
-	/*if (((verifyCPF(jQuery("#gerencianet_card_cc_data_cpf_cnpj").val()) || verifyCNPJ(jQuery("#gerencianet_card_cc_data_cpf_cnpj").val())) && validateBirth(jQuery('#gerencianet_card_cc_data_birth').val())) && validateName(jQuery('#gerencianet_card_cc_data_name_corporate').val())) {
-		jQuery('.pay-juridical-person').addClass("gn-hide");
-	} else {
-		jQuery('.pay-juridical-person').removeClass("gn-hide");
-	}*/
+/*if (((verifyCPF(jQuery("#gerencianet_card_cc_data_cpf_cnpj").val()) || verifyCNPJ(jQuery("#gerencianet_card_cc_data_cpf_cnpj").val())) && validateBirth(jQuery('#gerencianet_card_cc_data_birth').val())) && validateName(jQuery('#gerencianet_card_cc_data_name_corporate').val())) {
+	jQuery('.pay-juridical-person').addClass("gn-hide");
+} else {
+	jQuery('.pay-juridical-person').removeClass("gn-hide");
+}*/
 
-	if (((verifyCPF(jQuery("#gerencianet_card_cc_data_cpf_cnpj").val()) || verifyCNPJ(jQuery("#gerencianet_card_cc_data_cpf_cnpj").val())) && validateBirth(jQuery('#gerencianet_card_cc_data_birth').val())) && (validateName(jQuery('#gerencianet_card_cc_data_name_corporate').val())) && (validateNeighborhood(document.getElementById('gerencianet_card_cc_data_neighborhood').value) && validateComplement(document.getElementById('gerencianet_card_cc_data_complement').value)) && (validateCity(document.getElementById('gerencianet_card_cc_data_city').value) && validateZipcode(document.getElementById('gerencianet_card_cc_data_zipcode').value)) && (validateStreet(document.getElementById('gerencianet_card_cc_data_street').value) && validateStreetNumber(document.getElementById('gerencianet_card_cc_data_number').value)) && (validatePhone(document.getElementById('gerencianet_card_cc_data_phone_number').value)) && (validateEmail(document.getElementById('gerencianet_card_cc_data_email').value))) {
-    	jQuery('#gn-card-payment-data-title').addClass("gn-hide");
+if (((verifyCPF(jQuery("#gerencianet_card_cc_data_cpf_cnpj").val()) || verifyCNPJ(jQuery(
+        "#gerencianet_card_cc_data_cpf_cnpj").val())) && validateBirth(jQuery('#gerencianet_card_cc_data_birth')
+        .val())) && (validateName(jQuery('#gerencianet_card_cc_data_name_corporate').val())) && (validateNeighborhood(
+        document.getElementById('gerencianet_card_cc_data_neighborhood').value) && validateComplement(document
+        .getElementById('gerencianet_card_cc_data_complement').value)) && (validateCity(document.getElementById(
+        'gerencianet_card_cc_data_city').value) && validateZipcode(document.getElementById(
+        'gerencianet_card_cc_data_zipcode').value)) && (validateStreet(document.getElementById(
+        'gerencianet_card_cc_data_street').value) && validateStreetNumber(document.getElementById(
+        'gerencianet_card_cc_data_number').value)) && (validatePhone(document.getElementById(
+        'gerencianet_card_cc_data_phone_number').value)) && (validateEmail(document.getElementById(
+        'gerencianet_card_cc_data_email').value))) {
+    jQuery('#gn-card-payment-data-title').addClass("gn-hide");
+} else {
+    jQuery('#gn-card-payment-data-title').removeClass("gn-hide");
+
+}
+
+function validateName(data) {
+    if (data) {
+        if (data.length > 7) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+function validateEmail(email) {
+    if (email) {
+        var pattern = new RegExp(
+            /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/
+            );
+        return pattern.test(email);
     } else {
-    	jQuery('#gn-card-payment-data-title').removeClass("gn-hide");
-    	
+        return false;
     }
+}
 
-	function validateName(data) {
-        if (data) {
-            if (data.length > 7) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    }
-
-    function validateEmail(email) {
-        if (email) {
-            var pattern = new RegExp(/^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/);
-            return pattern.test(email);
-        } else {
+function validatePhone(phone_number) {
+    if (phone_number) {
+        if (phone_number.replace(/[^\d]+/g, '').length < 10) {
             return false;
-        }
-    }
-
-    function validatePhone(phone_number) {
-        if (phone_number) {
-            if (phone_number.replace(/[^\d]+/g,'').length < 10) {
-                return false; 
-            } else {
-                var pattern = new RegExp(/^[1-9]{2}9?[0-9]{8}$/);
-                if (pattern.test(phone_number.replace(/[^\d]+/g,''))) {
-                    return true; 
-                } else {
-                    return false; 
-                }
-            }
-        }
-    }
-
-    function validateStreet(data) {
-        if (data) {
-            if (data.length<1 || data.length>200) {
-                return false;
-            } else {
-                return true;
-            }
         } else {
-            return false;
+            var pattern = new RegExp(/^[1-9]{2}9?[0-9]{8}$/);
+            if (pattern.test(phone_number.replace(/[^\d]+/g, ''))) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
+}
 
-    function validateStreetNumber(data) {
-        if (data) {
-            if (data.length<1 || data.length>55) {
-                return false;
-            } else {
-                return true;
-            }
+function validateStreet(data) {
+    if (data) {
+        if (data.length < 1 || data.length > 200) {
+            return false;
         } else {
-            return false;
+            return true;
         }
+    } else {
+        return false;
     }
+}
 
-    function validateNeighborhood(data) {
-        if (data) {
-            if (data.length<1 || data.length>255) {
-                return false;
-            } else {
-                return true;
-            }
+function validateStreetNumber(data) {
+    if (data) {
+        if (data.length < 1 || data.length > 55) {
+            return false;
         } else {
-            return false;
+            return true;
         }
+    } else {
+        return false;
     }
+}
 
-    function validateComplement(data) {
-        if (data) {
-            if (data.length>55) {
-                return false;
-            } else {
-                return true;
-            }
+function validateNeighborhood(data) {
+    if (data) {
+        if (data.length < 1 || data.length > 255) {
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        return false;
+    }
+}
+
+function validateComplement(data) {
+    if (data) {
+        if (data.length > 55) {
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        return true;
+    }
+}
+
+function validateState(data) {
+    if (data) {
+        var pattern = new RegExp(/^(?:A[CLPM]|BA|CE|DF|ES|GO|M[ATSG]|P[RBAEI]|R[JNSOR]|S[CEP]|TO)$/);
+        if (!pattern.test(data)) {
+            return false;
+        } else {
+            return true;
+        }
+    } else {
+        return false;
+    }
+}
+
+function validateZipcode(data) {
+    if (data) {
+        if (data.replace(/[^\d]+/g, '').length != 8) {
+            return false;
         } else {
             return true;
         }
     }
+}
 
-    function validateState(data) {
-        if (data) {
-            var pattern = new RegExp(/^(?:A[CLPM]|BA|CE|DF|ES|GO|M[ATSG]|P[RBAEI]|R[JNSOR]|S[CEP]|TO)$/);
-            if (!pattern.test(data)) {
-                return false;
-            } else {
-                return true;
-            }
-        } else {
+function validateCity(data) {
+    if (data) {
+        if (data.length < 1 || data.length > 255) {
             return false;
-        }
-    }
-
-    function validateZipcode(data) {
-        if (data) {
-            if (data.replace(/[^\d]+/g,'').length!=8) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-    }
-
-    function validateCity(data) {
-        if (data) {
-            if (data.length<1 || data.length>255) {
-                return false;
-            } else {
-                return true;
-            }
         } else {
-            return false;
-        }
-    }
-
-    function verifyCPF(cpf) {
-        if (cpf) {
-            cpf = cpf.replace(/[^\d]+/g,'');
-            
-            if(cpf == '' || cpf.length != 11) return false;
-            
-            var resto;
-            var soma = 0;
-            
-            if (cpf == "00000000000" || cpf == "11111111111" || cpf == "22222222222" || cpf == "33333333333" || cpf == "44444444444" || cpf == "55555555555" || cpf == "66666666666" || cpf == "77777777777" || cpf == "88888888888" || cpf == "99999999999" || cpf == "12345678909") return false;
-            
-            for (i=1; i<=9; i++) soma = soma + parseInt(cpf.substring(i-1, i)) * (11 - i);
-            resto = (soma * 10) % 11;
-            
-            if ((resto == 10) || (resto == 11))  resto = 0;
-            if (resto != parseInt(cpf.substring(9, 10)) ) return false;
-            
-            soma = 0;
-            for (i = 1; i <= 10; i++) soma = soma + parseInt(cpf.substring(i-1, i)) * (12 - i);
-            resto = (soma * 10) % 11;
-            
-            if ((resto == 10) || (resto == 11))  resto = 0;
-            if (resto != parseInt(cpf.substring(10, 11) ) ) return false;
             return true;
+        }
+    } else {
+        return false;
+    }
+}
+
+function verifyCPF(cpf) {
+    if (cpf) {
+        cpf = cpf.replace(/[^\d]+/g, '');
+
+        if (cpf == '' || cpf.length != 11) return false;
+
+        var resto;
+        var soma = 0;
+
+        if (cpf == "00000000000" || cpf == "11111111111" || cpf == "22222222222" || cpf == "33333333333" || cpf ==
+            "44444444444" || cpf == "55555555555" || cpf == "66666666666" || cpf == "77777777777" || cpf ==
+            "88888888888" || cpf == "99999999999" || cpf == "12345678909") return false;
+
+        for (i = 1; i <= 9; i++) soma = soma + parseInt(cpf.substring(i - 1, i)) * (11 - i);
+        resto = (soma * 10) % 11;
+
+        if ((resto == 10) || (resto == 11)) resto = 0;
+        if (resto != parseInt(cpf.substring(9, 10))) return false;
+
+        soma = 0;
+        for (i = 1; i <= 10; i++) soma = soma + parseInt(cpf.substring(i - 1, i)) * (12 - i);
+        resto = (soma * 10) % 11;
+
+        if ((resto == 10) || (resto == 11)) resto = 0;
+        if (resto != parseInt(cpf.substring(10, 11))) return false;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function verifyCNPJ(cnpj) {
+    if (cnpj) {
+        cnpj = cnpj.replace(/[^\d]+/g, '');
+
+        if (cnpj == '' || cnpj.length != 14) return false;
+
+        if (cnpj == "00000000000000" || cnpj == "11111111111111" || cnpj == "22222222222222" || cnpj ==
+            "33333333333333" || cnpj == "44444444444444" || cnpj == "55555555555555" || cnpj == "66666666666666" ||
+            cnpj == "77777777777777" || cnpj == "88888888888888" || cnpj == "99999999999999") return false;
+
+        var tamanho = cnpj.length - 2
+        var numeros = cnpj.substring(0, tamanho);
+        var digitos = cnpj.substring(tamanho);
+        var soma = 0;
+        var pos = tamanho - 7;
+
+        for (i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2)
+                pos = 9;
+        }
+
+        var resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+
+        if (resultado != digitos.charAt(0)) return false;
+
+        tamanho = tamanho + 1;
+        numeros = cnpj.substring(0, tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+
+        for (i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2) pos = 9;
+        }
+
+        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+
+        if (resultado != digitos.charAt(1)) return false;
+
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function validateBirth(birth) {
+    if (birth) {
+        var pattern = new RegExp(/^[12][0-9]{3}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])$/);
+        var date = birth.split("/");
+        return pattern.test(date[2] + "-" + date[1] + "-" + date[0]);
+    } else {
+        return false;
+    }
+}
+
+if (document.getElementById('billing:firstname')) {
+    //document.getElementById('billing:firstname').onchange=function(){
+    jQuery("[name='billing[firstname]']").change(function() {
+        if (document.getElementById('billing:lastname')) {
+            var full_name = this.value + " " + document.getElementById('billing:lastname').value;
         } else {
-            return false;
+            var full_name = this.value;
+        }
+        if (document.getElementById('billing:taxvat') && verifyCNPJ(document.getElementById('billing:taxvat')
+                .value)) {
+            jQuery('#gerencianet_card_cc_data_name_corporate').val(this.value);
+        } else {
+            jQuery('#gerencianet_card_cc_data_name_corporate').val(full_name);
+        }
+        if (validateName(full_name)) {
+            jQuery('#gerencianet_card_cc_data_name_corporate').removeClass("gn-inputs-error required-entry");
+            jQuery('#gerencianet_cc_name_row').hide();
+        } else {
+            jQuery('#gerencianet_card_cc_data_name_corporate').addClass("gn-inputs-error required-entry");
+            jQuery('#gerencianet_cc_name_row').show();
+        }
+    });
+} else {
+    jQuery('#gerencianet_card_cc_data_name_corporate').addClass("required-entry");
+}
+
+if (document.getElementById('billing:lastname')) {
+    jQuery("[name='billing[lastname]']").change(function() {
+        if (document.getElementById('billing:firstname')) {
+            var full_name = document.getElementById('billing:firstname').value + " " + this.value;
+        } else {
+            var full_name = this.value;
+        }
+        if (document.getElementById('billing:taxvat') && verifyCNPJ(document.getElementById('billing:taxvat')
+                .value)) {
+            //
+        } else {
+            jQuery('#gerencianet_card_cc_data_name_corporate').val(full_name);
+        }
+
+        if (validateName(full_name)) {
+            jQuery('#gerencianet_card_cc_data_name_corporate').removeClass("gn-inputs-error required-entry");
+            jQuery('#gerencianet_cc_name_row').hide();
+        } else {
+            jQuery('#gerencianet_card_cc_data_name_corporate').addClass("gn-inputs-error required-entry");
+            jQuery('#gerencianet_cc_name_row').show();
+        }
+
+    });
+} else {
+    jQuery('#gerencianet_card_cc_data_name_corporate').addClass("required-entry");
+}
+
+if (document.getElementById('billing:day')) {
+    jQuery("[name='billing[day]']").change(function() {
+        //document.getElementById('billing:day').onchange=function(){
+        birthCheck();
+    });
+} else {
+    jQuery('#gerencianet_card_cc_data_birth').addClass("required-entry");
+}
+if (document.getElementById('billing:month')) {
+    jQuery("[name='billing[month]']").change(function() {
+        //document.getElementById('billing:month').onchange=function(){
+        birthCheck();
+    });
+} else {
+    jQuery('#gerencianet_card_cc_data_birth').addClass("required-entry");
+}
+if (document.getElementById('billing:year')) {
+    jQuery("[name='billing[year]']").change(function() {
+        //document.getElementById('billing:year').onchange=function(){
+        birthCheck();
+    });
+} else {
+    jQuery('#gerencianet_card_cc_data_birth').addClass("required-entry");
+}
+
+function birthCheck() {
+    var birth_day;
+    var birth_month;
+    var birth_year;
+    if (document.getElementById('billing:day') && document.getElementById('billing:month') && document.getElementById(
+            'billing:year')) {
+        birth_day = document.getElementById('billing:day').value;
+        birth_month = document.getElementById('billing:month').value;
+        birth_year = document.getElementById('billing:year').value;
+        if (birth_day != "" && birth_month != "" && birth_year != "") {
+            jQuery('#gerencianet_card_cc_data_birth').val(birth_day + "/" + birth_month + "/" + birth_year);
         }
     }
 
-    function verifyCNPJ(cnpj) {
-        if (cnpj) {
-            cnpj = cnpj.replace(/[^\d]+/g,'');
+    if (validateBirth(birth_day + "/" + birth_month + "/" + birth_year)) {
+        jQuery('#gerencianet_card_cc_data_birth').removeClass("gn-inputs-error required-entry");
+        //jQuery('#gerencianet_cc_email_row').hide();
+    } else {
+        jQuery('#gerencianet_card_cc_data_birth').addClass("gn-inputs-error required-entry");
+        //jQuery('#gerencianet_cc_email_row').hide();
+    }
+}
 
-            if(cnpj == '' || cnpj.length != 14) return false;
+if (document.getElementById('billing:email')) {
+    //document.getElementById('billing:email').onchange=function(){
+    jQuery("[name='billing[email]']").change(function() {
+        jQuery('#gerencianet_card_cc_data_email').val(this.value);
+        if (validateEmail(this.value)) {
+            jQuery('#gerencianet_card_cc_data_email').removeClass("gn-inputs-error required-entry");
+            jQuery('#gerencianet_cc_email_row').hide();
+        } else {
+            jQuery('#gerencianet_card_cc_data_email').addClass("gn-inputs-error required-entry");
+            jQuery('#gerencianet_cc_email_row').show();
+        }
+    });
+} else {
+    jQuery('#gerencianet_card_cc_data_email').addClass("required-entry");
+}
 
-            if (cnpj == "00000000000000" || cnpj == "11111111111111" || cnpj == "22222222222222" || cnpj == "33333333333333" || cnpj == "44444444444444" || cnpj == "55555555555555" || cnpj == "66666666666666" || cnpj == "77777777777777" || cnpj == "88888888888888" || cnpj == "99999999999999") return false;
+if (document.getElementsByName('billing[telephone]')) {
+    jQuery("[name='billing[telephone]']").change(function() {
+        jQuery('#gerencianet_card_cc_data_phone_number').val(this.value);
+        if (validatePhone(this.value)) {
+            jQuery('#gerencianet_card_cc_data_phone_number').removeClass("gn-inputs-error required-entry");
+            jQuery('#gerencianet_cc_phone_row').hide();
+        } else {
+            jQuery('#gerencianet_card_cc_data_phone_number').addClass("gn-inputs-error required-entry");
+            jQuery('#gerencianet_cc_phone_row').show();
+        }
+    });
+} else {
+    jQuery('#gerencianet_card_cc_data_phone_number').addClass("required-entry");
+}
 
-            var tamanho = cnpj.length - 2
-            var numeros = cnpj.substring(0,tamanho);
-            var digitos = cnpj.substring(tamanho);
-            var soma = 0;
-            var pos = tamanho - 7;
-            
-            for (i = tamanho; i >= 1; i--) {
-              soma += numeros.charAt(tamanho - i) * pos--;
-              if (pos < 2)
-                    pos = 9;
+if (document.getElementById('billing:postcode')) {
+    //document.getElementById('billing:postcode').onchange=function(){
+    jQuery("[name='billing[postcode]']").change(function() {
+        jQuery('#gerencianet_card_cc_data_zipcode').val(this.value);
+        if (validateZipcode(this.value)) {
+            jQuery('#gerencianet_card_cc_data_zipcode').removeClass("gn-inputs-error required-entry");
+            if (validateCity(jQuery('#gerencianet_card_cc_data_city').val())) {
+                jQuery('#gerencianet_cc_city_and_zipcode_row').hide();
             }
-            
-            var resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-            
-            if (resultado != digitos.charAt(0)) return false;
+        } else {
+            jQuery('#gerencianet_card_cc_data_zipcode').addClass("gn-inputs-error required-entry");
+            jQuery('#gerencianet_cc_city_and_zipcode_row').show();
+        }
+    });
+} else {
+    jQuery('#gerencianet_card_cc_data_zipcode').addClass("required-entry");
+}
 
-            tamanho = tamanho + 1;
-            numeros = cnpj.substring(0,tamanho);
-            soma = 0;
-            pos = tamanho - 7;
-            
-            for (i = tamanho; i >= 1; i--) {
-              soma += numeros.charAt(tamanho - i) * pos--;
-              if (pos < 2) pos = 9;
+if (document.getElementById('billing:city')) {
+    //document.getElementById('billing:city').onchange=function(){
+    jQuery("[name='billing[city]']").change(function() {
+        jQuery('#gerencianet_card_cc_data_city').val(this.value);
+        if (validateCity(this.value)) {
+            jQuery('#gerencianet_card_cc_data_city').removeClass("gn-inputs-error required-entry");
+            if (validateZipcode(jQuery('#gerencianet_card_cc_data_zipcode').val())) {
+                jQuery('#gerencianet_cc_city_and_zipcode_row').hide();
             }
-            
-            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-            
-            if (resultado != digitos.charAt(1)) return false;
-
-            return true; 
         } else {
-            return false;
+            jQuery('#gerencianet_card_cc_data_city').addClass("gn-inputs-error required-entry");
+            jQuery('#gerencianet_cc_city_and_zipcode_row').show();
         }
-    }
+    });
+} else {
+    jQuery('#gerencianet_card_cc_data_city').addClass("required-entry");
+}
 
-    function validateBirth(birth) {
-        if (birth) {
-            var pattern = new RegExp(/^[12][0-9]{3}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])$/);
-            var date = birth.split("/");
-            return pattern.test(date[2] + "-" + date[1] + "-" + date[0]);
+if (document.getElementById('billing:street1')) {
+    jQuery("[name='billing[street1]']").change(function() {
+        //document.getElementById('billing:street1').onchange=function(){
+        jQuery('#gerencianet_card_cc_data_street').val(this.value);
+        if (validateStreet(this.value)) {
+            jQuery('#gerencianet_card_cc_data_street').removeClass("gn-inputs-error required-entry");
+            if (validateStreet(jQuery('#gerencianet_card_cc_data_number').val())) {
+                jQuery('#gerencianet_cc_street_and_number_row').hide();
+            }
         } else {
-            return false;
+            jQuery('#gerencianet_card_cc_data_street').addClass("gn-inputs-error required-entry");
+            jQuery('#gerencianet_cc_street_and_number_row').show();
         }
-    }
+    });
+} else {
+    jQuery('#gerencianet_card_cc_data_street').addClass("required-entry");
+}
 
-    if (document.getElementById('billing:firstname')) {
-		//document.getElementById('billing:firstname').onchange=function(){
-		jQuery("[name='billing[firstname]']").change(function() {
-			if (document.getElementById('billing:lastname')) {
-				var full_name = this.value + " " + document.getElementById('billing:lastname').value;
-			} else {
-				var full_name = this.value;
-			}
-			if (document.getElementById('billing:taxvat') && verifyCNPJ(document.getElementById('billing:taxvat').value)) {
-				jQuery('#gerencianet_card_cc_data_name_corporate').val(this.value);
-			} else {
-				jQuery('#gerencianet_card_cc_data_name_corporate').val(full_name);
-			}
-			if (validateName(full_name)) {
-				jQuery('#gerencianet_card_cc_data_name_corporate').removeClass("gn-inputs-error required-entry");
-				jQuery('#gerencianet_cc_name_row').hide();
-	        } else {
-	            jQuery('#gerencianet_card_cc_data_name_corporate').addClass("gn-inputs-error required-entry");
-	            jQuery('#gerencianet_cc_name_row').show();
-			}
-		});
-	} else {
-		jQuery('#gerencianet_card_cc_data_name_corporate').addClass("required-entry");
-	}
-
-	if (document.getElementById('billing:lastname')) {
-		jQuery("[name='billing[lastname]']").change(function() {
-			if (document.getElementById('billing:firstname')) {
-				var full_name = document.getElementById('billing:firstname').value + " " + this.value;
-			} else {
-				var full_name = this.value;
-			}
-			if (document.getElementById('billing:taxvat') && verifyCNPJ(document.getElementById('billing:taxvat').value)) {
-				//
-			} else {
-				jQuery('#gerencianet_card_cc_data_name_corporate').val(full_name);
-			}
-
-			if (validateName(full_name)) {
-				jQuery('#gerencianet_card_cc_data_name_corporate').removeClass("gn-inputs-error required-entry");
-				jQuery('#gerencianet_cc_name_row').hide();
-	        } else {
-	            jQuery('#gerencianet_card_cc_data_name_corporate').addClass("gn-inputs-error required-entry");
-	            jQuery('#gerencianet_cc_name_row').show();
-			}
-
-		});
-	} else {
-		jQuery('#gerencianet_card_cc_data_name_corporate').addClass("required-entry");
-	}
-
-	if (document.getElementById('billing:day')) {
-		jQuery("[name='billing[day]']").change(function() {
-		//document.getElementById('billing:day').onchange=function(){
-			birthCheck();
-		});
-	} else {
-		jQuery('#gerencianet_card_cc_data_birth').addClass("required-entry");
-	}
-	if (document.getElementById('billing:month')) {
-		jQuery("[name='billing[month]']").change(function() {
-		//document.getElementById('billing:month').onchange=function(){
-			birthCheck();
-		});
-	} else {
-		jQuery('#gerencianet_card_cc_data_birth').addClass("required-entry");
-	}
-	if (document.getElementById('billing:year')) {
-		jQuery("[name='billing[year]']").change(function() {
-		//document.getElementById('billing:year').onchange=function(){
-			birthCheck();
-		});
-	} else {
-		jQuery('#gerencianet_card_cc_data_birth').addClass("required-entry");
-	}
-
-	function birthCheck() {
-		var birth_day;
-		var birth_month;
-		var birth_year;
-		if (document.getElementById('billing:day') && document.getElementById('billing:month') && document.getElementById('billing:year')) {
-			birth_day= document.getElementById('billing:day').value;
-			birth_month= document.getElementById('billing:month').value;
-			birth_year= document.getElementById('billing:year').value;
-			if (birth_day!="" && birth_month!="" && birth_year!="") {
-				jQuery('#gerencianet_card_cc_data_birth').val(birth_day+"/"+birth_month+"/"+birth_year);
-			}
-		}
-
-		if (validateBirth(birth_day+"/"+birth_month+"/"+birth_year)) {
-			jQuery('#gerencianet_card_cc_data_birth').removeClass("gn-inputs-error required-entry");
-            //jQuery('#gerencianet_cc_email_row').hide();
+if (document.getElementById('billing:street2')) {
+    jQuery("[name='billing[street2]']").change(function() {
+        //document.getElementById('billing:street2').onchange=function(){
+        jQuery('#gerencianet_card_cc_data_number').val(this.value);
+        if (validateStreetNumber(this.value)) {
+            jQuery('#gerencianet_card_cc_data_number').removeClass("gn-inputs-error required-entry");
+            if (validateStreet(jQuery('#gerencianet_card_cc_data_street').val())) {
+                jQuery('#gerencianet_cc_street_and_number_row').hide();
+            }
         } else {
-            jQuery('#gerencianet_card_cc_data_birth').addClass("gn-inputs-error required-entry");
-            //jQuery('#gerencianet_cc_email_row').hide();
-		}
-	}
+            jQuery('#gerencianet_card_cc_data_number').addClass("gn-inputs-error required-entry");
+            jQuery('#gerencianet_cc_street_and_number_row').show();
+        }
+    });
+} else {
+    jQuery('#gerencianet_card_cc_data_number').addClass("required-entry");
+}
 
-	if (document.getElementById('billing:email')) {
-		//document.getElementById('billing:email').onchange=function(){
-		jQuery("[name='billing[email]']").change(function() {
-			jQuery('#gerencianet_card_cc_data_email').val(this.value);
-			if (validateEmail(this.value)) {
-				jQuery('#gerencianet_card_cc_data_email').removeClass("gn-inputs-error required-entry");
-	            jQuery('#gerencianet_cc_email_row').hide();
-	        } else {
-	            jQuery('#gerencianet_card_cc_data_email').addClass("gn-inputs-error required-entry");
-	            jQuery('#gerencianet_cc_email_row').show();
-			}
-		});
-	} else {
-		jQuery('#gerencianet_card_cc_data_email').addClass("required-entry");
-	}
+if (document.getElementById('billing:street3')) {
+    jQuery("[name='billing[street3]']").change(function() {
+        //document.getElementById('billing:street3').onchange=function(){
+        jQuery('#gerencianet_card_cc_data_complement').val(this.value);
+        if (validateComplement(this.value)) {
+            jQuery('#gerencianet_card_cc_data_complement').removeClass("gn-inputs-error");
+            if (validateNeighborhood(jQuery('#gerencianet_card_cc_data_neighborhood').val())) {
+                jQuery('#gerencianet_cc_neighborhood_row').hide();
+            }
+        } else {
+            jQuery('#gerencianet_card_cc_data_complement').addClass("gn-inputs-error");
+            jQuery('#gerencianet_cc_neighborhood_row').show();
+        }
+    });
+}
 
-	if (document.getElementsByName('billing[telephone]')) {
-		jQuery("[name='billing[telephone]']").change(function() {
-			jQuery('#gerencianet_card_cc_data_phone_number').val(this.value);
-			if (validatePhone(this.value)) {
-				jQuery('#gerencianet_card_cc_data_phone_number').removeClass("gn-inputs-error required-entry");
-	            jQuery('#gerencianet_cc_phone_row').hide();
-	        } else {
-	            jQuery('#gerencianet_card_cc_data_phone_number').addClass("gn-inputs-error required-entry");
-	            jQuery('#gerencianet_cc_phone_row').show();
-			}
-		});
-	} else {
-		jQuery('#gerencianet_card_cc_data_phone_number').addClass("required-entry");
-	}
+if (document.getElementById('billing:street4')) {
+    jQuery("[name='billing[street4]']").change(function() {
+        //document.getElementById('billing:street4').onchange=function(){
+        jQuery('#gerencianet_card_cc_data_neighborhood').val(this.value);
+        if (validateNeighborhood(this.value)) {
+            jQuery('#gerencianet_card_cc_data_neighborhood').removeClass("gn-inputs-error required-entry");
+            if (validateComplement(jQuery('#gerencianet_card_cc_data_complement').val())) {
+                jQuery('#gerencianet_cc_neighborhood_row').hide();
+            }
+        } else {
+            jQuery('#gerencianet_card_cc_data_neighborhood').addClass("gn-inputs-error required-entry");
+            jQuery('#gerencianet_cc_neighborhood_row').show();
+        }
+    });
+} else {
+    jQuery('#gerencianet_card_cc_data_neighborhood').addClass("required-entry");
+}
 
-	if (document.getElementById('billing:postcode')) {
-		//document.getElementById('billing:postcode').onchange=function(){
-		jQuery("[name='billing[postcode]']").change(function() {
-			jQuery('#gerencianet_card_cc_data_zipcode').val(this.value);
-			if (validateZipcode(this.value)) {
-				jQuery('#gerencianet_card_cc_data_zipcode').removeClass("gn-inputs-error required-entry");
-				if (validateCity(jQuery('#gerencianet_card_cc_data_city').val())) {
-		            jQuery('#gerencianet_cc_city_and_zipcode_row').hide();
-		        }
-	        } else {
-	            jQuery('#gerencianet_card_cc_data_zipcode').addClass("gn-inputs-error required-entry");
-	            jQuery('#gerencianet_cc_city_and_zipcode_row').show();
-			}
-		});
-	} else {
-		jQuery('#gerencianet_card_cc_data_zipcode').addClass("required-entry");
-	}
-
-	if (document.getElementById('billing:city')) {
-		//document.getElementById('billing:city').onchange=function(){
-		jQuery("[name='billing[city]']").change(function() {
-			jQuery('#gerencianet_card_cc_data_city').val(this.value);
-			if (validateCity(this.value)) {
-				jQuery('#gerencianet_card_cc_data_city').removeClass("gn-inputs-error required-entry");
-	            if (validateZipcode(jQuery('#gerencianet_card_cc_data_zipcode').val())) {
-		            jQuery('#gerencianet_cc_city_and_zipcode_row').hide();
-		        }
-	        } else {
-	            jQuery('#gerencianet_card_cc_data_city').addClass("gn-inputs-error required-entry");
-	            jQuery('#gerencianet_cc_city_and_zipcode_row').show();
-			}
-		});
-	} else {
-		jQuery('#gerencianet_card_cc_data_city').addClass("required-entry");
-	}
-
-	if (document.getElementById('billing:street1')) {
-		jQuery("[name='billing[street1]']").change(function() {
-		//document.getElementById('billing:street1').onchange=function(){
-			jQuery('#gerencianet_card_cc_data_street').val(this.value);
-			if (validateStreet(this.value)) {
-				jQuery('#gerencianet_card_cc_data_street').removeClass("gn-inputs-error required-entry");
-	            if (validateStreet(jQuery('#gerencianet_card_cc_data_number').val())) {
-		            jQuery('#gerencianet_cc_street_and_number_row').hide();
-		        }
-	        } else {
-	            jQuery('#gerencianet_card_cc_data_street').addClass("gn-inputs-error required-entry");
-	            jQuery('#gerencianet_cc_street_and_number_row').show();
-			}
-		});
-	} else {
-		jQuery('#gerencianet_card_cc_data_street').addClass("required-entry");
-	}
-
-	if (document.getElementById('billing:street2')) {
-		jQuery("[name='billing[street2]']").change(function() {
-		//document.getElementById('billing:street2').onchange=function(){
-			jQuery('#gerencianet_card_cc_data_number').val(this.value);
-			if (validateStreetNumber(this.value)) {
-				jQuery('#gerencianet_card_cc_data_number').removeClass("gn-inputs-error required-entry");
-				if (validateStreet(jQuery('#gerencianet_card_cc_data_street').val())) {
-		            jQuery('#gerencianet_cc_street_and_number_row').hide();
-		        }
-	        } else {
-	            jQuery('#gerencianet_card_cc_data_number').addClass("gn-inputs-error required-entry");
-	            jQuery('#gerencianet_cc_street_and_number_row').show();
-			}
-		});
-	} else {
-		jQuery('#gerencianet_card_cc_data_number').addClass("required-entry");
-	}
-
-	if (document.getElementById('billing:street3')) {
-		jQuery("[name='billing[street3]']").change(function() {
-		//document.getElementById('billing:street3').onchange=function(){
-			jQuery('#gerencianet_card_cc_data_complement').val(this.value);
-			if (validateComplement(this.value)) {
-				jQuery('#gerencianet_card_cc_data_complement').removeClass("gn-inputs-error");
-	            if (validateNeighborhood(jQuery('#gerencianet_card_cc_data_neighborhood').val())) {
-		            jQuery('#gerencianet_cc_neighborhood_row').hide();
-		        }
-	        } else {
-	            jQuery('#gerencianet_card_cc_data_complement').addClass("gn-inputs-error");
-	            jQuery('#gerencianet_cc_neighborhood_row').show();
-			}
-		});
-	}
-
-	if (document.getElementById('billing:street4')) {
-		jQuery("[name='billing[street4]']").change(function() {
-		//document.getElementById('billing:street4').onchange=function(){
-			jQuery('#gerencianet_card_cc_data_neighborhood').val(this.value);
-			if (validateNeighborhood(this.value)) {
-				jQuery('#gerencianet_card_cc_data_neighborhood').removeClass("gn-inputs-error required-entry");
-				if (validateComplement(jQuery('#gerencianet_card_cc_data_complement').val())) {
-		            jQuery('#gerencianet_cc_neighborhood_row').hide();
-		        }
-	        } else {
-	            jQuery('#gerencianet_card_cc_data_neighborhood').addClass("gn-inputs-error required-entry");
-	            jQuery('#gerencianet_cc_neighborhood_row').show();
-			}
-		});
-	} else {
-		jQuery('#gerencianet_card_cc_data_neighborhood').addClass("required-entry");
-	}
-
-	if (document.getElementById('billing:taxvat')) {
-		jQuery("[name='billing[taxvat]']").change(function() {
-			if (verifyCPF(this.value) || verifyCNPJ(this.value)) {
-				jQuery('#gerencianet_card_cc_data_cpf_cnpj').val(this.value);
-			}
-		});
-	} else {
-		//jQuery('#gerencianet_card_cc_data_cpf').addClass("required-entry");
-	}
-	
+if (document.getElementById('billing:taxvat')) {
+    jQuery("[name='billing[taxvat]']").change(function() {
+        if (verifyCPF(this.value) || verifyCNPJ(this.value)) {
+            jQuery('#gerencianet_card_cc_data_cpf_cnpj').val(this.value);
+        }
+    });
+} else {
+    //jQuery('#gerencianet_card_cc_data_cpf').addClass("required-entry");
+}
 </script>

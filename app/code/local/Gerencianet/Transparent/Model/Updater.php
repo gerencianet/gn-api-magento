@@ -22,6 +22,7 @@ class Gerencianet_Transparent_Model_Updater
 	public function updatecharge($ID=NULL)
     {
         $notifications = Mage::getResourceModel('gerencianet_transparent/notifications')->getAll($ID);
+
         foreach ($notifications as $notification) {
             if (!$notification['order']) {
                 $order = Mage::getResourceModel('gerencianet_transparent/notifications')->findOrderByCharge($notification['charge_id'], $notification['environment']);
@@ -30,8 +31,13 @@ class Gerencianet_Transparent_Model_Updater
                 }
                 $notification['order'] = $order;
             }
+
             Mage::helper('gerencianet_transparent')->updateOrderStatus($notification);
             Mage::getResourceModel('gerencianet_transparent/notifications')->deleteById($notification['id']);
         }   
+    }
+
+    public function updatePixcharge($orderID, $e2eid){
+        Mage::helper('gerencianet_transparent')->updateFromWebhook($orderID, $e2eid);
     }
 }

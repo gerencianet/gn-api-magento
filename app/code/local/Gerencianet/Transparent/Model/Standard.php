@@ -38,6 +38,12 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	protected $_sandboxClientId;
 	protected $_sandboxClientSecret;
 	protected $_environment;
+	protected $_certificate;
+	protected $_options;
+	protected $_expiration;
+	protected $_pixKey;
+	protected $_pixEnable;
+	protected $_mtls;
 
 	/**
 	 * Define Gerencianet environment
@@ -56,6 +62,10 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		$this->_clientSecret = Mage::getStoreConfig($this->_configPath . 'client_secret');
 		$this->_sandboxClientId = Mage::getStoreConfig($this->_configPath . 'sandbox_client_id');
 		$this->_sandboxClientSecret = Mage::getStoreConfig($this->_configPath . 'sandbox_client_secret');
+		$this->_certificate = Mage::getStoreConfig('payment/gerencianet_pix/upload_cert');
+		$this->_expiration = Mage::getStoreConfig('payment/gerencianet_pix/pix_time');
+		$this->_pixKey = Mage::getStoreConfig('payment/gerencianet_pix/pix_key');
+		$this->_mtls = Mage::getStoreConfig('payment/gerencianet_pix/mtls');
 	}
 
 	/**
@@ -123,14 +133,60 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 				$mode = false;
 			}
 
-			$options = array(
+			$this->_options = array(
 				'client_id' => $clientID,
 				'client_secret' => $clientSecret,
 				'sandbox' => $mode,
 				'debug' => false
 			);
 
-			$this->_api = new Gerencianet\Gerencianet($options);
+			unset($this->_options['pix_cert']);
+			$this->_api = new Gerencianet\Gerencianet($this->_options);
+		}
+
+		return $this->_api;
+	}
+
+	public function getApiPix($env = NULL)
+	{
+		if ($env) {
+			if ($env !== $this->_environment) {
+				$this->_api = NULL;
+			}
+		} else {
+			$env = $this->_environment;
+		}
+
+		if (!$this->_api) {
+			#Mage::log("Teste",null,'gerencianet.log',true);
+
+			if ($env == self::ENV_TEST) {
+				$clientID = $this->_sandboxClientId;
+				$clientSecret = $this->_sandboxClientSecret;
+				$mode = true;
+				$cert = $this->_certificate;
+			} else {
+				$clientID = $this->_clientId;
+				$clientSecret = $this->_clientSecret;
+				$mode = false;
+				$cert = $this->_certificate;
+			}
+
+			$this->_options = array(
+				'client_id' => $clientID,
+				'client_secret' => $clientSecret,
+				'sandbox' => $mode,
+				'debug' => false,
+				'pix_cert' => Mage::getBaseDir("media").'//certs/'.str_replace("p12", "pem", $this->_certificate)
+			);
+
+			if($this->_mtls){
+				$this->_options['headers'] = array('x-skip-mtls-checking' => 'false');
+			} else {
+				$this->_options['headers'] = array('x-skip-mtls-checking' => 'true');
+			}
+			
+			$this->_api = new Gerencianet\Gerencianet($this->_options);
 		}
 
 		return $this->_api;
@@ -164,7 +220,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			Mage::throwException($this->errorHelper($e_message, $e_code, $e));
 		}
 	}
-
+	
 	/**
 	 * Create a charge for current quote
 	 *
@@ -174,7 +230,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	{
 		$body = $this->getChargeBody();
 		try {
-			$charge = $this->getApi()->createCharge(array(), $body);
+			$charge = $this->getApi()->createCharge([],$body);
 			Mage::log('CHARGE: ' . var_export($charge, true), 0, 'gerencianet.log');
 			return $charge['data']['charge_id'];
 		} catch (Exception $e) {
@@ -211,7 +267,6 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	{
 		try {
 			$notification = $this->getApi(self::ENV_PRODUCTION)->getNotification(array('token' => $token), array());
-			Mage::log('NOTIFICATION: ' . var_export($notification, true), 0, 'gerencianet.log');
 			return $notification['data'];
 		} catch (Exception $e) {
 			Mage::log('GET NOTIFICATION ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
@@ -267,8 +322,10 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 	public function getCustomer($paymentType)
 	{
 		$formData = unserialize($this->getOrder()->getPayment()->getAdditionalData());
+
 		$payBilletAsJuridical = false;
 		$payCardAsJuridical = false;
+		$payPixAsJuridical = false;
 
 		if (isset($formData['customer']['data_cpf_cnpj'])) {
 
@@ -302,6 +359,10 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 			}
 		}
 
+		if (isset($formData['devedor']['cnpj'])) {
+			$payPixAsJuridical = Mage::getModel('gerencianet_transparent/validator')->validateJuridicalPerson($formData['devedor']['nome'], $formData['devedor']['cnpj'], $paymentType, false);
+		}
+
 		if ($paymentType == "billet") {
 
 			if ($payBilletAsJuridical) {
@@ -318,7 +379,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 					'phone_number' => preg_replace('/[^0-9]/', '', $formData['customer']['data_phone_number'])
 				);
 			}
-		} else {
+		} else if ($paymentType == "card") {
 			$birth_date = $formData['customer']['cc_data_birth'];
 			if (strpos($birth_date, '/') !== false) {
 				$birth_date = date("Y-m-d", strtotime(str_replace('/', '-', $birth_date)));
@@ -338,6 +399,18 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 					'email' => $formData['customer']['cc_data_email'],
 					'birth' => $birth_date,
 					'phone_number' => preg_replace('/[^0-9]/', '', $formData['customer']['cc_data_phone_number'])
+				);
+			}
+		} else if($paymentType == "pix") {
+			if ($payPixAsJuridical) {
+				$customer = array(
+					'nome' => $formData['devedor']['nome'],
+					'cnpj' => $formData['devedor']['cnpj']
+				);
+			} else {
+				$customer = array(
+					'nome' => $formData['devedor']['nome'],
+					'cpf' => $formData['devedor']['cpf']
 				);
 			}
 		}
@@ -398,6 +471,100 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		return $return;
 	}
 
+
+		/**
+	 * Generate a payment to charge using checkout
+	 *
+	 * @return ApiPix
+	 */
+	public function payPix()
+	{
+		$params = array('id' => $this->createImmediateCharge());
+		try {
+			$QRCode = $this->getApiPix()->pixGenerateQRCode($params);
+			Mage::log($QRCode,null,'gerencianet.log',true);
+			return $QRCode;
+		} catch (Exception $e) {
+			Mage::log('PAY PIX ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
+
+			if ($e->getMessage()) {
+				$e_message = $e->getMessage();
+			} else {
+				$e_message = "";
+			}
+
+			if ($e->getCode()) {
+				$e_code = $e->getCode();
+			} else {
+				$e_code = "";
+			}
+
+			Mage::throwException($this->errorHelper($e_message, $e_code, $e));
+		}
+	}
+
+   public function createImmediateCharge()
+   {
+	   $body = $this->getPixBody();
+	   $order = $this->getOrder();
+	   $idPedido = $order->getIncrementId();
+
+	   try {
+		   $pix = $this->getApiPix()->pixCreateImmediateCharge([], $body);
+		   $callback['txid'] = $pix['txid'];
+		   $callback['order'] = $idPedido;
+			Mage::getResourceModel('gerencianet_transparent/webhook')->preInsert($callback);
+		   return $pix['loc']['id'];
+	   } catch (Exception $e) {
+		   Mage::log('PIX CREATE IMMEDIATE CHARGE ERROR: ' . $e->getMessage(), 0, 'gerencianet.log');
+		   Mage::throwException($e->getMessage());
+	   }
+   }
+
+   		/**
+	 * Generates charge body
+	 * @return array
+	 */
+	public function getPixBody()
+	{
+		$order = $this->getOrder();
+		$return = array();
+		$orderTotal = $order->getGrandTotal();
+
+		$store = Mage::app()->getStore();
+		$name = $store->getName();
+
+		$Incrementid = $order->getIncrementId();
+
+		$body = [
+			"calendario" => [
+				"expiracao" => 86400 * (int)$this->_expiration
+			],
+			"devedor" => $this->getCustomer('pix'),
+			"valor" => [
+				"original" => number_format($orderTotal, 2)
+			],
+			"chave" => $this->_pixKey,
+			"infoAdicionais" => [
+				[
+					"nome" => "Pagamento em ",
+					"valor" => $name // Dados do campo string (Valor) ≤ 200 characters
+				],
+				[
+					"nome" => "Pedido Nº",
+					"valor" => "# ".$Incrementid
+				]
+			]
+		];
+
+		Mage::log("Body",null,'gerencianet.log',true);
+		Mage::log($body,null,'gerencianet.log',true);
+
+		return $body;
+	}
+
+
+
 	/**
 	 * Generates charge body
 	 * @return array
@@ -411,54 +578,44 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		$currentCurrencyCode = Mage::app()->getStore()->getCurrentCurrencyCode();
 
 		foreach ($order->getAllItems() as $it) {
-			$item = $order->getItemById($it->getItemId());
+			// $item = $order->getItemById($it->getItemId());
+			$item = $it;
+			
 			if ($baseCurrencyCode === 'BRL')
-				$itemBasePrice = $item->getBasePrice();
+			$itemBasePrice = $item->getBasePrice();
 			else
-				$itemBasePrice = Mage::helper('directory')->currencyConvert($item->getBasePrice(), $baseCurrencyCode, $currentCurrencyCode);
-
+			$itemBasePrice = Mage::helper('directory')->currencyConvert($item->getBasePrice(), $baseCurrencyCode, $currentCurrencyCode);
+			
 			$orderTotal += $itemBasePrice;
-
 			//if a product has parents (simple product of configurable/bundled/grouped product) load his Parent product type
-			if ($it->getParentItemId()) {
-				$parentItem = $order->getItemById($it->getParentItemId());
-
-				if (($parentItem->getProductType() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE) && ($item->getProductType() == Mage_Catalog_Model_Product_Type::TYPE_SIMPLE))
-					$return[] = array(
+			$return[] = array(
 						'name' => $item->getName(),
 						'value' => (int)number_format($itemBasePrice, 2, '', ''),
-						'amount' => $item->getQty() * $parentItem->getQty()
+						'amount' => $item['qty_ordered']
 					);
-			} else {
-				if ($item->getProductType() !== Mage_Catalog_Model_Product_Type::TYPE_BUNDLE)
-					$return[] = array(
-						'name' => $item->getName(),
-						'value' => (int)number_format($itemBasePrice, 2, '', ''),
-						'amount' => $item->getQty()
-					);
-			}
 		}
 
 		$returnData = array();
-		if (!$order->isVirtual()) { // CHECK ORDER IS NOT VIRTUAL
-			$title = $order->getShippingAddress()->getShippingDescription();
-			$price = $order->getShippingAddress()->getShippingAmount();
+
+		if (!$order['is_virtual']) { // CHECK ORDER IS NOT VIRTUAL
+			$title = $order['shipping_description'];
+			$price = $order['shipping_amount'];
 			$orderTotal += $price;
 			$returnData['shippings'] = array(array(
 				'name' => $title,
 				'value' => (int)number_format($price, 2, '', '')
 			));
 		}
-
+		// Mage::log($parentItem->getProductType()->debug(), null, 'system.log', true);
 		# Add taxes as a charge's item
-		if ($orderTotal < $order->getBaseTotal()) {
-			$taxValue = $order->getBaseTotal() - $orderTotal;
-			$return[] = array(
-				'name' => 'Taxa/Imposto',
-				'value' => (int)number_format($taxValue, 2, '', ''),
-				'amount' => 1
-			);
-		}
+		// if ($orderTotal < $order->getBaseTotal()) {
+		// 	$taxValue = $order->getBaseTotal() - $orderTotal;
+		// 	$return[] = array(
+		// 		'name' => 'Taxa/Imposto',
+		// 		'value' => (int)number_format($taxValue, 2, '', ''),
+		// 		'amount' => 1
+		// 	);
+		// }
 
 		$returnData['items'] = $return;
 
@@ -511,7 +668,7 @@ class Gerencianet_Transparent_Model_Standard extends Mage_Payment_Model_Method_A
 		if ($discount) {
 			$paymentData['discount'] = array(
 				'type' 		=> 'currency',
-				'value'		=> $discount
+				'value'		=> abs($discount)
 			);
 		}
 
