@@ -66,8 +66,6 @@ Acessando `Sistema > Configuração > Formas de Pagamento`, 4 novos menus serão
 - **Habilitado:** Serve para habilitar ou desabilitar a funcionalidade de cartão de crédito.
 - **Título:** Altera o nome do método de pagamento no checkout.
 
-Observação: A **data de nascimento** é obrigatória para cobranças via cartão e o **cpf** é obrigatório para qualquer tipo de pagamento. Acesse `Sistema > Configuração > Configuração do cliente > Opções de Nome e Endereço`. Marque "obrigatório" para "Exibir Data de Nascimento" e "Exibir CPF/CNPJ".
-
 ### **Gerencianet - Pix**
 ![Pix](https://i.imgur.com/6j2IvPP.png)
 
