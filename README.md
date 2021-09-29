@@ -5,7 +5,7 @@
 ## Requisitos
 
  - PHP >= 7.0.0
- - Magento 1.9.x  OU  OpenMage LTS 19.4.x
+ - OpenMage LTS 19.4.x
 
 ## Instalação
 
